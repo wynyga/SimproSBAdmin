@@ -30,19 +30,27 @@ const navItems: NavItem[] = [
   {
     icon: <GridIcon />,
     name: "Dashboard",
-    path: "/",
+    path: "/dashboard",
   },
   {
     icon: <CalenderIcon />,
     name: "Transaksi Kas",
-    path: "/calendar",
+    path: "/transaksi-kas",
   },
   {
     icon: <UserCircleIcon />,
     name: "Profile",
     path: "/profile",
   },
-
+  {
+    icon: <PieChartIcon />,
+    name: "Approval",
+    subItems: [
+      { name: "Approval Transaksi Kas", path: "/line-chart", pro: false },
+      { name: "Approval Gudang Input", path: "/bar-chart", pro: false },
+      { name: "Approval Gudang Output", path: "/tes-chart", pro: false },
+    ],
+  },
   {
     name: "Material Inventory",
     icon: <ListIcon />,
@@ -328,31 +336,32 @@ const AppSidebar: React.FC = () => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <div
-        className={`py-8 flex  ${
+        className={`py-8 flex items-center ${
           !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
         }`}
       >
-        <Link href="/">
+        <Link href="/dashboard" className="flex items-center justify-center w-full">
           {isExpanded || isHovered || isMobileOpen ? (
             <>
               <Image
-                className="dark:hidden"
-                src="/images/logo/logo.svg"
+                className="dark:hidden mx-auto"
+                src="/images/logo/icon.png"
                 alt="Logo"
-                width={150}
+                width={90}
                 height={40}
               />
               <Image
-                className="hidden dark:block"
-                src="/images/logo/logo-dark.svg"
+                className="hidden dark:block mx-auto"
+                src="/images/logo/icon.png"
                 alt="Logo"
-                width={150}
+                width={90}
                 height={40}
               />
             </>
           ) : (
             <Image
-              src="/images/logo/logo-icon.svg"
+              className="mx-auto"
+              src="/images/logo/icon.png"
               alt="Logo"
               width={32}
               height={32}
