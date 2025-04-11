@@ -30,36 +30,52 @@ const navItems: NavItem[] = [
   {
     icon: <GridIcon />,
     name: "Dashboard",
-    subItems: [{ name: "Ecommerce", path: "/", pro: false }],
+    path: "/",
   },
   {
     icon: <CalenderIcon />,
-    name: "Calendar",
+    name: "Transaksi Kas",
     path: "/calendar",
   },
   {
     icon: <UserCircleIcon />,
-    name: "User Profile",
+    name: "Profile",
     path: "/profile",
   },
 
   {
-    name: "Forms",
+    name: "Material Inventory",
     icon: <ListIcon />,
-    subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
+    subItems: [
+      { name: "Stock", path: "/form-elements", pro: false },
+      { name: "Gudang Input", path: "/form-elements", pro: false },
+      { name: "Gudang Output", path: "/form-elements", pro: false },
+      { name: "Administrator Inventory", path: "/form-elements", pro: false },
+    ],
   },
   {
-    name: "Tables",
+    name: "Stock Unit",
     icon: <TableIcon />,
-    subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
+    subItems: [
+      { name: "Stock Unit", path: "/basic-tables", pro: false },
+      { name: "Tipe Rumah", path: "/basic-tables", pro: false },
+      { name: "Blok", path: "/basic-tables", pro: false },
+      { name: "Unit", path: "/basic-tables", pro: false },
+      { name: "Users", path: "/basic-tables", pro: false },
+      { name: "Transaksi", path: "/basic-tables", pro: false },
+    ]
   },
   {
-    name: "Pages",
+    name: "Laporan",
     icon: <PageIcon />,
     subItems: [
-      { name: "Blank Page", path: "/blank", pro: false },
-      { name: "404 Error", path: "/error-404", pro: false },
-    ],
+      { name: "Laporan", path: "/laporan", pro: false },
+      { name: "Tambahkan Laporan", path: "/add-laporan", pro: false },
+      { name: "Cost Center", path: "/cost-center", pro: false },
+      { name: "Cost Element", path: "/cost-element", pro: false },
+      { name: "Cost Tee", path: "/cost-tee", pro: false },
+      { name: "Cost Structure", path: "/cost-structure", pro: false },
+    ]
   },
 ];
 
@@ -70,6 +86,14 @@ const othersItems: NavItem[] = [
     subItems: [
       { name: "Line Chart", path: "/line-chart", pro: false },
       { name: "Bar Chart", path: "/bar-chart", pro: false },
+    ],
+  },
+  {
+    name: "Laporan",
+    icon: <PageIcon />,
+    subItems: [
+      { name: "Blank Page", path: "/blank", pro: false },
+      { name: "404 Error", path: "/error-404", pro: false },
     ],
   },
   {
