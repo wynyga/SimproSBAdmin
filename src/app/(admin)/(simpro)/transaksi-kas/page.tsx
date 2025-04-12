@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import { getTransaksiKas,storeTransaksiKas } from "../../../../../utils/transaksi-kas";
+import TransaksiKasForm from "@/components/simpro/TransaksiKasForm";
+import ComponentCard from "@/components/common/ComponentCard";
 
 interface KasData {
   saldoKas: number;
@@ -22,9 +23,8 @@ export default function TransaksiKasPage() {
     keterangan_objek_transaksi: "",
   });
   const [error, setError] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
+  const [, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const router = useRouter();
   
   useEffect(() => {
     fetchKas();
@@ -70,41 +70,59 @@ export default function TransaksiKasPage() {
 
       <div className="grid gap-6 xl:grid-cols-2">
         {/* Ringkasan Kas */}
-        <div className="rounded-lg border bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
-        <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90 mb-4">Ringkasan Transaksi Kas</h4>
+        <ComponentCard title="Ringkasan Transaksi Kas">
+          {error && <p className="text-sm text-red-500">{error}</p>}
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
-
-        {loading ? (
+          {loading ? (
             <p className="text-sm text-gray-500 dark:text-gray-400">Memuat data...</p>
-        ) : (
+          ) : (
             kasData && (
-            <div className="space-y-3">
-                <div className="text-sm">
-                <span className="font-medium text-gray-700 dark:text-white">Saldo Kas:</span>{" "}
-                <span className="text-gray-900 dark:text-white">
+              <div className="space-y-4 text-sm">
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-700 dark:text-white">Saldo Kas</span>
+                  <span className="text-gray-900 dark:text-white">
                     Rp {kasData.saldoKas.toLocaleString("id-ID")}
-                </span>
+                  </span>
                 </div>
-                <div className="text-sm">
-                <span className="font-medium text-gray-700 dark:text-white">Total Pemasukan:</span>{" "}
-                <span className="text-gray-900 dark:text-white">
+
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-700 dark:text-white">Total Pemasukan</span>
+                  <span className="text-gray-900 dark:text-white">
                     Rp {kasData.totalCashIn.toLocaleString("id-ID")}
-                </span>
+                  </span>
                 </div>
-                <div className="text-sm">
-                <span className="font-medium text-gray-700 dark:text-white">Total Pengeluaran:</span>{" "}
-                <span className="text-gray-900 dark:text-white">
+
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-700 dark:text-white">Total Pengeluaran</span>
+                  <span className="text-gray-900 dark:text-white">
                     Rp {kasData.totalCashOut.toLocaleString("id-ID")}
-                </span>
+                  </span>
                 </div>
-            </div>
+              </div>
             )
-        )}
-        </div>
+          )}
+        </ComponentCard>
 
         {/* Form Tambah Transaksi */}
-        <div className="rounded-lg border bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
+        <div className="space-y-6">
+          <TransaksiKasForm
+            formData={newTransaksi}
+            handleChange={handleChange}
+            handleSelectChange={(val, name) =>
+              setNewTransaksi((prev) => ({ ...prev, [name]: val }))
+            }
+            handleDateChange={(date) =>
+              setNewTransaksi((prev) => ({
+                ...prev,
+                tanggal: date.toISOString().split("T")[0],
+              }))
+            }
+            handleSubmit={handleSubmit}
+            loading={loading}
+          />
+        </div>
+
+        {/* <div className="rounded-lg border bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
           <h4 className="mb-4 text-lg font-semibold text-gray-800 dark:text-white/90">Tambah Transaksi</h4>
 
           {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
@@ -200,7 +218,10 @@ export default function TransaksiKasPage() {
               </button>
             </div>
           </form>
-        </div>
+        </div> */}
+
+
+
       </div>
     </div>
   );

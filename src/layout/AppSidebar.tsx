@@ -46,9 +46,9 @@ const navItems: NavItem[] = [
     icon: <PieChartIcon />,
     name: "Approval",
     subItems: [
-      { name: "Approval Transaksi Kas", path: "/line-chart", pro: false },
-      { name: "Approval Gudang Input", path: "/bar-chart", pro: false },
-      { name: "Approval Gudang Output", path: "/tes-chart", pro: false },
+      { name: "Approval Transaksi Kas", path: "/approval-transaksi-kas", pro: false },
+      { name: "Approval Gudang Input", path: "/approval-gudang-input", pro: false },
+      { name: "Approval Gudang Output", path: "/approval-gudang-output", pro: false },
     ],
   },
   {
