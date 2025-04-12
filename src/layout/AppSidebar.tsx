@@ -55,8 +55,8 @@ const navItems: NavItem[] = [
     name: "Material Inventory",
     icon: <ListIcon />,
     subItems: [
-      { name: "Stock", path: "/form-elements", pro: false },
-      { name: "Gudang Input", path: "/form-elements", pro: false },
+      { name: "Stock", path: "/stock", pro: false },
+      { name: "Gudang Input", path: "/gudang-input", pro: false },
       { name: "Gudang Output", path: "/form-elements", pro: false },
       { name: "Administrator Inventory", path: "/form-elements", pro: false },
     ],
@@ -65,7 +65,7 @@ const navItems: NavItem[] = [
     name: "Stock Unit",
     icon: <TableIcon />,
     subItems: [
-      { name: "Stock Unit", path: "/basic-tables", pro: false },
+      { name: "Stock Unit", path: "/stockss", pro: false },
       { name: "Tipe Rumah", path: "/basic-tables", pro: false },
       { name: "Blok", path: "/basic-tables", pro: false },
       { name: "Unit", path: "/basic-tables", pro: false },
