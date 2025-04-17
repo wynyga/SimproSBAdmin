@@ -8,7 +8,7 @@ interface Props {
   onClose: () => void;
   selectedStock: StockData | null;
   setSelectedStock: (stock: StockData | null) => void;
-  handleUpdateStock: () => Promise<boolean>; // return true if success
+  handleUpdateStock: () => Promise<boolean>; 
   validationErrors: { [key: string]: boolean };
   errorMessage: string | null;
 }

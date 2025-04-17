@@ -22,7 +22,7 @@ export default function ApprovalPage() {
         } else {
           setIsAllowed(false);
         }
-      } catch (error) {
+      } catch {
         setErrorMessage("Gagal memuat profil pengguna.");
       } finally {
         setLoading(false);

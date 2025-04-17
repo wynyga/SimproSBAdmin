@@ -66,7 +66,7 @@ const navItems: NavItem[] = [
     subItems: [
       { name: "Stock", path: "/stock", pro: false },
       { name: "Gudang Input", path: "/gudang-input", pro: false },
-      { name: "Gudang Output", path: "/form-elements", pro: false },
+      { name: "Gudang Output", path: "/gudang-output", pro: false },
       { name: "Administrator Inventory", path: "/form-elements", pro: false },
     ],
   },

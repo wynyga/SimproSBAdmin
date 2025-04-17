@@ -37,12 +37,6 @@ export default function TransaksiKasForm({
     { value: "101", label: "Kas Masuk" },
     { value: "102", label: "Kas Keluar" },
   ];
-
-  const metodeOptions = [
-    { value: "Tunai", label: "Tunai" },
-    { value: "Transfer Bank", label: "Transfer Bank" },
-  ];
-
   return (
     <ComponentCard title="Form Tambah Transaksi Kas">
       <form onSubmit={handleSubmit} className="space-y-6">
