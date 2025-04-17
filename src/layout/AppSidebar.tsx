@@ -43,6 +43,15 @@ const navItems: NavItem[] = [
     path: "/admin",
   },
   {
+    icon: <BoxCubeIcon />,
+    name: "Search",
+    subItems: [
+      { name: "Search Stock", path: "/search/stock", pro: false },
+      { name: "Search Penjualan", path: "/search/penjualan", pro: false },
+      { name: "Search Gudang", path: "/search/gudang", pro: false },
+    ],
+  },
+  {
     icon: <PieChartIcon />,
     name: "Approval",
     subItems: [
