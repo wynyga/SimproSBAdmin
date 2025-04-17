@@ -5,7 +5,6 @@ import ComponentCard from "@/components/common/ComponentCard";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { getStock } from "../../../../../../utils/stock";
-
 interface StockItem {
   type: string;
   nama_barang: string;
@@ -18,6 +17,7 @@ interface StockItem {
 export default function StockPage() {
   const [stockData, setStockData] = useState<Record<string, StockItem[]>>({});
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,7 +45,7 @@ export default function StockPage() {
             <ComponentCard key={index} title={btn.label}>
               <button
                 onClick={() => toggleDropdown(index)}
-                className="w-full flex items-center gap-3 bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded-md transition"
+                className="w-full flex items-center gap-3 bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-md transition"
               >
                 <Image
                   src={`/images/icons/Stock/${btn.icon}.png`}
@@ -70,13 +70,16 @@ export default function StockPage() {
 
                   {categoryItems.length > 0 ? (
                     categoryItems.map((item, i) => (
-                      <div key={i} className="grid grid-cols-6 py-2 border-t border-gray-100 dark:border-gray-800 text-gray-800 dark:text-white text-sm">
+                      <div
+                        key={i}
+                        className="grid grid-cols-6 py-2 border-t border-gray-100 dark:border-gray-800 text-gray-800 dark:text-white text-sm"
+                      >
                         <div>{item.type}</div>
                         <div>{item.nama_barang}</div>
                         <div>{item.uty}</div>
-                        <div>Rp {(+item.harga_satuan).toLocaleString("id-ID")}</div>
+                        <div>{item.harga_satuan}</div>
                         <div>{item.stock_bahan}</div>
-                        <div>Rp {(+item.total_price).toLocaleString("id-ID")}</div>
+                        <div>{item.total_price}</div>
                       </div>
                     ))
                   ) : (
