@@ -95,62 +95,65 @@ export default function TipeRumahPage() {
         </div>
 
         <div className="overflow-auto rounded border dark:border-gray-700">
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-gray-700 dark:text-white text-sm">
+          <table className="min-w-full border border-gray-300 dark:border-gray-700 text-sm text-gray-700 dark:text-white">
             <thead className="bg-gray-100 dark:bg-gray-700">
               <tr>
-                <th className="px-4 py-2 text-left font-semibold">Nama</th>
-                <th className="px-4 py-2">Luas Bangunan</th>
-                <th className="px-4 py-2">Luas Kavling</th>
-                <th className="px-4 py-2">Harga Tengah</th>
-                <th className="px-4 py-2">Harga Sudut</th>
-                <th className="px-4 py-2">Penambahan</th>
-                <th className="px-4 py-2">Aksi</th>
+                <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left font-semibold">Nama</th>
+                <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left font-semibold">Luas Bangunan</th>
+                <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left font-semibold">Luas Kavling</th>
+                <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left font-semibold">Harga Tengah</th>
+                <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left font-semibold">Harga Sudut</th>
+                <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left font-semibold">Penambahan</th>
+                <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left font-semibold">Aksi</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-700 text-gray-700 dark:text-white">
+            <tbody>
               {tipeRumah.length > 0 ? (
                 tipeRumah.map((tipe) => (
-                  <tr key={tipe.id}>
-                    <td className="px-4 py-2">{tipe.tipe_rumah}</td>
-                    <td className="px-4 py-2">{tipe.luas_bangunan} m²</td>
-                    <td className="px-4 py-2">{tipe.luas_kavling} m²</td>
-                    <td className="px-4 py-2">Rp {tipe.harga_standar_tengah.toLocaleString("id-ID")}</td>
-                    <td className="px-4 py-2">Rp {tipe.harga_standar_sudut.toLocaleString("id-ID")}</td>
-                    <td className="px-4 py-2">Rp {tipe.penambahan_bangunan.toLocaleString("id-ID")}</td>
-                    <td className="px-4 py-2 flex gap-2 justify-end">
-                      <Button
-                        size="sm"
-                        className="bg-yellow-500 hover:bg-yellow-600 text-white"
-                        onClick={() => {
-                          setSelectedTipe(tipe);
-                          setShowEditModal(true);
-                        }}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        size="sm"
-                        className="bg-red-600 hover:bg-red-700 text-white"
-                        onClick={() => {
-                          setDeleteId(tipe.id);
-                          setShowDeleteModal(true);
-                        }}
-                      >
-                        Hapus
-                      </Button>
+                  <tr key={tipe.id} className="bg-white dark:bg-transparent">
+                    <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">{tipe.tipe_rumah}</td>
+                    <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">{tipe.luas_bangunan} m²</td>
+                    <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">{tipe.luas_kavling} m²</td>
+                    <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Rp {tipe.harga_standar_tengah.toLocaleString("id-ID")}</td>
+                    <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Rp {tipe.harga_standar_sudut.toLocaleString("id-ID")}</td>
+                    <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Rp {tipe.penambahan_bangunan.toLocaleString("id-ID")}</td>
+                    <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">
+                      <div className="flex gap-2 justify-end">
+                        <Button
+                          size="sm"
+                          className="bg-yellow-500 hover:bg-yellow-600 text-white"
+                          onClick={() => {
+                            setSelectedTipe(tipe);
+                            setShowEditModal(true);
+                          }}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="bg-red-600 hover:bg-red-700 text-white"
+                          onClick={() => {
+                            setDeleteId(tipe.id);
+                            setShowDeleteModal(true);
+                          }}
+                        >
+                          Hapus
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                    <td colSpan={7} className="px-4 py-4 text-center text-gray-500 dark:text-white">
+                  <td colSpan={7} className="text-center text-gray-500 dark:text-gray-400 py-4">
                     Tidak ada data
-                    </td>
+                  </td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
+
       </ComponentCard>
 
       {/* Modal Area */}
