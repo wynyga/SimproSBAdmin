@@ -78,7 +78,7 @@ const navItems: NavItem[] = [
       { name: "Tipe Rumah", path: "/tipe-rumah", pro: false },
       { name: "Blok", path: "/blok", pro: false },
       { name: "Unit", path: "/unit", pro: false },
-      { name: "Users", path: "/basic-tables", pro: false },
+      { name: "Users", path: "/users", pro: false },
       { name: "Transaksi", path: "/basic-tables", pro: false },
     ]
   },
