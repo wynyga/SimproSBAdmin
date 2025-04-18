@@ -16,6 +16,7 @@ interface Props {
   setUser: (user: User) => void;
   onSubmit: () => Promise<boolean>;
   error?: string | null;
+  setError: (value: string | null) => void;
 }
 
 export default function EditUserModal({
@@ -25,6 +26,7 @@ export default function EditUserModal({
   setUser,
   onSubmit,
   error,
+  setError
 }: Props) {
   if (!isOpen || !user) return null;
 
@@ -34,9 +36,15 @@ export default function EditUserModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (user.no_telepon.length < 10) {
+      setError("Nomor telepon minimal 10 digit.");
+      return;
+    }
+  
     const success = await onSubmit();
     if (success) onClose();
   };
+  
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">

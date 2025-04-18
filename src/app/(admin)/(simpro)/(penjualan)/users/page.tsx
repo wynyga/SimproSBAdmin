@@ -150,6 +150,7 @@ export default function UserPage() {
           setUser={setSelectedUser}
           onSubmit={handleUpdateUser}
           error={error}
+          setError={setError}
         />
       )}
 
