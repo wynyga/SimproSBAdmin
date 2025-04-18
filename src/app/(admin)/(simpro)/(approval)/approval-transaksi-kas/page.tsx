@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import { getProfile } from "../../../../../../utils/auth";
-import ApprovalTransaksiKas from "@/components/simpro/ApprovalTransaksiKas";
+import ApprovalTransaksiKas from "@/components/simpro/transaksi kas/ApprovalTransaksiKas";
 import ComponentCard from "@/components/common/ComponentCard";
 
 export default function ApprovalPage() {

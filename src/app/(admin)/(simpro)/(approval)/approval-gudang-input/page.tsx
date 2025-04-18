@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import ComponentCard from "@/components/common/ComponentCard";
-import ApprovalGudangIn from "@/components/simpro/ApporvalGudangIn";
+import ApprovalGudangIn from "@/components/simpro/gudang/ApporvalGudangIn";
 import { getProfile } from "../../../../../../utils/auth";
 
 export default function ApprovalGudangInPage() {

@@ -3,9 +3,9 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import SearchForm from "../../../../../../../component/SearchForm";
-import SearchResults from "../../../../../../../component/SearchResults";
-import UpdateStockModal from "../../../../../../../component/UpdateStockModal";
+import SearchForm from "../../../../../../components/simpro/stock/SearchForm";
+import SearchResults from "../../../../../../components/simpro/stock/SearchResults";
+import UpdateStockModal from "../../../../../../components/simpro/stock/UpdateStockModal";
 import { updateStock,searchStock, } from "../../../../../../../utils/stock";
 import { StockData } from "../../../../../../../utils/StockData";
 

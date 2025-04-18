@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { getTransaksiKas,verifyTransaksiKas,rejectTransaksiKas } from "../../../utils/transaksi-kas";
+import { getTransaksiKas,verifyTransaksiKas,rejectTransaksiKas } from "../../../../utils/transaksi-kas";
 import ComponentCard from "@/components/common/ComponentCard";
 import Button from "@/components/ui/button/Button";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { StockData } from "../utils/StockData";
+import { StockData } from "../../../../utils/StockData";
 
 interface Props {
   isOpen: boolean;
