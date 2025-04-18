@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import { getTransaksiKas,storeTransaksiKas } from "../../../../../utils/transaksi-kas";
-import TransaksiKasForm from "@/components/simpro/TransaksiKasForm";
+import TransaksiKasForm from "@/components/simpro/transaksi kas/TransaksiKasForm";
 import ComponentCard from "@/components/common/ComponentCard";
 
 interface KasData {

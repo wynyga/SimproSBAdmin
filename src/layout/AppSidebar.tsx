@@ -75,7 +75,7 @@ const navItems: NavItem[] = [
     icon: <TableIcon />,
     subItems: [
       { name: "Stock Unit", path: "/stockss", pro: false },
-      { name: "Tipe Rumah", path: "/basic-tables", pro: false },
+      { name: "Tipe Rumah", path: "/tipe-rumah", pro: false },
       { name: "Blok", path: "/basic-tables", pro: false },
       { name: "Unit", path: "/basic-tables", pro: false },
       { name: "Users", path: "/basic-tables", pro: false },

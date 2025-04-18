@@ -1,13 +1,13 @@
 "use client";
 
 import React from "react";
-import ComponentCard from "../common/ComponentCard";
-import Label from "../form/Label";
-import Input from "../form/input/InputField";
-import Select from "../form/Select";
+import ComponentCard from "@/components/common/ComponentCard";
+import Label from "@/components/form/Label";
+import Input from "@/components/form/input/InputField";
+import Select from "@/components/form/Select";
 import DatePicker from "@/components/form/date-picker";
 import { ChevronDownIcon } from "@/icons";
-import TextArea from "../form/input/TextArea";
+import TextArea from "@/components/form/input/TextArea";
 
 interface Props {
   formData: {
