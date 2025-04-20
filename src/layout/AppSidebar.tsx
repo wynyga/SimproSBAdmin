@@ -40,8 +40,12 @@ const navItems: NavItem[] = [
   {
     icon: <UserCircleIcon />,
     name: "Admin",
-    path: "/admin",
+    subItems: [
+      { name: "Daftar Akun", path: "account-center", pro: false },
+      { name: "Daftar Perumahan", path: "perumahan", pro: false },
+    ],
   },
+
   {
     icon: <BoxCubeIcon />,
     name: "Search",
