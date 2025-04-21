@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { getGudangHistory, verifyGudangOut, rejectGudangOut } from "../../../utils/stock";
+import { getGudangHistory,verifyGudangOut,rejectGudangOut } from "../../../../utils/stock";
 import ComponentCard from "@/components/common/ComponentCard";
 import Button from "@/components/ui/button/Button";
 

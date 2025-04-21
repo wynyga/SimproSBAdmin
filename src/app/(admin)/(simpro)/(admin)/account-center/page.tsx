@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { getUsers, registerUser, resetUserPassword } from "../../../../../../utils/auth";
-import { useRouter } from "next/navigation";
+import { getUsers, registerUser, resetUserPassword,deleteUser } from "../../../../../../utils/auth";
 import ResetPasswordModal from "@/components/simpro/admin/ResetPasswordModal";
 import AddAccountModal from "@/components/simpro/admin/AddAccountModal";
 import ConfirmDeleteModal from "@/components/simpro/penjualan/ConfirmDeleteModal";
@@ -17,7 +16,6 @@ interface User {
 }
 
 export default function AccountPage() {
-  const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -77,13 +75,13 @@ export default function AccountPage() {
     }
   };
 
-//   const handleDeleteUser = async () => {
-//     if (!selectedUserId) return;
-//     await deleteUser(selectedUserId, setError);
-//     setShowDeleteModal(false);
-//     setSelectedUserId(null);
-//     fetchUsers();
-//   };
+  const handleDeleteUser = async () => {
+    if (!selectedUserId) return;
+    await deleteUser(selectedUserId, setError);
+    setShowDeleteModal(false);
+    setSelectedUserId(null);
+    fetchUsers();
+  };
 
   return (
     <div className="min-h-screen px-4 py-6 dark:text-white">
@@ -161,12 +159,12 @@ export default function AccountPage() {
         onSubmit={handleResetPassword}
       />
 
-      {/* <ConfirmDeleteModal
+      <ConfirmDeleteModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         onConfirm={handleDeleteUser}
         message="Apakah Anda yakin ingin menghapus akun ini?"
-      /> */}
+      />
     </div>
   );
 }

@@ -284,3 +284,31 @@ export const resetUserPassword = async (
   }
 };
 
+export const deleteUser = async (userId: number, setError: Function) => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("Anda harus login untuk menghapus pengguna.");
+    }
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/users/${userId}`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || "Gagal menghapus pengguna.");
+    }
+
+    return result;
+  } catch (err) {
+    setError(err instanceof Error ? err.message : "Terjadi kesalahan saat menghapus pengguna.");
+  }
+};
+
+
