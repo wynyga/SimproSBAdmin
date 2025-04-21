@@ -7,7 +7,7 @@ import ComponentCard from "@/components/common/ComponentCard";
 import Button from "@/components/ui/button/Button";
 import ConfirmDeleteModal from "@/components/simpro/penjualan/ConfirmDeleteModal";
 import AddCostCenterModal from "@/components/simpro/laporan bulanan/cost center/AddCostCenterModal";
-import EditCostCenterModal from "@/components/simpro/laporan bulanan/EditCostCenterModal";
+import EditCostCenterModal from "@/components/simpro/laporan bulanan/cost center/EditCostCenterModal";
 
 interface CostCenter {
     id: number;
