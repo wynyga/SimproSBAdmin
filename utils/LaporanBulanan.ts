@@ -315,3 +315,32 @@ export const updateLaporanBulanan = async (id: number, data: any, setError: Func
       setError(err instanceof Error ? err.message : "Terjadi kesalahan saat mengambil data pengeluaran bahan dari gudang.");
     }
   };
+
+  // Mengambil total harga persediaan bahan dari stok gudang
+export const getStockInventory = async (bulan: number, tahun: number,setError: Function) => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("Anda harus login untuk mengakses data.");
+    }
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/lap_bulanan/inventory/${bulan}/${tahun}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Gagal mengambil data persediaan bahan.");
+    }
+
+    return await response.json();
+  } catch (err) {
+    setError(err instanceof Error ? err.message : "Terjadi kesalahan saat mengambil data persediaan bahan.");
+  }
+};

@@ -8,8 +8,8 @@ import Select from "@/components/form/Select";
 import DatePicker from "@/components/form/date-picker";
 import TextArea from "@/components/form/input/TextArea";
 import { ChevronDownIcon } from "@/icons";
-import { getStock,gudangOut } from "../../../../utils/stock";
-import { getCostStructures } from "../../../../utils/CostStructure";
+import { getStock, gudangOut } from "../../../../utils/stock";
+import { getCostTees } from "../../../../utils/CostTeeApi";
 
 interface StockItem {
   type: string;
@@ -24,8 +24,8 @@ export default function GudangOutForm() {
   const [categories, setCategories] = useState<string[]>([]);
   const [stockData, setStockData] = useState<StockData>({});
   const [filteredItems, setFilteredItems] = useState<StockItem[]>([]);
-  const [costStructures, setCostStructures] = useState<
-    { id: number; cost_tee: { description: string } }[]
+  const [costTees, setCostTees] = useState<
+    { id: number; cost_tee_code: string; description: string }[]
   >([]);
 
   const [loading, setLoading] = useState(false);
@@ -50,9 +50,9 @@ export default function GudangOutForm() {
         setCategories(Object.keys(stock));
       }
 
-      const structure = await getCostStructures(setError);
-      if (structure) {
-        setCostStructures(structure);
+      const tees = await getCostTees(setError);
+      if (tees) {
+        setCostTees(tees);
       }
     };
     fetchInitial();
@@ -131,13 +131,9 @@ export default function GudangOutForm() {
 
   return (
     <ComponentCard title="Form Input Gudang Keluar">
-      {error && (
-        <p className="text-sm mb-4 text-red-500 text-center">{error}</p>
-      )}
+      {error && <p className="text-sm mb-4 text-red-500 text-center">{error}</p>}
       {successMessage && (
-        <p className="text-sm mb-4 text-green-600 text-center">
-          {successMessage}
-        </p>
+        <p className="text-sm mb-4 text-green-600 text-center">{successMessage}</p>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -194,9 +190,7 @@ export default function GudangOutForm() {
             id="tanggal_barang_keluar"
             label="Tanggal Barang Keluar"
             placeholder="Pilih tanggal"
-            onChange={(dates, dateStr) =>
-              handleDateChange(new Date(dateStr))
-            }
+            onChange={(dates, dateStr) => handleDateChange(new Date(dateStr))}
           />
         </div>
 
@@ -205,9 +199,9 @@ export default function GudangOutForm() {
           <div className="relative">
             <Select
               placeholder="Pilih peruntukan"
-              options={costStructures.map((cs) => ({
-                value: cs.id.toString(),
-                label: cs.cost_tee.description,
+              options={costTees.map((tee) => ({
+                value: tee.id.toString(),
+                label: tee.description,
               }))}
               defaultValue={formData.peruntukan}
               onChange={(val) =>

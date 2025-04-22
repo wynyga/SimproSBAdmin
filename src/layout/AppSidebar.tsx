@@ -95,7 +95,6 @@ const navItems: NavItem[] = [
       { name: "Cost Center", path: "/cost-center", pro: false },
       { name: "Cost Element", path: "/cost-element", pro: false },
       { name: "Cost Tee", path: "/cost-tee", pro: false },
-      { name: "Cost Structure", path: "/cost-structure", pro: false },
     ]
   },
 ];
