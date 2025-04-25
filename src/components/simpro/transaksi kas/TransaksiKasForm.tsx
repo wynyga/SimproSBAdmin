@@ -25,6 +25,8 @@ interface Props {
   loading: boolean;
 }
 
+// ...imports tetap sama
+
 export default function TransaksiKasForm({
   formData,
   handleChange,
@@ -37,6 +39,15 @@ export default function TransaksiKasForm({
     { value: "101", label: "Kas Masuk" },
     { value: "102", label: "Kas Keluar" },
   ];
+
+  const metodePembayaranOptions = [
+    { value: "Tunai", label: "Tunai" },
+    { value: "Transfer Bank", label: "Transfer Bank" },
+    { value: "Cek", label: "Cek" },
+    { value: "Giro", label: "Giro" },
+    { value: "Draft", label: "Draft" },
+  ];
+
   return (
     <ComponentCard title="Form Tambah Transaksi Kas">
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -65,13 +76,13 @@ export default function TransaksiKasForm({
         <div>
           <Label>Jenis Transaksi</Label>
           <div className="relative">
-          <Select
-            options={jenisOptions}
-            defaultValue={formData.kode}
-            placeholder="Pilih jenis transaksi"
-            onChange={(value) => handleSelectChange(value, "kode")}
-            className="dark:bg-dark-900"
-          />
+            <Select
+              options={jenisOptions}
+              defaultValue={formData.kode}
+              placeholder="Pilih jenis transaksi"
+              onChange={(value) => handleSelectChange(value, "kode")}
+              className="dark:bg-dark-900"
+            />
             <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400">
               <ChevronDownIcon />
             </span>
@@ -94,10 +105,10 @@ export default function TransaksiKasForm({
           <Label>Metode Pembayaran</Label>
           <div className="relative">
             <Select
-              options={jenisOptions}
-              defaultValue={formData.kode}
-              placeholder="Pilih jenis transaksi"
-              onChange={(value) => handleSelectChange(value, "kode")}
+              options={metodePembayaranOptions}
+              defaultValue={formData.metode_pembayaran}
+              placeholder="Pilih metode pembayaran"
+              onChange={(value) => handleSelectChange(value, "metode_pembayaran")}
               className="dark:bg-dark-900"
             />
             <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400">

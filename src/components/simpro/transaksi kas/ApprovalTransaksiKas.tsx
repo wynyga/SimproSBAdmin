@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { getTransaksiKas,verifyTransaksiKas,rejectTransaksiKas } from "../../../../utils/transaksi-kas";
 import ComponentCard from "@/components/common/ComponentCard";
 import Button from "@/components/ui/button/Button";
+import { createKwitansi } from "../../../../utils/kwitansi";
 
 interface TransaksiKasData {
   id: number;
@@ -40,12 +41,18 @@ export default function ApprovalTransaksiKas() {
 
     setLoading(false);
   };
-
   const handleVerify = async (id: number) => {
     setLoading(true);
     setError(null);
-    await verifyTransaksiKas(id, setError);
-    await fetchPendingApprovals();
+    try {
+      await verifyTransaksiKas(id, setError); // 1. approve transaksi kas
+      await createKwitansi(id, setError);     // 2. langsung create kwitansi
+      await fetchPendingApprovals();          // 3. refresh list
+    } catch (e) {
+      console.error("Gagal verifikasi:", e);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleReject = async (id: number) => {

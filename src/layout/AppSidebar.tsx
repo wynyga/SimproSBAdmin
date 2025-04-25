@@ -62,6 +62,7 @@ const navItems: NavItem[] = [
       { name: "Approval Transaksi Kas", path: "/approval-transaksi-kas", pro: false },
       { name: "Approval Gudang Input", path: "/approval-gudang-input", pro: false },
       { name: "Approval Gudang Output", path: "/approval-gudang-output", pro: false },
+      { name: "Kwitansi", path: "/kwitansi", pro: false },
     ],
   },
   {
