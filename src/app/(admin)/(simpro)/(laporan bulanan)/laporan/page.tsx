@@ -3,9 +3,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import {
   getLaporanBulanan,
-  getKasMasuk,
-  getKasKeluar,
-  getSisaKas,
   getJournalSummary,
   getGudangOutSummary,
   getStockInventory,
@@ -33,22 +30,32 @@ export default function LaporanBulananPage() {
 
   const fetchData = useCallback(async () => {
     try {
-      const [jurnal, gudang, stok, masuk, keluar, sisa] = await Promise.all([
+      const [laporan, jurnal, gudang, stok] = await Promise.all([
+        getLaporanBulanan(setError),
         getJournalSummary(bulan, tahun, setError),
         getGudangOutSummary(bulan, tahun, setError),
         getStockInventory(bulan, tahun, setError),
-        getKasMasuk(bulan, tahun, setError),
-        getKasKeluar(bulan, tahun, setError),
-        getSisaKas(bulan, tahun, setError),
       ]);
+
+      // Hitung Kas Masuk & Keluar dari Laporan
+      let masuk = 0;
+      let keluar = 0;
+
+      if (Array.isArray(laporan)) {
+        for (const item of laporan) {
+          const costCode = item?.cost_tee?.cost_element?.cost_centre?.cost_code;
+          if (costCode === "KASIN") masuk += Number(item.jumlah);
+          if (costCode === "KASOUT") keluar += Number(item.jumlah);
+        }
+      }
+
+      setKasMasuk(masuk);
+      setKasKeluar(keluar);
+      setKasSisa(masuk - keluar);
 
       setDebit(jurnal?.debit || 0);
       setKredit(jurnal?.kredit || 0);
       setSaldo(jurnal?.saldo || 0);
-
-      setKasMasuk(masuk || 0);
-      setKasKeluar(keluar || 0);
-      setKasSisa(sisa || 0);
 
       setGudangOut({
         code_account: gudang?.pengeluaran_bahan?.code_account || "-",
@@ -97,38 +104,53 @@ export default function LaporanBulananPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+     {/* Ringkasan Jurnal */}
+     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
         <div className="bg-white dark:bg-gray-800 rounded p-4 shadow-md">
           <h4 className="text-gray-600 dark:text-gray-300 font-medium">Total Debit</h4>
-          <p className="text-lg font-bold text-green-600 dark:text-green-400">Rp {debit.toLocaleString("id-ID")}</p>
+          <p className="text-lg font-bold text-green-600 dark:text-green-400">
+            Rp {debit.toLocaleString("id-ID")}
+          </p>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded p-4 shadow-md">
           <h4 className="text-gray-600 dark:text-gray-300 font-medium">Total Kredit</h4>
-          <p className="text-lg font-bold text-red-600 dark:text-red-400">Rp {kredit.toLocaleString("id-ID")}</p>
+          <p className="text-lg font-bold text-red-600 dark:text-red-400">
+            Rp {kredit.toLocaleString("id-ID")}
+          </p>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded p-4 shadow-md">
           <h4 className="text-gray-600 dark:text-gray-300 font-medium">Saldo Akhir</h4>
-          <p className="text-lg font-bold text-blue-600 dark:text-blue-400">Rp {saldo.toLocaleString("id-ID")}</p>
+          <p className="text-lg font-bold text-blue-600 dark:text-blue-400">
+            Rp {saldo.toLocaleString("id-ID")}
+          </p>
         </div>
       </div>
 
+      {/* Ringkasan Kas */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
         <div className="bg-white dark:bg-gray-800 rounded p-4 shadow-md">
           <h4 className="text-gray-600 dark:text-gray-300 font-medium">Kas Masuk</h4>
-          <p className="text-lg font-bold text-green-600 dark:text-green-400">Rp {kasMasuk.toLocaleString("id-ID")}</p>
+          <p className="text-lg font-bold text-green-600 dark:text-green-400">
+            Rp {kasMasuk.toLocaleString("id-ID")}
+          </p>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded p-4 shadow-md">
           <h4 className="text-gray-600 dark:text-gray-300 font-medium">Kas Keluar</h4>
-          <p className="text-lg font-bold text-red-600 dark:text-red-400">Rp {kasKeluar.toLocaleString("id-ID")}</p>
+          <p className="text-lg font-bold text-red-600 dark:text-red-400">
+            Rp {kasKeluar.toLocaleString("id-ID")}
+          </p>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded p-4 shadow-md">
           <h4 className="text-gray-600 dark:text-gray-300 font-medium">Sisa Kas</h4>
-          <p className="text-lg font-bold text-blue-600 dark:text-blue-400">Rp {kasSisa.toLocaleString("id-ID")}</p>
+          <p className="text-lg font-bold text-blue-600 dark:text-blue-400">
+            Rp {kasSisa.toLocaleString("id-ID")}
+          </p>
         </div>
       </div>
 
+      {/* Gudang & Inventory */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-        <div className="bg-white dark:bg-gray-800 rounded p-4 shadow-md">
+      <div className="bg-white dark:bg-gray-800 rounded p-4 shadow-md">
           <h4 className="text-gray-600 dark:text-gray-300 font-medium">Pengeluaran Gudang</h4>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">({gudangOut.code_account})</p>
           <p className="text-lg font-bold text-orange-600 dark:text-orange-400">
