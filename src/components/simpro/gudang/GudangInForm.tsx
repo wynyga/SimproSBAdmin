@@ -8,7 +8,7 @@ import Select from "@/components/form/Select";
 import DatePicker from "@/components/form/date-picker";
 import { ChevronDownIcon } from "@/icons";
 import TextArea from "@/components/form/input/TextArea";
-import { getStock,gudangIn } from "../../../../utils/stock";
+import { getStock, gudangIn } from "../../../../utils/stock";
 
 interface StockItem {
   type: string;
@@ -36,6 +36,7 @@ export default function GudangInForm() {
     tanggal_barang_masuk: "",
     jumlah: 1,
     keterangan: "",
+    sistem_pembayaran: "",
   });
 
   useEffect(() => {
@@ -94,6 +95,13 @@ export default function GudangInForm() {
     setError(null);
     setSuccessMessage(null);
 
+    // Validasi frontend sederhana
+    if (!formData.sistem_pembayaran) {
+      setError("Sistem pembayaran harus dipilih.");
+      setLoading(false);
+      return;
+    }
+
     const result = await gudangIn(
       formData.kode_barang,
       formData.pengirim,
@@ -101,6 +109,7 @@ export default function GudangInForm() {
       formData.tanggal_barang_masuk,
       formData.jumlah,
       formData.keterangan,
+      formData.sistem_pembayaran,
       setError
     );
 
@@ -115,6 +124,7 @@ export default function GudangInForm() {
         tanggal_barang_masuk: "",
         jumlah: 1,
         keterangan: "",
+        sistem_pembayaran: "",
       });
       setFilteredItems([]);
     }
@@ -128,7 +138,9 @@ export default function GudangInForm() {
         <p className="text-sm mb-4 text-red-500 text-center">{error}</p>
       )}
       {successMessage && (
-        <p className="text-sm mb-4 text-green-600 text-center">{successMessage}</p>
+        <p className="text-sm mb-4 text-green-600 text-center">
+          {successMessage}
+        </p>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -209,6 +221,30 @@ export default function GudangInForm() {
             placeholder="Pilih tanggal"
             onChange={(dates, dateStr) => handleDateChange(new Date(dateStr))}
           />
+        </div>
+
+        <div>
+          <Label>Sistem Pembayaran</Label>
+          <div className="relative">
+            <Select
+              placeholder="Pilih sistem pembayaran"
+              options={[
+                { value: "Cash", label: "Cash" },
+                { value: "Dua Mingguan", label: "Dua Mingguan" },
+                { value: "Bulanan", label: "Bulanan" },
+              ]}
+              defaultValue={formData.sistem_pembayaran}
+              onChange={(value) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  sistem_pembayaran: value,
+                }))
+              }
+            />
+            <span className="absolute text-gray-500 dark:text-gray-400 right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+              <ChevronDownIcon />
+            </span>
+          </div>
         </div>
 
         <div>
