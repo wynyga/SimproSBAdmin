@@ -26,6 +26,28 @@ export default function EditTransaksiModal({
 }: Props) {
   if (!isOpen || !transaksi) return null;
 
+  const calculateTotalHarga = (data: TransaksiDataWithRelasi) => {
+    return (
+      Number(data.harga_jual_standar) +
+      Number(data.kelebihan_tanah) +
+      Number(data.penambahan_luas_bangunan) +
+      Number(data.perubahan_spek_bangunan)
+    );
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    const updatedTransaksi = {
+      ...transaksi,
+      [name]: name === "kpr_disetujui" ? value : +value,
+    };
+
+    // Hitung ulang total harga jual otomatis
+    updatedTransaksi.total_harga_jual = calculateTotalHarga(updatedTransaksi);
+
+    setTransaksi(updatedTransaksi);
+  };
+
   const handleSubmit = async () => {
     const success = await onSubmit();
     if (success) onClose();
@@ -36,23 +58,18 @@ export default function EditTransaksiModal({
       <div className="w-full max-w-4xl rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800 dark:text-white">
         <div className="flex justify-between items-center mb-4">
           <h4 className="text-lg font-semibold">Edit Transaksi</h4>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-          >
-            ✕
-          </button>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">✕</button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Select User */}
           <div>
             <label className="block text-sm mb-1">Pembeli</label>
             <select
-              className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              name="user_id"
               value={transaksi.user_id}
-              onChange={(e) =>
-                setTransaksi({ ...transaksi, user_id: e.target.value })
-              }
+              onChange={handleChange}
+              className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             >
               <option value="">Pilih Pembeli</option>
               {userList.map((user) => (
@@ -63,14 +80,14 @@ export default function EditTransaksiModal({
             </select>
           </div>
 
+          {/* Select Unit */}
           <div>
             <label className="block text-sm mb-1">Unit</label>
             <select
-              className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              name="unit_id"
               value={transaksi.unit_id}
-              onChange={(e) =>
-                setTransaksi({ ...transaksi, unit_id: e.target.value })
-              }
+              onChange={handleChange}
+              className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             >
               <option value="">Pilih Unit</option>
               {unitList.map((unit) => (
@@ -81,118 +98,22 @@ export default function EditTransaksiModal({
             </select>
           </div>
 
-          <div>
-            <label className="block text-sm mb-1">Harga Jual Standar</label>
-            <input
-              type="number"
-              value={transaksi.harga_jual_standar}
-              onChange={(e) =>
-                setTransaksi({
-                  ...transaksi,
-                  harga_jual_standar: +e.target.value,
-                })
-              }
-              className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            />
-          </div>
+          {/* Input Fields */}
+          <InputNumber label="Harga Jual Standar" name="harga_jual_standar" value={transaksi.harga_jual_standar} handleChange={handleChange} />
+          <InputNumber label="Kelebihan Tanah" name="kelebihan_tanah" value={transaksi.kelebihan_tanah} handleChange={handleChange} />
+          <InputNumber label="Penambahan Luas Bangunan" name="penambahan_luas_bangunan" value={transaksi.penambahan_luas_bangunan} handleChange={handleChange} />
+          <InputNumber label="Perubahan Spek Bangunan" name="perubahan_spek_bangunan" value={transaksi.perubahan_spek_bangunan} handleChange={handleChange} />
+          <InputNumber label="Total Harga Jual" name="total_harga_jual" value={transaksi.total_harga_jual} handleChange={() => {}} disabled />
+          <InputNumber label="Minimum DP" name="minimum_dp" value={transaksi.minimum_dp} handleChange={handleChange} />
+          <InputNumber label="Biaya Booking" name="biaya_booking" value={transaksi.biaya_booking} handleChange={handleChange} />
 
-          <div>
-            <label className="block text-sm mb-1">Kelebihan Tanah</label>
-            <input
-              type="number"
-              value={transaksi.kelebihan_tanah}
-              onChange={(e) =>
-                setTransaksi({
-                  ...transaksi,
-                  kelebihan_tanah: +e.target.value,
-                })
-              }
-              className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm mb-1">Penambahan Luas Bangunan</label>
-            <input
-              type="number"
-              value={transaksi.penambahan_luas_bangunan}
-              onChange={(e) =>
-                setTransaksi({
-                  ...transaksi,
-                  penambahan_luas_bangunan: +e.target.value,
-                })
-              }
-              className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm mb-1">Perubahan Spek Bangunan</label>
-            <input
-              type="number"
-              value={transaksi.perubahan_spek_bangunan}
-              onChange={(e) =>
-                setTransaksi({
-                  ...transaksi,
-                  perubahan_spek_bangunan: +e.target.value,
-                })
-              }
-              className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm mb-1">Total Harga Jual</label>
-            <input
-              type="number"
-              value={transaksi.total_harga_jual}
-              onChange={(e) =>
-                setTransaksi({
-                  ...transaksi,
-                  total_harga_jual: +e.target.value,
-                })
-              }
-              className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm mb-1">Minimum DP</label>
-            <input
-              type="number"
-              value={transaksi.minimum_dp}
-              onChange={(e) =>
-                setTransaksi({
-                  ...transaksi,
-                  minimum_dp: +e.target.value,
-                })
-              }
-              className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm mb-1">Kewajiban Hutang</label>
-            <input
-              type="number"
-              value={transaksi.kewajiban_hutang}
-              onChange={(e) =>
-                setTransaksi({
-                  ...transaksi,
-                  kewajiban_hutang: +e.target.value,
-                })
-              }
-              className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            />
-          </div>
-
+          {/* Status KPR */}
           <div>
             <label className="block text-sm mb-1">Status KPR</label>
             <select
+              name="kpr_disetujui"
               value={transaksi.kpr_disetujui}
-              onChange={(e) =>
-                setTransaksi({ ...transaksi, kpr_disetujui: e.target.value })
-              }
+              onChange={handleChange}
               className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             >
               <option value="Ya">Ya</option>
@@ -204,20 +125,31 @@ export default function EditTransaksiModal({
         {error && <p className="text-sm text-red-500 mt-4">{error}</p>}
 
         <div className="mt-6 flex justify-end gap-3">
-          <button
-            onClick={handleSubmit}
-            className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition"
-          >
+          <button onClick={handleSubmit} className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition">
             Simpan Perubahan
           </button>
-          <button
-            onClick={onClose}
-            className="rounded border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-100 dark:border-gray-500 dark:text-white dark:hover:bg-gray-700 transition"
-          >
+          <button onClick={onClose} className="rounded border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-100 dark:border-gray-500 dark:text-white dark:hover:bg-gray-700 transition">
             Batal
           </button>
         </div>
       </div>
+    </div>
+  );
+}
+
+// Komponen kecil input number
+function InputNumber({ label, name, value, handleChange, disabled = false }: any) {
+  return (
+    <div>
+      <label className="block text-sm mb-1">{label}</label>
+      <input
+        type="number"
+        name={name}
+        value={value}
+        onChange={handleChange}
+        disabled={disabled}
+        className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+      />
     </div>
   );
 }

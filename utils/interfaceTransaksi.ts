@@ -1,4 +1,5 @@
 // utils/interfaceTransaksi.ts
+
 export interface TransaksiData {
     id?: number;
     unit_id: number | string;
@@ -9,7 +10,8 @@ export interface TransaksiData {
     perubahan_spek_bangunan: number | string;
     total_harga_jual: number | string;
     minimum_dp: number | string;
-    kewajiban_hutang: number | string;
+    biaya_booking: number | string; 
+    plafon_kpr?: number | string;   
     kpr_disetujui: "Ya" | "Tidak" | string;
 }
 

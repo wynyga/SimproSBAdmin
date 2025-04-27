@@ -34,7 +34,7 @@ export default function TransaksiPage() {
       const userData = await getUsers(setError);
       const unitData = await getUnit(setError);
       const transaksiData = await getTransaksi(setError);
-      setUsers(userData.users || []);
+      setUsers(userData?.users || []);
       setUnits(unitData || []);
       setTransaksiList(transaksiData || []);
       setLoading(false);

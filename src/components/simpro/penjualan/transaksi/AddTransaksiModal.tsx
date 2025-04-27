@@ -26,7 +26,7 @@ export default function AddTransaksiModal({
     perubahan_spek_bangunan: 0,
     total_harga_jual: 0,
     minimum_dp: 0,
-    kewajiban_hutang: 0,
+    biaya_booking: 0,
     kpr_disetujui: "Ya",
   });
 
@@ -43,17 +43,35 @@ export default function AddTransaksiModal({
         perubahan_spek_bangunan: 0,
         total_harga_jual: 0,
         minimum_dp: 0,
-        kewajiban_hutang: 0,
+        biaya_booking: 0,
         kpr_disetujui: "Ya",
       });
       setError(null);
     }
   }, [isOpen]);
 
+  const calculateTotalHarga = (data: typeof formData) => {
+    return (
+      Number(data.harga_jual_standar) +
+      Number(data.kelebihan_tanah) +
+      Number(data.penambahan_luas_bangunan) +
+      Number(data.perubahan_spek_bangunan)
+    );
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    const updatedForm = { ...formData, [name]: name === "kpr_disetujui" ? value : +value };
+
+    // Hitung total harga jual otomatis
+    updatedForm.total_harga_jual = calculateTotalHarga(updatedForm);
+
+    setFormData(updatedForm);
+  };
+
   const handleSubmit = () => {
-    const { user_id, unit_id, total_harga_jual } = formData;
-    if (!user_id || !unit_id || total_harga_jual <= 0) {
-      setError("Semua field wajib diisi dengan benar.");
+    if (!formData.user_id || !formData.unit_id) {
+      setError("Pembeli dan Unit wajib diisi.");
       return;
     }
     onSubmit(formData);
@@ -67,24 +85,15 @@ export default function AddTransaksiModal({
       <div className="w-full max-w-4xl rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800 dark:text-white">
         <div className="flex justify-between items-center mb-4">
           <h4 className="text-lg font-semibold">Tambah Transaksi</h4>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-          >
-            ✕
-          </button>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">✕</button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Select User */}
           <div>
             <label className="block text-sm mb-1">Pembeli</label>
-            <select
-              className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              value={formData.user_id}
-              onChange={(e) =>
-                setFormData({ ...formData, user_id: e.target.value })
-              }
-            >
+            <select name="user_id" value={formData.user_id} onChange={handleChange}
+              className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
               <option value="">Pilih Pembeli</option>
               {userList.map((user) => (
                 <option key={user.id} value={user.id}>
@@ -93,15 +102,12 @@ export default function AddTransaksiModal({
               ))}
             </select>
           </div>
+
+          {/* Select Unit */}
           <div>
             <label className="block text-sm mb-1">Unit</label>
-            <select
-              className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              value={formData.unit_id}
-              onChange={(e) =>
-                setFormData({ ...formData, unit_id: e.target.value })
-              }
-            >
+            <select name="unit_id" value={formData.unit_id} onChange={handleChange}
+              className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
               <option value="">Pilih Unit</option>
               {unitList.map((unit) => (
                 <option key={unit.id} value={unit.id}>
@@ -110,104 +116,21 @@ export default function AddTransaksiModal({
               ))}
             </select>
           </div>
-          <div>
-            <label className="block text-sm mb-1">Harga Jual Standar</label>
-            <input
-              type="number"
-              className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              value={formData.harga_jual_standar}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  harga_jual_standar: +e.target.value,
-                })
-              }
-            />
-          </div>
-          <div>
-            <label className="block text-sm mb-1">Kelebihan Tanah</label>
-            <input
-              type="number"
-              value={formData.kelebihan_tanah}
-              onChange={(e) =>
-                setFormData({ ...formData, kelebihan_tanah: +e.target.value })
-              }
-              className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            />
-          </div>
-          <div>
-            <label className="block text-sm mb-1">Penambahan Luas Bangunan</label>
-            <input
-              type="number"
-              value={formData.penambahan_luas_bangunan}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  penambahan_luas_bangunan: +e.target.value,
-                })
-              }
-              className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            />
-          </div>
-          <div>
-            <label className="block text-sm mb-1">Perubahan Spek Bangunan</label>
-            <input
-              type="number"
-              value={formData.perubahan_spek_bangunan}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  perubahan_spek_bangunan: +e.target.value,
-                })
-              }
-              className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            />
-          </div>
-          <div>
-            <label className="block text-sm mb-1">Total Harga Jual</label>
-            <input
-              type="number"
-              value={formData.total_harga_jual}
-              onChange={(e) =>
-                setFormData({ ...formData, total_harga_jual: +e.target.value })
-              }
-              className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            />
-          </div>
-          <div>
-            <label className="block text-sm mb-1">Minimum DP</label>
-            <input
-              type="number"
-              value={formData.minimum_dp}
-              onChange={(e) =>
-                setFormData({ ...formData, minimum_dp: +e.target.value })
-              }
-              className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            />
-          </div>
-          <div>
-            <label className="block text-sm mb-1">Kewajiban Hutang</label>
-            <input
-              type="number"
-              value={formData.kewajiban_hutang}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  kewajiban_hutang: +e.target.value,
-                })
-              }
-              className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            />
-          </div>
+
+          {/* Harga jual standard dan lainnya */}
+          <InputNumber label="Harga Jual Standar" name="harga_jual_standar" value={formData.harga_jual_standar} handleChange={handleChange} />
+          <InputNumber label="Kelebihan Tanah" name="kelebihan_tanah" value={formData.kelebihan_tanah} handleChange={handleChange} />
+          <InputNumber label="Penambahan Luas Bangunan" name="penambahan_luas_bangunan" value={formData.penambahan_luas_bangunan} handleChange={handleChange} />
+          <InputNumber label="Perubahan Spek Bangunan" name="perubahan_spek_bangunan" value={formData.perubahan_spek_bangunan} handleChange={handleChange} />
+          <InputNumber label="Total Harga Jual" name="total_harga_jual" value={formData.total_harga_jual} handleChange={() => {}} disabled />
+          <InputNumber label="Minimum DP" name="minimum_dp" value={formData.minimum_dp} handleChange={handleChange} />
+          <InputNumber label="Biaya Booking" name="biaya_booking" value={formData.biaya_booking} handleChange={handleChange} />
+
+          {/* Status KPR */}
           <div>
             <label className="block text-sm mb-1">Status KPR</label>
-            <select
-              value={formData.kpr_disetujui}
-              onChange={(e) =>
-                setFormData({ ...formData, kpr_disetujui: e.target.value })
-              }
-              className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            >
+            <select name="kpr_disetujui" value={formData.kpr_disetujui} onChange={handleChange}
+              className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
               <option value="Ya">Ya</option>
               <option value="Tidak">Tidak</option>
             </select>
@@ -217,20 +140,27 @@ export default function AddTransaksiModal({
         {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
 
         <div className="mt-6 flex justify-end gap-3">
-          <button
-            onClick={handleSubmit}
-            className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-          >
-            Simpan
-          </button>
-          <button
-            onClick={onClose}
-            className="rounded border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-100 dark:border-gray-500 dark:text-white dark:hover:bg-gray-700"
-          >
-            Batal
-          </button>
+          <button onClick={handleSubmit} className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">Simpan</button>
+          <button onClick={onClose} className="rounded border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-100 dark:border-gray-500 dark:text-white dark:hover:bg-gray-700">Batal</button>
         </div>
       </div>
+    </div>
+  );
+}
+
+// Komponen kecil untuk input angka
+function InputNumber({ label, name, value, handleChange, disabled = false }: any) {
+  return (
+    <div>
+      <label className="block text-sm mb-1">{label}</label>
+      <input
+        type="number"
+        name={name}
+        value={value}
+        onChange={handleChange}
+        disabled={disabled}
+        className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+      />
     </div>
   );
 }
