@@ -12,7 +12,8 @@ import TextArea from "@/components/form/input/TextArea";
 interface Props {
   formData: {
     tanggal: string;
-    keterangan_transaksi: string;
+    sumber_transaksi: string;
+    keterangan_transaksi_id: string;
     kode: string;
     jumlah: string;
     metode_pembayaran: string;
@@ -22,10 +23,10 @@ interface Props {
   handleSelectChange: (value: string, name: string) => void;
   handleDateChange: (date: Date) => void;
   handleSubmit: (e: React.FormEvent) => void;
+  handleSelectSumber: (value: string) => void;
+  optionsKeterangan: { value: string; label: string }[];
   loading: boolean;
 }
-
-// ...imports tetap sama
 
 export default function TransaksiKasForm({
   formData,
@@ -33,11 +34,18 @@ export default function TransaksiKasForm({
   handleSelectChange,
   handleDateChange,
   handleSubmit,
+  handleSelectSumber,
+  optionsKeterangan,
   loading,
 }: Props) {
   const jenisOptions = [
     { value: "101", label: "Kas Masuk" },
     { value: "102", label: "Kas Keluar" },
+  ];
+
+  const sumberOptions = [
+    { value: "cost_code", label: "Cost Code" },
+    { value: "penjualan", label: "Penjualan" },
   ];
 
   const metodePembayaranOptions = [
@@ -51,6 +59,8 @@ export default function TransaksiKasForm({
   return (
     <ComponentCard title="Form Tambah Transaksi Kas">
       <form onSubmit={handleSubmit} className="space-y-6">
+
+        {/* Tanggal */}
         <div>
           <DatePicker
             id="tanggal"
@@ -62,17 +72,43 @@ export default function TransaksiKasForm({
           />
         </div>
 
+        {/* Sumber Transaksi */}
         <div>
-          <Label>Keterangan Transaksi</Label>
-          <Input
-            name="keterangan_transaksi"
-            placeholder="Contoh: Pembayaran DP"
-            value={formData.keterangan_transaksi}
-            onChange={handleChange}
-            required
-          />
+          <Label>Sumber Transaksi</Label>
+          <div className="relative">
+            <Select
+              options={sumberOptions}
+              placeholder="Pilih sumber transaksi"
+              defaultValue={formData.sumber_transaksi}
+              onChange={(value) => handleSelectSumber(value)}
+              className="dark:bg-dark-900"
+            />
+            <span className="absolute text-gray-500 dark:text-gray-400 right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+              <ChevronDownIcon />
+            </span>
+          </div>
         </div>
 
+        {/* Keterangan Transaksi */}
+        {formData.sumber_transaksi && (
+          <div>
+            <Label>Keterangan Transaksi</Label>
+            <div className="relative">
+              <Select
+                options={optionsKeterangan}
+                placeholder="Pilih keterangan"
+                defaultValue={formData.keterangan_transaksi_id}
+                onChange={(value) => handleSelectChange(value, "keterangan_transaksi_id")}
+                className="dark:bg-dark-900"
+              />
+              <span className="absolute text-gray-500 dark:text-gray-400 right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                <ChevronDownIcon />
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Jenis Transaksi */}
         <div>
           <Label>Jenis Transaksi</Label>
           <div className="relative">
@@ -83,12 +119,13 @@ export default function TransaksiKasForm({
               onChange={(value) => handleSelectChange(value, "kode")}
               className="dark:bg-dark-900"
             />
-            <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400">
+            <span className="absolute text-gray-500 dark:text-gray-400 right-3 top-1/2 -translate-y-1/2 pointer-events-none">
               <ChevronDownIcon />
             </span>
           </div>
         </div>
 
+        {/* Jumlah */}
         <div>
           <Label>Jumlah</Label>
           <Input
@@ -101,6 +138,7 @@ export default function TransaksiKasForm({
           />
         </div>
 
+        {/* Metode Pembayaran */}
         <div>
           <Label>Metode Pembayaran</Label>
           <div className="relative">
@@ -111,12 +149,13 @@ export default function TransaksiKasForm({
               onChange={(value) => handleSelectChange(value, "metode_pembayaran")}
               className="dark:bg-dark-900"
             />
-            <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400">
+            <span className="absolute text-gray-500 dark:text-gray-400 right-3 top-1/2 -translate-y-1/2 pointer-events-none">
               <ChevronDownIcon />
             </span>
           </div>
         </div>
 
+        {/* Keterangan Objek (Optional) */}
         <div>
           <Label>Keterangan Objek (Opsional)</Label>
           <TextArea
@@ -134,6 +173,7 @@ export default function TransaksiKasForm({
           />
         </div>
 
+        {/* Tombol Submit */}
         <div>
           <button
             type="submit"

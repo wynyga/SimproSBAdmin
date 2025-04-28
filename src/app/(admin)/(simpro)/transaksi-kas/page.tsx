@@ -2,9 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import { getTransaksiKas,storeTransaksiKas } from "../../../../../utils/transaksi-kas";
+import { getTransaksiKas } from "../../../../../utils/transaksi-kas";
 import TransaksiKasForm from "@/components/simpro/transaksi kas/TransaksiKasForm";
 import ComponentCard from "@/components/common/ComponentCard";
+import { useTransaksiKasForm } from "@/components/simpro/transaksi kas/useTransaksiKasForm";
 
 interface KasData {
   saldoKas: number;
@@ -14,54 +15,30 @@ interface KasData {
 
 export default function TransaksiKasPage() {
   const [kasData, setKasData] = useState<KasData | null>(null);
-  const [newTransaksi, setNewTransaksi] = useState({
-    tanggal: "",
-    keterangan_transaksi: "",
-    kode: "101",
-    jumlah: "",
-    metode_pembayaran: "Tunai",
-    keterangan_objek_transaksi: "",
-  });
   const [error, setError] = useState<string | null>(null);
-  const [, setMessage] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  
+  const [loadingKas, setLoadingKas] = useState<boolean>(false);
+
+  // Gunakan hook form yang baru
+  const {
+    formData,
+    loading,
+    optionsKeterangan,
+    handleChange,
+    handleSelectChange,
+    handleDateChange,
+    handleSelectSumber,
+    handleSubmit,
+  } = useTransaksiKasForm(setError);
+
   useEffect(() => {
     fetchKas();
   }, []);
 
   const fetchKas = async () => {
     setError(null);
-    setLoading(true);
+    setLoadingKas(true);
     await getTransaksiKas(setKasData, setError);
-    setLoading(false);
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setNewTransaksi({ ...newTransaksi, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setMessage(null);
-    setError(null);
-    setLoading(true);
-
-    await storeTransaksiKas(newTransaksi, setError);
-    setLoading(false);
-
-    if (!error) {
-      setMessage("Transaksi berhasil ditambahkan.");
-      setNewTransaksi({
-        tanggal: "",
-        keterangan_transaksi: "",
-        kode: "101",
-        jumlah: "",
-        metode_pembayaran: "Tunai",
-        keterangan_objek_transaksi: "",
-      });
-      fetchKas();
-    }
+    setLoadingKas(false);
   };
 
   return (
@@ -73,7 +50,7 @@ export default function TransaksiKasPage() {
         <ComponentCard title="Ringkasan Transaksi Kas">
           {error && <p className="text-sm text-red-500">{error}</p>}
 
-          {loading ? (
+          {loadingKas ? (
             <p className="text-sm text-gray-500 dark:text-gray-400">Memuat data...</p>
           ) : (
             kasData && (
@@ -106,18 +83,16 @@ export default function TransaksiKasPage() {
         {/* Form Tambah Transaksi */}
         <div className="space-y-6">
           <TransaksiKasForm
-            formData={newTransaksi}
+            formData={formData}
             handleChange={handleChange}
-            handleSelectChange={(val, name) =>
-              setNewTransaksi((prev) => ({ ...prev, [name]: val }))
-            }
-            handleDateChange={(date) =>
-              setNewTransaksi((prev) => ({
-                ...prev,
-                tanggal: date.toISOString().split("T")[0],
-              }))
-            }
-            handleSubmit={handleSubmit}
+            handleSelectChange={handleSelectChange}
+            handleDateChange={handleDateChange}
+            handleSelectSumber={handleSelectSumber}
+            optionsKeterangan={optionsKeterangan}
+            handleSubmit={async (e) => {
+              await handleSubmit(e);
+              fetchKas(); // Refresh saldo kas setelah berhasil tambah transaksi
+            }}
             loading={loading}
           />
         </div>
