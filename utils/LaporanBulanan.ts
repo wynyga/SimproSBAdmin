@@ -342,5 +342,30 @@ export const getStockInventory = async (bulan: number, tahun: number,setError: F
     return await response.json();
   } catch (err) {
     setError(err instanceof Error ? err.message : "Terjadi kesalahan saat mengambil data persediaan bahan.");
+  } 
+};
+
+export const getLaporanTahunan = async (tahun: number, setError: Function) => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("Anda harus login untuk mengakses data.");
+    }
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/lap_bulanan/tahunan/${tahun}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Gagal mengambil data laporan tahunan.");
+    }
+
+    return await response.json();
+  } catch (err) {
+    setError(err instanceof Error ? err.message : "Terjadi kesalahan saat mengambil laporan tahunan.");
   }
 };
