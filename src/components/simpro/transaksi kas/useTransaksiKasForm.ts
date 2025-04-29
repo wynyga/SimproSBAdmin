@@ -93,9 +93,6 @@ const handleSubmit = async (e: React.FormEvent) => {
       keterangan_objek_transaksi: formData.keterangan_objek_transaksi,
     };
 
-    // 🔥 Tambahkan ini supaya muncul output JSON di console:
-    console.log("Data yang akan dikirim:", JSON.stringify(payload, null, 2));
-
     await storeTransaksiKas(payload, setError);
     resetForm();
   } catch (error: any) {
