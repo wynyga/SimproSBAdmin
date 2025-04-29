@@ -63,7 +63,6 @@ const navItems: NavItem[] = [
       { name: "Approval Gudang Input", path: "/approval-gudang-input", pro: false },
       { name: "Approval Gudang Output", path: "/approval-gudang-output", pro: false },
       { name: "Kwitansi", path: "/kwitansi", pro: false },
-      { name: "Status Penjualan", path: "/status", pro: false },
     ],
   },
   {
@@ -77,15 +76,21 @@ const navItems: NavItem[] = [
     ],
   },
   {
-    name: "Stock Unit",
+    name: "Manajemen Stock",
     icon: <TableIcon />,
     subItems: [
-      // { name: "Stock Unit", path: "/stockss", pro: false },
       { name: "Tipe Rumah", path: "/tipe-rumah", pro: false },
       { name: "Blok", path: "/blok", pro: false },
       { name: "Unit", path: "/unit", pro: false },
+    ]
+  },
+  {
+    name: "Manajemen Penjualan",
+    icon: <TableIcon />,
+    subItems: [
       { name: "Users", path: "/users", pro: false },
       { name: "Penjualan", path: "/penjualan", pro: false },
+      { name: "Status Penjualan", path: "/status", pro: false },
     ]
   },
   {

@@ -35,11 +35,16 @@ export default function AddCostCenterModal({ isOpen, onClose, onSubmit, error }:
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800 dark:text-white">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm px-2">
+      <div className="w-[95%] sm:w-full max-w-md mx-4 rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800 dark:text-white max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h4 className="text-lg font-semibold">Tambah Cost Center</h4>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">✕</button>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          >
+            ✕
+          </button>
         </div>
 
         <form onSubmit={handleSubmit}>

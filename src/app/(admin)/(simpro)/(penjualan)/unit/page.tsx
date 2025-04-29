@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { getUnit,addUnit,updateUnit,deleteUnit } from "../../../../../../utils/Unit";
+import { getPaginatedUnit, addUnit, updateUnit, deleteUnit } from "../../../../../../utils/Unit";
 import { getBlok } from "../../../../../../utils/blok";
 import { getTipeRumah } from "../../../../../../utils/tipeRumah";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
@@ -41,19 +41,33 @@ export default function UnitPage() {
 
   const [error, setError] = useState<string | null>(null);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [totalPages, setTotalPages] = useState(1);
+
   useEffect(() => {
-    fetchAll();
+    fetchStaticData();
   }, []);
 
-  const fetchAll = async () => {
-    const [units, bloks, tipeRumah] = await Promise.all([
-      getUnit(setError),
+  useEffect(() => {
+    fetchUnits();
+  }, [currentPage, searchTerm]);
+
+  const fetchStaticData = async () => {
+    const [bloks, tipeRumah] = await Promise.all([
       getBlok(setError),
       getTipeRumah(setError),
     ]);
-    setUnitList(units || []);
     setBlokList(bloks || []);
     setTipeList(tipeRumah || []);
+  };
+
+  const fetchUnits = async () => {
+    const res = await getPaginatedUnit(currentPage, searchTerm, setError);
+    if (res) {
+      setUnitList(res.data);
+      setTotalPages(res.last_page);
+    }
   };
 
   const handleAdd = async (data: {
@@ -62,7 +76,7 @@ export default function UnitPage() {
     nomor_unit: string;
   }) => {
     await addUnit(data, setError);
-    await fetchAll();
+    await fetchUnits();
   };
 
   const handleUpdate = async (): Promise<boolean> => {
@@ -81,14 +95,14 @@ export default function UnitPage() {
       setError
     );
 
-    await fetchAll();
+    await fetchUnits();
     return true;
   };
 
   const handleDelete = async () => {
     if (deleteId !== null) {
       await deleteUnit(deleteId, setError);
-      await fetchAll();
+      await fetchUnits();
       setShowDeleteModal(false);
       setDeleteId(null);
     }
@@ -98,7 +112,19 @@ export default function UnitPage() {
     <div className="min-h-screen px-4 xl:px-10">
       <PageBreadcrumb pageTitle="Manajemen Unit" />
       <ComponentCard title="Data Unit">
-        <div className="flex justify-between items-center mb-4">
+
+        {/* Search & Add */}
+        <div className="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+          <input
+            type="text"
+            placeholder="Cari Nomor Unit..."
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1); // reset page ke 1 kalau search
+            }}
+            className="w-full sm:w-60 rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+          />
           <Button
             className="bg-blue-600 hover:bg-blue-700 text-white"
             onClick={() => setShowAddModal(true)}
@@ -107,6 +133,7 @@ export default function UnitPage() {
           </Button>
         </div>
 
+        {/* Table */}
         <div className="overflow-auto rounded border dark:border-gray-700">
           <table className="min-w-full border border-gray-300 dark:border-gray-700 text-sm text-gray-700 dark:text-white">
             <thead className="bg-gray-100 dark:bg-gray-700">
@@ -123,14 +150,10 @@ export default function UnitPage() {
                   <tr key={unit.id} className="bg-white dark:bg-transparent">
                     <td className="border px-4 py-2">{unit.nomor_unit}</td>
                     <td className="border px-4 py-2">
-                      {blokList.find((b) => b.id === unit.blok_id)?.nama_blok ||
-                        "-"}
+                      {blokList.find((b) => b.id === unit.blok_id)?.nama_blok || "-"}
                     </td>
                     <td className="border px-4 py-2">
-                      {
-                        tipeList.find((t) => t.id === unit.tipe_rumah_id)
-                          ?.tipe_rumah
-                      }
+                      {tipeList.find((t) => t.id === unit.tipe_rumah_id)?.tipe_rumah || "-"}
                     </td>
                     <td className="border px-4 py-2 flex justify-end gap-2">
                       <Button
@@ -166,6 +189,30 @@ export default function UnitPage() {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 mt-4 text-sm">
+            <button
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((prev) => prev - 1)}
+              className="px-3 py-1 rounded border dark:border-gray-600 disabled:opacity-50"
+            >
+              Sebelumnya
+            </button>
+            <span>
+              Halaman {currentPage} dari {totalPages}
+            </span>
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage((prev) => prev + 1)}
+              className="px-3 py-1 rounded border dark:border-gray-600 disabled:opacity-50"
+            >
+              Selanjutnya
+            </button>
+          </div>
+        )}
+
       </ComponentCard>
 
       {/* Modals */}

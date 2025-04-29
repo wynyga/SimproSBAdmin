@@ -128,3 +128,31 @@ export const getUnit = async (setError: Function) => {
       setError(err instanceof Error ? err.message : "Terjadi kesalahan saat menghapus unit.");
     }
   };
+
+  export const getPaginatedUnit = async (
+    page: number,
+    search: string,
+    setError: (msg: string | null) => void
+  ) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("Anda harus login untuk mengakses data.");
+  
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/penjualan/unit?page=${page}&per_page=10&search=${encodeURIComponent(search)}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+        }
+      );
+  
+      if (!response.ok) throw new Error("Gagal mengambil data unit.");
+      return await response.json();
+    } catch (err: any) {
+      setError(err instanceof Error ? err.message : "Terjadi kesalahan saat mengambil data unit.");
+      return null;
+    }
+  };
