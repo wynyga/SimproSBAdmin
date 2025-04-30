@@ -17,7 +17,7 @@ export default function ApprovalGudangOutPage() {
     const checkAccess = async () => {
       try {
         const profile = await getProfile((err: string) => setErrorMessage(err));
-        if (profile && (profile.role === "Admin" || profile.role === "Manager")) {
+        if (profile && (profile.role === "Direktur"  || profile.role === "Manager")) {
           setIsAllowed(true);
         } else {
           setIsAllowed(false);

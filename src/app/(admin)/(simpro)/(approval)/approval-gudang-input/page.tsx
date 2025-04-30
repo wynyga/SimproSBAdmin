@@ -17,7 +17,7 @@ export default function ApprovalGudangInPage() {
     const checkAccess = async () => {
       try {
         const profile = await getProfile((err: string) => setErrorMessage(err));
-        if (profile && (profile.role === "Admin" || profile.role === "Manager")) {
+        if (profile && (profile.role === "Direktur" || profile.role === "Manager")) {
           setIsAllowed(true);
         } else {
           setIsAllowed(false);
@@ -44,7 +44,7 @@ export default function ApprovalGudangInPage() {
               Anda tidak memiliki izin untuk mengakses halaman ini.
             </p>
             <button
-              onClick={() => router.push("/beranda/stock")}
+              onClick={() => router.push("/dashboard")}
               className="mt-4 rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
             >
               Kembali ke Beranda Stock

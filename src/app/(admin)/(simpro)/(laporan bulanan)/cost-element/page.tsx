@@ -1,7 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { getCostElements,addCostElement,updateCostElement,deleteCostElement } from "../../../../../../utils/CostElementApi";
+import { useRouter } from "next/navigation";
+import { getProfile } from "../../../../../../utils/auth"; 
+import {
+  getCostElements,
+  addCostElement,
+  updateCostElement,
+  deleteCostElement,
+} from "../../../../../../utils/CostElementApi";
 import { getCostCenters } from "../../../../../../utils/costcenter";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import ComponentCard from "@/components/common/ComponentCard";
@@ -24,6 +31,8 @@ interface CostCenter {
 }
 
 export default function CostElementPage() {
+  const router = useRouter();
+
   const [costElements, setCostElements] = useState<CostElement[]>([]);
   const [costCenters, setCostCenters] = useState<CostCenter[]>([]);
   const [selectedCostElement, setSelectedCostElement] = useState<CostElement | null>(null);
@@ -34,11 +43,34 @@ export default function CostElementPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isAllowed, setIsAllowed] = useState(false);
 
   useEffect(() => {
-    fetchCostElements();
-    fetchCostCenters();
+    checkAccess();
   }, []);
+
+  useEffect(() => {
+    if (isAllowed) {
+      fetchCostElements();
+      fetchCostCenters();
+    }
+  }, [isAllowed]);
+
+  const checkAccess = async () => {
+    try {
+      const profile = await getProfile((err: string) => setError(err));
+      if (profile && (profile.role === "Direktur" || profile.role === "Manager")) {
+        setIsAllowed(true);
+      } else {
+        setIsAllowed(false);
+      }
+    } catch {
+      setError("Gagal memuat profil pengguna.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchCostElements = async () => {
     const data = await getCostElements(setError);
@@ -81,97 +113,116 @@ export default function CostElementPage() {
   return (
     <div className="min-h-screen px-4 xl:px-10">
       <PageBreadcrumb pageTitle="Manajemen Cost Element" />
-      <ComponentCard title="Data Cost Element">
-        <div className="flex justify-between items-center mb-4">
-          <Button
-            className="bg-blue-600 hover:bg-blue-700 text-white"
-            onClick={() => setShowAddModal(true)}
+
+      {loading ? (
+        <p className="text-sm text-gray-500">Memuat akses pengguna...</p>
+      ) : !isAllowed ? (
+        <ComponentCard title="Akses Ditolak">
+          <p className="text-sm text-red-500">
+            Anda tidak memiliki izin untuk mengakses halaman ini.
+          </p>
+          <button
+            onClick={() => router.push("/dashboard")}
+            className="mt-4 rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
           >
-            Tambah Cost Element
-          </Button>
-        </div>
+            Kembali ke Dashboard
+          </button>
+        </ComponentCard>
+      ) : (
+        <>
+          <ComponentCard title="Data Cost Element">
+            <div className="flex justify-between items-center mb-4">
+              <Button
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+                onClick={() => setShowAddModal(true)}
+              >
+                Tambah Cost Element
+              </Button>
+            </div>
 
-        <div className="overflow-auto rounded border dark:border-gray-700">
-          <table className="min-w-full border border-gray-300 dark:border-gray-700 text-sm">
-            <thead className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white">
-              <tr>
-                <th className="border px-4 py-2 text-left font-semibold">Cost Element Code</th>
-                <th className="border px-4 py-2 text-left font-semibold">Cost Center</th>
-                <th className="border px-4 py-2 text-left font-semibold">Deskripsi</th>
-                <th className="border px-4 py-2 text-left font-semibold">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="text-gray-800 dark:text-white">
-              {costElements.length > 0 ? (
-                costElements.map((item) => (
-                  <tr key={item.id} className="bg-white dark:bg-transparent">
-                    <td className="border px-4 py-2">{item.cost_element_code}</td>
-                    <td className="border px-4 py-2">{item.cost_centre_code}</td>
-                    <td className="border px-4 py-2">{item.description}</td>
-                    <td className="border px-4 py-2">
-                      <div className="flex items-center gap-2 justify-end">
-                        <Button
-                          size="sm"
-                          className="bg-yellow-500 hover:bg-yellow-600 text-white"
-                          onClick={() => {
-                            setSelectedCostElement(item);
-                            setShowEditModal(true);
-                          }}
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          size="sm"
-                          className="bg-red-600 hover:bg-red-700 text-white"
-                          onClick={() => {
-                            setDeleteId(item.id);
-                            setShowDeleteModal(true);
-                          }}
-                        >
-                          Hapus
-                        </Button>
-                      </div>
-                    </td>
+            <div className="overflow-auto rounded border dark:border-gray-700">
+              <table className="min-w-full border border-gray-300 dark:border-gray-700 text-sm">
+                <thead className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white">
+                  <tr>
+                    <th className="border px-4 py-2 text-left font-semibold">Cost Element Code</th>
+                    <th className="border px-4 py-2 text-left font-semibold">Cost Center</th>
+                    <th className="border px-4 py-2 text-left font-semibold">Deskripsi</th>
+                    <th className="border px-4 py-2 text-left font-semibold">Aksi</th>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={4} className="text-center py-4 text-gray-500 dark:text-gray-400">
-                    Tidak ada data cost element.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </ComponentCard>
+                </thead>
+                <tbody className="text-gray-800 dark:text-white">
+                  {costElements.length > 0 ? (
+                    costElements.map((item) => (
+                      <tr key={item.id} className="bg-white dark:bg-transparent">
+                        <td className="border px-4 py-2">{item.cost_element_code}</td>
+                        <td className="border px-4 py-2">{item.cost_centre_code}</td>
+                        <td className="border px-4 py-2">{item.description}</td>
+                        <td className="border px-4 py-2">
+                          <div className="flex items-center gap-2 justify-end">
+                            <Button
+                              size="sm"
+                              className="bg-yellow-500 hover:bg-yellow-600 text-white"
+                              onClick={() => {
+                                setSelectedCostElement(item);
+                                setShowEditModal(true);
+                              }}
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              size="sm"
+                              className="bg-red-600 hover:bg-red-700 text-white"
+                              onClick={() => {
+                                setDeleteId(item.id);
+                                setShowDeleteModal(true);
+                              }}
+                            >
+                              Hapus
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={4} className="text-center py-4 text-gray-500 dark:text-gray-400">
+                        Tidak ada data cost element.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </ComponentCard>
 
-      <AddCostElementModal
-        isOpen={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        onSubmit={handleAdd}
-        fetchCostCenters={fetchCostCenters}
-        costCenters={costCenters}
-        error={error}
-      />
+          <AddCostElementModal
+            isOpen={showAddModal}
+            onClose={() => setShowAddModal(false)}
+            onSubmit={handleAdd}
+            fetchCostCenters={fetchCostCenters}
+            costCenters={costCenters}
+            error={error}
+          />
 
-      {selectedCostElement && (
-        <EditCostElementModal
-          isOpen={showEditModal}
-          onClose={() => setShowEditModal(false)}
-          costElement={selectedCostElement}
-          setCostElement={setSelectedCostElement}
-          onSubmit={handleUpdate}
-          error={error}
-        />
+          {selectedCostElement && (
+            <EditCostElementModal
+              isOpen={showEditModal}
+              onClose={() => setShowEditModal(false)}
+              costElement={selectedCostElement}
+              setCostElement={setSelectedCostElement}
+              onSubmit={handleUpdate}
+              error={error}
+            />
+          )}
+
+          <ConfirmDeleteModal
+            isOpen={showDeleteModal}
+            onClose={() => setShowDeleteModal(false)}
+            onConfirm={handleDelete}
+            message="Apakah Anda yakin ingin menghapus cost element ini?"
+          />
+        </>
       )}
-
-      <ConfirmDeleteModal
-        isOpen={showDeleteModal}
-        onClose={() => setShowDeleteModal(false)}
-        onConfirm={handleDelete}
-        message="Apakah Anda yakin ingin menghapus cost element ini?"
-      />
     </div>
   );
 }
