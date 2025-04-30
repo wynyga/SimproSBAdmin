@@ -51,8 +51,8 @@ const navItems: NavItem[] = [
     name: "Search",
     subItems: [
       { name: "Search Stock", path: "/search/stock", pro: false },
-      { name: "Search Penjualan", path: "/search/penjualan", pro: false },
-      { name: "Search Gudang", path: "/search/gudang", pro: false },
+      { name: "Search Gudang In", path: "/search/gudangIn", pro: false },
+      { name: "Search Gudang Out", path: "/search/gudangOut", pro: false },
     ],
   },
   {
