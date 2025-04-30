@@ -361,32 +361,34 @@ const AppSidebar: React.FC = () => {
         }`}
       >
         <Link href="/dashboard" className="flex items-center justify-center w-full">
-          {isExpanded || isHovered || isMobileOpen ? (
-            <>
+          <span className={`transition-opacity duration-300 ${isMobileOpen ? "opacity-0" : "opacity-100"}`}>
+            {isExpanded || isHovered ? (
+              <>
+                <Image
+                  className="dark:hidden mx-auto"
+                  src="/images/logo/icon.png"
+                  alt="Logo"
+                  width={90}
+                  height={40}
+                />
+                <Image
+                  className="hidden dark:block mx-auto"
+                  src="/images/logo/icon.png"
+                  alt="Logo"
+                  width={90}
+                  height={40}
+                />
+              </>
+            ) : (
               <Image
-                className="dark:hidden mx-auto"
+                className="mx-auto"
                 src="/images/logo/icon.png"
                 alt="Logo"
-                width={90}
-                height={40}
+                width={32}
+                height={32}
               />
-              <Image
-                className="hidden dark:block mx-auto"
-                src="/images/logo/icon.png"
-                alt="Logo"
-                width={90}
-                height={40}
-              />
-            </>
-          ) : (
-            <Image
-              className="mx-auto"
-              src="/images/logo/icon.png"
-              alt="Logo"
-              width={32}
-              height={32}
-            />
-          )}
+            )}
+          </span>
         </Link>
       </div>
       <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">

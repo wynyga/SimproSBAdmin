@@ -87,30 +87,30 @@ try {
 
 // Fungsi untuk Logout
 export const logoutUser = async (setError: Function) => {
-try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-    throw new Error("Anda harus login untuk logout.");
-    }
+  try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+        throw new Error("Anda harus login untuk logout.");
+        }
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/logout`, {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
-    },
-    });
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/logout`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        });
 
-    if (!response.ok) {
-    throw new Error("Gagal logout.");
-    }
+        if (!response.ok) {
+        throw new Error("Gagal logout.");
+        }
 
-    localStorage.removeItem("token"); // Hapus token dari localStorage setelah logout
+        localStorage.removeItem("token"); // Hapus token dari localStorage setelah logout
 
-    return { message: "Logout berhasil" };
-} catch (err) {
-    setError(err instanceof Error ? err.message : "Terjadi kesalahan saat logout.");
-}
+        return { message: "Logout berhasil" };
+    } catch (err) {
+        setError(err instanceof Error ? err.message : "Terjadi kesalahan saat logout.");
+  }
 };
 
 // Fungsi untuk Refresh Token
