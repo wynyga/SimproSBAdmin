@@ -190,28 +190,28 @@ export default function UnitPage() {
           </table>
         </div>
 
-        {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex justify-center items-center gap-2 mt-4 text-sm">
+          <div className="flex justify-center items-center gap-2 mt-4 text-sm text-gray-800 dark:text-gray-100">
             <button
               disabled={currentPage === 1}
               onClick={() => setCurrentPage((prev) => prev - 1)}
-              className="px-3 py-1 rounded border dark:border-gray-600 disabled:opacity-50"
+              className="px-3 py-1 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
             >
               Sebelumnya
             </button>
-            <span>
-              Halaman {currentPage} dari {totalPages}
+            <span className="mx-2">
+              Halaman <strong>{currentPage}</strong> dari <strong>{totalPages}</strong>
             </span>
             <button
               disabled={currentPage === totalPages}
               onClick={() => setCurrentPage((prev) => prev + 1)}
-              className="px-3 py-1 rounded border dark:border-gray-600 disabled:opacity-50"
+              className="px-3 py-1 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
             >
               Selanjutnya
             </button>
           </div>
         )}
+
 
       </ComponentCard>
 
