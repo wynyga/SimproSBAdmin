@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { getPaginatedUnit, addUnit, updateUnit, deleteUnit } from "../../../../../../utils/Unit";
-import { getBlok } from "../../../../../../utils/blok";
-import { getTipeRumah } from "../../../../../../utils/tipeRumah";
+import { getAllBlok } from "../../../../../../utils/blok";
+import { getAllTipeRumah } from "../../../../../../utils/tipeRumah";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import ComponentCard from "@/components/common/ComponentCard";
 import Button from "@/components/ui/button/Button";
@@ -55,13 +55,14 @@ export default function UnitPage() {
 
   const fetchStaticData = async () => {
     const [bloks, tipeRumah] = await Promise.all([
-      getBlok(setError),
-      getTipeRumah(setError),
+      getAllBlok(setError),
+      getAllTipeRumah(setError),
     ]);
-    setBlokList(bloks || []);
-    setTipeList(tipeRumah || []);
+  
+    setBlokList(Array.isArray(bloks) ? bloks : []);
+    setTipeList(Array.isArray(tipeRumah) ? tipeRumah : []);
   };
-
+  
   const fetchUnits = async () => {
     const res = await getPaginatedUnit(currentPage, searchTerm, setError);
     if (res) {

@@ -1,10 +1,8 @@
-export const getUnit = async (setError: Function) => {
+  export const getUnit = async (setError: Function) => {
     try {
       const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("Anda harus login untuk mengakses data.");
-      }
-  
+      if (!token) throw new Error("Anda harus login untuk mengakses data.");
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/penjualan/unit`, {
         method: "GET",
         headers: {
@@ -12,16 +10,19 @@ export const getUnit = async (setError: Function) => {
           "Authorization": `Bearer ${token}`,
         },
       });
-  
-      if (!response.ok) {
-        throw new Error("Gagal mengambil data unit.");
-      }
-  
-      return await response.json();
+
+      if (!response.ok) throw new Error("Gagal mengambil data unit.");
+
+      const result = await response.json();
+
+      // jika API return { data: [...] }
+      return Array.isArray(result) ? result : result.data || [];
     } catch (err) {
       setError(err instanceof Error ? err.message : "Terjadi kesalahan saat mengambil data unit.");
+      return [];
     }
   };
+
   
   // Mendapatkan Unit berdasarkan ID
   export const getUnitById = async (id: number, setError: Function) => {
@@ -156,3 +157,25 @@ export const getUnit = async (setError: Function) => {
       return null;
     }
   };
+
+  export const getAllUnit = async (setError: Function) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("Anda harus login.");
+  
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/penjualan/unit/all`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      if (!response.ok) throw new Error("Gagal mengambil data unit.");
+  
+      return await response.json(); // array unit
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Terjadi kesalahan saat mengambil unit.");
+      return [];
+    }
+  };
+  

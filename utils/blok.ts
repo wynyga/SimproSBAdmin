@@ -128,3 +128,53 @@ export const getBlok = async (setError: Function) => {
       setError(err instanceof Error ? err.message : "Terjadi kesalahan saat menghapus blok.");
     }
   };
+
+  export const getPaginatedBlok = async (
+  page: number,
+  search: string,
+  setError: (msg: string | null) => void
+) => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("Anda harus login.");
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/penjualan/blok?page=${page}&per_page=10&search=${encodeURIComponent(search)}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) throw new Error("Gagal mengambil data blok.");
+    return await response.json();
+  } catch (err: any) {
+    setError(err instanceof Error ? err.message : "Terjadi kesalahan saat mengambil data.");
+    return null;
+  }
+};
+
+export const getAllBlok = async (setError: Function) => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("Anda harus login.");
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/penjualan/blok/all`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) throw new Error("Gagal mengambil data blok.");
+
+    return await response.json(); // array blok
+  } catch (err) {
+    setError(err instanceof Error ? err.message : "Terjadi kesalahan saat mengambil blok.");
+    return [];
+  }
+};
+

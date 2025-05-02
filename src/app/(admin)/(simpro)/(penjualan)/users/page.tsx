@@ -1,7 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { getUsers,addUser,updateUser,deleteUser } from "../../../../../../utils/users";
+import {
+  getPaginatedUsers,
+  addUser,
+  updateUser,
+  deleteUser,
+} from "../../../../../../utils/users";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import ComponentCard from "@/components/common/ComponentCard";
 import Button from "@/components/ui/button/Button";
@@ -25,13 +30,20 @@ export default function UserPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [searchTerm, currentPage]);
 
   const fetchUsers = async () => {
-    const data = await getUsers(setError);
-    setUsers(data.users || []);
+    const res = await getPaginatedUsers(currentPage, searchTerm, setError);
+    if (res) {
+      setUsers(res.data || []);
+      setTotalPages(res.last_page || 1);
+    }
   };
 
   const handleAddUser = async (data: {
@@ -73,7 +85,19 @@ export default function UserPage() {
     <div className="min-h-screen px-4 xl:px-10">
       <PageBreadcrumb pageTitle="Manajemen Users (Pembeli)" />
       <ComponentCard title="Data User">
-        <div className="flex justify-between items-center mb-4">
+
+        {/* Search & Tambah */}
+        <div className="mb-4 flex flex-col sm:flex-row justify-between gap-2">
+          <input
+            type="text"
+            placeholder="Cari nama, alamat, atau no. telepon..."
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1); // reset halaman saat search
+            }}
+            className="w-full sm:w-64 rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+          />
           <Button
             className="bg-blue-600 hover:bg-blue-700 text-white"
             onClick={() => setShowAddModal(true)}
@@ -82,6 +106,7 @@ export default function UserPage() {
           </Button>
         </div>
 
+        {/* Tabel */}
         <div className="overflow-auto rounded border dark:border-gray-700">
           <table className="min-w-full border border-gray-300 dark:border-gray-700 text-sm text-gray-700 dark:text-white">
             <thead className="bg-gray-100 dark:bg-gray-700">
@@ -133,6 +158,29 @@ export default function UserPage() {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 mt-4 text-sm text-gray-800 dark:text-gray-100">
+            <button
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((prev) => prev - 1)}
+              className="px-3 py-1 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            >
+              Sebelumnya
+            </button>
+            <span className="mx-2">
+              Halaman <strong>{currentPage}</strong> dari <strong>{totalPages}</strong>
+            </span>
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage((prev) => prev + 1)}
+              className="px-3 py-1 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            >
+              Selanjutnya
+            </button>
+          </div>
+        )}
       </ComponentCard>
 
       {/* Modals */}

@@ -100,3 +100,32 @@ export const addTransaksi = async (data: any, setError: Function) => {
       setError(err instanceof Error ? err.message : "Terjadi kesalahan saat menghapus transaksi.");
     }
   };
+
+  export const getPaginatedTransaksi = async (
+    page: number,
+    search: string,
+    setError: Function
+  ) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("Anda harus login.");
+  
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/penjualan/transaksi?page=${page}&per_page=10&search=${encodeURIComponent(search)}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      if (!response.ok) throw new Error("Gagal mengambil data transaksi.");
+      return await response.json();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Terjadi kesalahan saat mengambil data transaksi.");
+      return null;
+    }
+  };
+  

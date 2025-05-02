@@ -128,3 +128,54 @@ export const getTipeRumah = async (setError: Function) => {
       setError(err instanceof Error ? err.message : "Terjadi kesalahan saat menghapus tipe rumah.");
     }
   };
+
+  export const getPaginatedTipeRumah = async (
+    page: number,
+    search: string,
+    setError: (msg: string | null) => void
+  ) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("Anda harus login.");
+  
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/penjualan/tipe_rumah?page=${page}&per_page=10&search=${encodeURIComponent(search)}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      if (!response.ok) throw new Error("Gagal mengambil data tipe rumah.");
+      return await response.json();
+    } catch (err: any) {
+      setError(err instanceof Error ? err.message : "Terjadi kesalahan saat mengambil data.");
+      return null;
+    }
+  };
+
+  export const getAllTipeRumah = async (setError: Function) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("Anda harus login.");
+  
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/penjualan/tipe_rumah/all`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      if (!response.ok) throw new Error("Gagal mengambil data tipe rumah.");
+  
+      return await response.json(); // hasil array
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Terjadi kesalahan saat mengambil tipe rumah.");
+      return [];
+    }
+  };
+  
+  

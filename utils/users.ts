@@ -1,29 +1,29 @@
-export const getUsers = async (setError: Function) => {
+  export const getUsers = async (setError: Function) => {
     try {
       const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("Anda harus login untuk mengakses data.");
-      }
-  
+      if (!token) throw new Error("Anda harus login untuk mengakses data.");
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/users`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || "Gagal mengambil data user.");
       }
-  
-      return await response.json();
+
+      const result = await response.json();
+      return Array.isArray(result) ? result : result.users || [];
     } catch (err) {
       setError(err instanceof Error ? err.message : "Terjadi kesalahan saat mengambil data user.");
+      return [];
     }
   };
-  
+
   
   // Menambahkan User baru 
   export const addUser = async (data: any, setError: Function) => {
@@ -106,3 +106,53 @@ export const getUsers = async (setError: Function) => {
       setError(err instanceof Error ? err.message : "Terjadi kesalahan saat menghapus user.");
     }
   };
+
+  export const getPaginatedUsers = async (
+    page: number,
+    search: string,
+    setError: (msg: string | null) => void
+  ) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("Anda harus login.");
+  
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/users?page=${page}&per_page=10&search=${encodeURIComponent(search)}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      if (!response.ok) throw new Error("Gagal mengambil data user.");
+      return await response.json();
+    } catch (err: any) {
+      setError(err instanceof Error ? err.message : "Terjadi kesalahan saat mengambil data user.");
+      return null;
+    }
+  };
+  
+  export const getAllUsers = async (setError: Function) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("Anda harus login.");
+  
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/users/all`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      if (!response.ok) throw new Error("Gagal mengambil daftar semua user.");
+  
+      return await response.json(); // ini sudah array
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Terjadi kesalahan saat mengambil semua user.");
+      return [];
+    }
+  };
+  
