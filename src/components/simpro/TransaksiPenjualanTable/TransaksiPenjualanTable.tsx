@@ -55,9 +55,9 @@ export default function TransaksiPenjualanTable({ transaksiList, loading, error 
           <tr>
             <th className="px-4 py-2">Unit</th>
             <th className="px-4 py-2">Pembeli</th>
-            <th className="px-4 py-2">Total Harga</th>
+            <th className="px-4 py-2">Harga Jual</th>
             <th className="px-4 py-2">Plafon KPR</th>
-            <th className="px-4 py-2">Total Bayar</th>
+            <th className="px-4 py-2">Sisa Pelunasan</th>
             <th className="px-4 py-2">Sisa Hutang</th>
             <th className="px-4 py-2">Status Bayar</th>
           </tr>
