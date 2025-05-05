@@ -37,6 +37,7 @@ export const gudangIn = async (
     jumlah: number,
     keterangan: string,
     sistem_pembayaran: string,
+    jenis_penerimaan: string, 
     setError: Function
 ) => {
     try {
@@ -59,6 +60,7 @@ export const gudangIn = async (
         jumlah,
         sistem_pembayaran,
         keterangan,
+        jenis_penerimaan
         }),
     });
 
@@ -373,3 +375,20 @@ export const searchStock = async (
     setError(err instanceof Error ? err.message : "Terjadi kesalahan saat mencari stok.");
     }
 };
+
+export const fetchGudangInById = async (id: number) => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/gudang/in/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!res.ok) throw new Error("Gagal mengambil data Gudang In.");
+      return await res.json();
+    } catch (err) {
+      console.error("fetchGudangInById error:", err);
+      return null;
+    }
+  };
+  

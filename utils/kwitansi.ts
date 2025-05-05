@@ -59,3 +59,70 @@ export const getKwitansiHistory = async (setData: Function, setError: Function) 
     console.error("getKwitansiHistory error:", msg);
   }
 };
+
+export const createSttb = async (
+  gudang_in_id: number,
+  jenis_penerimaan: "Langsung" | "Tidak Langsung" | "Ambil Sendiri",
+  setError?: (msg: string) => void
+) => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/kwitansi/sttb/store`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ gudang_in_id, jenis_penerimaan }),
+    });
+
+    if (!response.ok) throw new Error("Gagal membuat STTB.");
+    return await response.json();
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "Terjadi kesalahan saat membuat STTB.";
+    if (setError) setError(msg);
+    console.error("createSttb error:", msg);
+  }
+};
+
+export const cetakSttb = async (sttbId: number) => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/kwitansi/sttb/${sttbId}/cetak`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) throw new Error("Gagal cetak STTB.");
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    window.open(url, "_blank");
+  } catch (err) {
+    alert("Gagal membuka STTB.");
+  }
+};
+
+export const getSttbByGudangIn = async (
+  gudang_in_id: number,
+  setError?: (msg: string) => void
+) => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/kwitansi/sttb/${gudang_in_id}/show`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) throw new Error("Gagal mengambil data STTB.");
+    return await response.json();
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "Terjadi kesalahan saat mengambil STTB.";
+    if (setError) setError(msg);
+    console.error("getSttbByGudangIn error:", msg);
+  }
+};
