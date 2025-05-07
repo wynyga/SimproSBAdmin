@@ -62,7 +62,7 @@ export const getKwitansiHistory = async (setData: Function, setError: Function) 
 
 export const createSttb = async (
   gudang_in_id: number,
-  jenis_penerimaan: "Langsung" | "Tidak Langsung" | "Ambil Sendiri",
+  sistem_pembayaran: string,
   setError?: (msg: string) => void
 ) => {
   try {
@@ -73,7 +73,7 @@ export const createSttb = async (
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ gudang_in_id, jenis_penerimaan }),
+      body: JSON.stringify({ gudang_in_id, sistem_pembayaran }),
     });
 
     if (!response.ok) throw new Error("Gagal membuat STTB.");
@@ -84,6 +84,7 @@ export const createSttb = async (
     console.error("createSttb error:", msg);
   }
 };
+
 
 export const cetakSttb = async (sttbId: number) => {
   try {
@@ -124,5 +125,25 @@ export const getSttbByGudangIn = async (
     const msg = err instanceof Error ? err.message : "Terjadi kesalahan saat mengambil STTB.";
     if (setError) setError(msg);
     console.error("getSttbByGudangIn error:", msg);
+  }
+};
+
+export const cetakKwitansiCO = async (kwitansiId: number) => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/kwitansi/cetak-co/${kwitansiId}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) throw new Error("Gagal cetak kwitansi CO.");
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    window.open(url, "_blank");
+  } catch (err) {
+    alert("Gagal membuka kwitansi CO.");
   }
 };

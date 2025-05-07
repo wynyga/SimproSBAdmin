@@ -49,7 +49,7 @@ export default function TransaksiKasForm({
   ];
 
   const metodePembayaranOptions = [
-    { value: "Tunai", label: "Tunai" },
+    { value: "Cash", label: "Cash" },
     { value: "Transfer Bank", label: "Transfer Bank" },
     { value: "Cek", label: "Cek" },
     { value: "Giro", label: "Giro" },

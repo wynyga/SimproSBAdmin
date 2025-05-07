@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import ComponentCard from "@/components/common/ComponentCard";
 import { getGudangHistory } from "../../../../../../utils/stock";
-import { cetakSttb } from "../../../../../../utils/kwitansi";
+import { cetakSttb, cetakKwitansiCO } from "../../../../../../utils/kwitansi";
 import { getProfile } from "../../../../../../utils/auth";
 import GudangInTableSTTB from "@/components/simpro/gudang/GudangInTableSTTB";
 
@@ -19,6 +19,11 @@ interface GudangInData {
   keterangan?: string;
   status: string;
   sttb?: {
+    id: number;
+    no_doc: string;
+    tanggal: string;
+  } | null;
+  kwitansi_co?: {
     id: number;
     no_doc: string;
     tanggal: string;
@@ -76,9 +81,17 @@ export default function GudangInSTTBPage() {
     }
   };
 
+  const handleCetakKwitansiCO = async (id: number) => {
+    try{
+      await cetakKwitansiCO(id);
+    } catch (err)
+    {
+      console.error("Gagal cetak CO:", err);
+    }
+  }
   return (
     <div className="min-h-screen px-4 xl:px-10">
-      <PageBreadcrumb pageTitle="Riwayat Gudang In (STTB)" />
+      <PageBreadcrumb pageTitle="Riwayat Gudang In (STTB & CO)" />
       {loading ? (
         <p className="text-sm text-gray-500">Memuat data gudang...</p>
       ) : !isAllowed ? (
@@ -101,6 +114,7 @@ export default function GudangInSTTBPage() {
         <GudangInTableSTTB
           gudangInList={gudangInList}
           onCetakSttb={handleCetakSttb}
+          onCetakKwitansiCO={handleCetakKwitansiCO}
         />
       )}
     </div>

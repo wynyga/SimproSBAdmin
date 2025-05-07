@@ -37,7 +37,6 @@ export default function GudangInForm() {
     jumlah: 1,
     keterangan: "",
     sistem_pembayaran: "",
-    jenis_penerimaan: "", // ← NEW
   });
   
 
@@ -103,11 +102,6 @@ export default function GudangInForm() {
       setLoading(false);
       return;
     }
-    if (!formData.jenis_penerimaan) {
-      setError("Jenis penerimaan harus dipilih.");
-      setLoading(false);
-      return;
-    }
 
     const result = await gudangIn(
       formData.kode_barang,
@@ -117,7 +111,6 @@ export default function GudangInForm() {
       formData.jumlah,
       formData.keterangan,
       formData.sistem_pembayaran,
-      formData.jenis_penerimaan,
       setError
     );
 
@@ -133,7 +126,6 @@ export default function GudangInForm() {
         jumlah: 1,
         keterangan: "",
         sistem_pembayaran: "",
-        jenis_penerimaan: "",
       });
       setFilteredItems([]);
     }
@@ -267,31 +259,6 @@ export default function GudangInForm() {
             required
           />
         </div>
-
-        <div>
-          <Label>Jenis Penerimaan</Label>
-          <div className="relative">
-            <Select
-              placeholder="Pilih jenis penerimaan"
-              options={[
-                { value: "Langsung", label: "Langsung" },
-                { value: "Tidak Langsung", label: "Tidak Langsung" },
-                { value: "Ambil Sendiri", label: "Ambil Sendiri" },
-              ]}
-              defaultValue={formData.jenis_penerimaan}
-              onChange={(value) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  jenis_penerimaan: value,
-                }))
-              }
-            />
-            <span className="absolute text-gray-500 dark:text-gray-400 right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-              <ChevronDownIcon />
-            </span>
-          </div>
-        </div>
-
         <div>
           <Label>Keterangan</Label>
           <TextArea

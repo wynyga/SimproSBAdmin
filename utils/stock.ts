@@ -37,7 +37,6 @@ export const gudangIn = async (
     jumlah: number,
     keterangan: string,
     sistem_pembayaran: string,
-    jenis_penerimaan: string, 
     setError: Function
 ) => {
     try {
@@ -60,7 +59,6 @@ export const gudangIn = async (
         jumlah,
         sistem_pembayaran,
         keterangan,
-        jenis_penerimaan
         }),
     });
 

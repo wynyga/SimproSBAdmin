@@ -5,7 +5,7 @@ import {
   getGudangHistory,
   verifyGudangIn,
   rejectGudangIn,
-  fetchGudangInById
+  fetchGudangInById,
 } from "../../../../utils/stock";
 import { createSttb } from "../../../../utils/kwitansi";
 import ComponentCard from "@/components/common/ComponentCard";
@@ -20,7 +20,7 @@ interface GudangInData {
   jumlah: number;
   keterangan?: string;
   status: string;
-  jenis_penerimaan: "Langsung" | "Tidak Langsung" | "Ambil Sendiri";
+  sistem_pembayaran: string;
 }
 
 export default function ApprovalGudangIn() {
@@ -52,17 +52,16 @@ export default function ApprovalGudangIn() {
     setLoading(true);
     setError(null);
     try {
-      await verifyGudangIn(item.id, setError); // 1. verifikasi GudangIn
-  
-      // 🔄 Fetch ulang data GudangIn by ID untuk memastikan status sudah updated
-      const refreshed = await fetchGudangInById(item.id); // implementasi fetch by ID
+      await verifyGudangIn(item.id, setError);
+
+      const refreshed = await fetchGudangInById(item.id);
       if (refreshed?.status === "verified") {
-        await createSttb(item.id, refreshed.jenis_penerimaan, setError); // 2. create STTB
+        await createSttb(item.id, refreshed.sistem_pembayaran, setError);
       } else {
         setError("Status belum terverifikasi, mohon coba beberapa detik lagi.");
       }
-  
-      await fetchPendingApprovals(); // 3. refresh list
+
+      await fetchPendingApprovals();
     } catch (err) {
       console.error("Verifikasi gagal:", err);
     } finally {
@@ -95,7 +94,7 @@ export default function ApprovalGudangIn() {
                 <div><span className="font-medium">No Nota:</span> {item.no_nota}</div>
                 <div><span className="font-medium">Tanggal Masuk:</span> {item.tanggal_barang_masuk}</div>
                 <div><span className="font-medium">Jumlah:</span> {item.jumlah}</div>
-                <div><span className="font-medium">Jenis Penerimaan:</span> {item.jenis_penerimaan}</div>
+                <div><span className="font-medium">Sistem Pembayaran:</span> {item.sistem_pembayaran}</div>
                 <div><span className="font-medium">Keterangan:</span> {item.keterangan || "-"}</div>
               </div>
 
