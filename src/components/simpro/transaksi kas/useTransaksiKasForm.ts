@@ -84,15 +84,21 @@ export function useTransaksiKasForm(setError: Function) {
         }
       } else if (value === "penjualan") {
         const result = await getTransaksi(setError);
-        if (result) {
+        const data = result?.data; // akses array di dalam response
+      
+        if (Array.isArray(data)) {
           setOptionsKeterangan(
-            result.map((item: any) => ({
+            data.map((item: any) => ({
               value: item.id.toString(),
               label: `Unit ${item.unit?.nomor_unit || "-"} - ${item.user_perumahan?.nama_user || "-"}`,
+              rawData: item // jika ingin pakai lagi
             }))
           );
+        } else {
+          console.error("Response penjualan tidak sesuai:", result);
+          setOptionsKeterangan([]);
         }
-      }
+      }      
     } catch (error) {
       console.error("Gagal mengambil pilihan keterangan:", error);
     }
