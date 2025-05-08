@@ -38,11 +38,6 @@ export default function TransaksiKasForm({
   optionsKeterangan,
   loading,
 }: Props) {
-  const jenisOptions = [
-    { value: "101", label: "Kas Masuk" },
-    { value: "102", label: "Kas Keluar" },
-  ];
-
   const sumberOptions = [
     { value: "cost_code", label: "Cost Code" },
     { value: "penjualan", label: "Penjualan" },
@@ -56,10 +51,20 @@ export default function TransaksiKasForm({
     { value: "Draft", label: "Draft" },
   ];
 
+  const renderJenisTransaksiLabel = () => {
+    switch (formData.kode) {
+      case "101":
+        return "Kas Masuk";
+      case "102":
+        return "Kas Keluar";
+      default:
+        return "";
+    }
+  };
+
   return (
     <ComponentCard title="Form Tambah Transaksi Kas">
       <form onSubmit={handleSubmit} className="space-y-6">
-
         {/* Tanggal */}
         <div>
           <DatePicker
@@ -108,21 +113,15 @@ export default function TransaksiKasForm({
           </div>
         )}
 
-        {/* Jenis Transaksi */}
+        {/* Jenis Transaksi (otomatis & readonly) */}
         <div>
           <Label>Jenis Transaksi</Label>
-          <div className="relative">
-            <Select
-              options={jenisOptions}
-              defaultValue={formData.kode}
-              placeholder="Pilih jenis transaksi"
-              onChange={(value) => handleSelectChange(value, "kode")}
-              className="dark:bg-dark-900"
-            />
-            <span className="absolute text-gray-500 dark:text-gray-400 right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-              <ChevronDownIcon />
-            </span>
-          </div>
+          <Input
+            name="kode"
+            value={renderJenisTransaksiLabel()}
+            onChange={() => {}}
+            disabled
+          />
         </div>
 
         {/* Jumlah */}
@@ -155,7 +154,7 @@ export default function TransaksiKasForm({
           </div>
         </div>
 
-        {/* Keterangan Objek (Optional) */}
+        {/* Keterangan Objek */}
         <div>
           <Label>Keterangan Objek (Opsional)</Label>
           <TextArea
@@ -173,7 +172,7 @@ export default function TransaksiKasForm({
           />
         </div>
 
-        {/* Tombol Submit */}
+        {/* Submit */}
         <div>
           <button
             type="submit"
