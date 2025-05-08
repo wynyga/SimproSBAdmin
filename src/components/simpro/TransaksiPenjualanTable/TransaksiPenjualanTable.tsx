@@ -12,6 +12,7 @@ interface TransaksiData {
   status_bayar: "lunas" | "cicil" | "utang";
   unit: string | null;
   pembeli: string | null;
+  minimum_dp: number;
 }
 
 interface Props {
@@ -56,8 +57,9 @@ export default function TransaksiPenjualanTable({ transaksiList, loading, error 
             <th className="px-4 py-2">Unit</th>
             <th className="px-4 py-2">Pembeli</th>
             <th className="px-4 py-2">Harga Jual</th>
+            <th className="px-4 py-2">DP</th>
             <th className="px-4 py-2">Plafon KPR</th>
-            <th className="px-4 py-2">Sisa Pelunasan</th>
+            <th className="px-4 py-2">Cicilan</th>
             <th className="px-4 py-2">Sisa Hutang</th>
             <th className="px-4 py-2">Status Bayar</th>
           </tr>
@@ -77,6 +79,7 @@ export default function TransaksiPenjualanTable({ transaksiList, loading, error 
                 <td className="px-4 py-2">{trx.unit || "-"}</td>
                 <td className="px-4 py-2">{trx.pembeli || "-"}</td>
                 <td className="px-4 py-2">Rp {trx.total_harga_jual.toLocaleString("id-ID")}</td>
+                <td className="px-4 py-2">Rp {trx.minimum_dp.toLocaleString("id-ID")}</td>
                 <td className="px-4 py-2">Rp {trx.plafon_kpr.toLocaleString("id-ID")}</td>
                 <td className="px-4 py-2">Rp {trx.total_bayar.toLocaleString("id-ID")}</td>
                 <td className="px-4 py-2">

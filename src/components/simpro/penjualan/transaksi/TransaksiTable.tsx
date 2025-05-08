@@ -29,7 +29,7 @@ export default function TransaksiTable({
     "Penambahan Bangunan",
     "Perubahan Spek",
     "Total Harga",
-    "Minimum DP",
+    "DP",
     "Biaya Booking",
     "Plafon KPR", // ➔ Ini dia tambahan barumu
     "Status KPR",
