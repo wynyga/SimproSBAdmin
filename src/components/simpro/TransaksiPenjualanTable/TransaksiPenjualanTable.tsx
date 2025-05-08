@@ -59,7 +59,7 @@ export default function TransaksiPenjualanTable({ transaksiList, loading, error 
             <th className="px-4 py-2">Harga Jual</th>
             <th className="px-4 py-2">DP</th>
             <th className="px-4 py-2">Plafon KPR</th>
-            <th className="px-4 py-2">Cicilan</th>
+            <th className="px-4 py-2">Sudah Dibayar</th>
             <th className="px-4 py-2">Sisa Hutang</th>
             <th className="px-4 py-2">Status Bayar</th>
           </tr>
@@ -67,32 +67,40 @@ export default function TransaksiPenjualanTable({ transaksiList, loading, error 
         <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
           {loading ? (
             <tr>
-              <td colSpan={7} className="px-4 py-4 text-center">Loading...</td>
+              <td colSpan={8} className="px-4 py-4 text-center">Loading...</td>
             </tr>
           ) : error ? (
             <tr>
-              <td colSpan={7} className="px-4 py-4 text-center text-red-500">{error}</td>
+              <td colSpan={8} className="px-4 py-4 text-center text-red-500">{error}</td>
             </tr>
           ) : paginatedList.length > 0 ? (
             paginatedList.map((trx) => (
               <tr key={trx.id}>
-                <td className="px-4 py-2">{trx.unit || "-"}</td>
-                <td className="px-4 py-2">{trx.pembeli || "-"}</td>
-                <td className="px-4 py-2">Rp {trx.total_harga_jual.toLocaleString("id-ID")}</td>
-                <td className="px-4 py-2">Rp {trx.minimum_dp.toLocaleString("id-ID")}</td>
-                <td className="px-4 py-2">Rp {trx.plafon_kpr.toLocaleString("id-ID")}</td>
-                <td className="px-4 py-2">Rp {trx.total_bayar.toLocaleString("id-ID")}</td>
-                <td className="px-4 py-2">
+                <td className="px-4 py-2 whitespace-nowrap">{trx.unit || "-"}</td>
+                <td className="px-4 py-2 whitespace-nowrap">{trx.pembeli || "-"}</td>
+                <td className="px-4 py-2 text-right whitespace-nowrap">
+                  Rp {trx.total_harga_jual.toLocaleString("id-ID")}
+                </td>
+                <td className="px-4 py-2 text-right whitespace-nowrap">
+                  Rp {trx.minimum_dp.toLocaleString("id-ID")}
+                </td>
+                <td className="px-4 py-2 text-right whitespace-nowrap">
+                  Rp {trx.plafon_kpr.toLocaleString("id-ID")}
+                </td>
+                <td className="px-4 py-2 text-right whitespace-nowrap">
+                  Rp {trx.total_bayar.toLocaleString("id-ID")}
+                </td>
+                <td className="px-4 py-2 text-right whitespace-nowrap">
                   Rp {(trx.plafon_kpr - trx.total_bayar).toLocaleString("id-ID")}
                 </td>
-                <td className={`px-4 py-2 font-semibold rounded ${getStatusColor(trx.status_bayar)}`}>
+                <td className={`px-4 py-2 text-center font-semibold rounded whitespace-nowrap ${getStatusColor(trx.status_bayar)}`}>
                   {trx.status_bayar.toUpperCase()}
                 </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan={7} className="px-4 py-4 text-center">Tidak ada transaksi.</td>
+              <td colSpan={8} className="px-4 py-4 text-center">Tidak ada transaksi.</td>
             </tr>
           )}
         </tbody>
