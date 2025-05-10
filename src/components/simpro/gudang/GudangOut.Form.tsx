@@ -52,7 +52,10 @@ export default function GudangOutForm() {
 
       const tees = await getCostTees(setError);
       if (tees) {
-        setCostTees(tees);
+        const filtered = tees.filter(
+          (tee: any) => tee.cost_element?.cost_centre?.cost_code === "KASOUT"
+        );
+        setCostTees(filtered);
       }
     };
     fetchInitial();

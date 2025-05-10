@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 
 interface CostCenter {
   id: number;
-  name: string;
+  description: string;
   cost_centre_code: string;
 }
 
@@ -38,8 +38,9 @@ export default function AddCostElementModal({
   }, []);
 
   const fullElementCode = selectedCostCentreCode && elementNumber
-    ? `${selectedCostCentreCode}-${elementNumber}`
+    ? `${selectedCostCentreCode}${elementNumber}`
     : "";
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,7 +81,7 @@ export default function AddCostElementModal({
               <option value="">Pilih Cost Center</option>
               {costCenters.map((cc) => (
                 <option key={cc.id} value={cc.cost_centre_code}>
-                  {cc.name} ({cc.cost_centre_code})
+                  {cc.description} ({cc.cost_centre_code})
                 </option>
               ))}
             </select>

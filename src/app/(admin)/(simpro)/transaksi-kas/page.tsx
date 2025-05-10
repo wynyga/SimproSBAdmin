@@ -9,7 +9,7 @@ import { useTransaksiKasForm } from "@/components/simpro/transaksi kas/useTransa
 
 interface KasData {
   saldoKas: number;
-  totalCashIn: number;
+  totalCashIn: number;  
   totalCashOut: number;
 }
 
@@ -65,14 +65,14 @@ export default function TransaksiKasPage() {
                 <div className="flex justify-between">
                   <span className="font-medium text-gray-700 dark:text-white">Total Pemasukan</span>
                   <span className="text-gray-900 dark:text-white">
-                    Rp {kasData.totalCashIn.toLocaleString("id-ID")}
+                    Rp {Number(kasData.totalCashIn).toLocaleString("id-ID")}
                   </span>
                 </div>
 
                 <div className="flex justify-between">
                   <span className="font-medium text-gray-700 dark:text-white">Total Pengeluaran</span>
                   <span className="text-gray-900 dark:text-white">
-                    Rp {kasData.totalCashOut.toLocaleString("id-ID")}
+                    Rp {Number(kasData.totalCashOut).toLocaleString("id-ID")}
                   </span>
                 </div>
               </div>

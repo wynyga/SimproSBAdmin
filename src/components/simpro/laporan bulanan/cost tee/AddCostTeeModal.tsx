@@ -38,7 +38,7 @@ export default function AddCostTeeModal({
   }, []);
 
   const fullTeeCode = selectedCostElementCode && teeNumber
-    ? `${selectedCostElementCode}-${teeNumber}`
+    ? `${selectedCostElementCode}${teeNumber}`
     : "";
 
   const handleSubmit = async (e: React.FormEvent) => {
