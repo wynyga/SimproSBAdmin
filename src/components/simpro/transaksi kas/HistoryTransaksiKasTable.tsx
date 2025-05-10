@@ -3,24 +3,24 @@
 import React from "react";
 import Button from "@/components/ui/button/Button";
 
-interface TransaksiKasItem {
+interface KwitansiItem {
   id: number;
   tanggal: string;
-  keterangan_transaksi: string;
-  kode: string;
+  no_doc: string;
+  untuk_pembayaran: string;
   jumlah: number;
   metode_pembayaran: string;
-  dibuat_oleh: string;
   status: string;
-  kwitansi?: {
-    id: number;
-    no_doc: string;
-    tanggal: string;
-  } | null;
+  dibuat_oleh: string;
+  transaksi_kas: {
+    kode: string;
+    status: string;
+    dibuat_oleh: string;
+  };
 }
 
 interface Props {
-  transactions: TransaksiKasItem[];
+  transactions: KwitansiItem[];
   onCetakKwitansi: (id: number) => void;
 }
 
@@ -44,34 +44,28 @@ export default function HistoryTransaksiKasTable({ transactions, onCetakKwitansi
             transactions.map((item) => (
               <tr key={item.id} className="bg-white dark:bg-transparent">
                 <td className="border px-4 py-2">{item.tanggal}</td>
-                <td className="border px-4 py-2">{item.keterangan_transaksi}</td>
-                <td className="border px-4 py-2">{item.kode === "101" ? "Kas Masuk" : "Kas Keluar"}</td>
+                <td className="border px-4 py-2">{item.untuk_pembayaran}</td>
+                <td className="border px-4 py-2">
+                  {item.transaksi_kas?.kode === "101" ? "Kas Masuk" : "Kas Keluar"}
+                </td>
                 <td className="border px-4 py-2">Rp {item.jumlah.toLocaleString("id-ID")}</td>
                 <td className="border px-4 py-2">{item.metode_pembayaran}</td>
-                <td className="border px-4 py-2">{item.status}</td>
+                <td className="border px-4 py-2">{item.transaksi_kas?.status}</td>
                 <td className="border px-4 py-2 text-center">
-                  {item.status === "approved" ? (
-                    item.kwitansi ? (
-                      <Button
-                        size="sm"
-                        className="bg-green-600 hover:bg-green-700 text-white"
-                        onClick={() => onCetakKwitansi(item.kwitansi!.id)}
-                      >
-                        Cetak Kwitansi
-                      </Button>
-                    ) : (
-                      <span className="text-gray-400 italic">Belum Ada Kwitansi</span>
-                    )
-                  ) : (
-                    <span className="text-gray-400 italic">Pending</span>
-                  )}
+                  <Button
+                    size="sm"
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                    onClick={() => onCetakKwitansi(item.id)}
+                  >
+                    Cetak Kwitansi
+                  </Button>
                 </td>
               </tr>
             ))
           ) : (
             <tr>
               <td colSpan={7} className="text-center py-4 text-gray-500 dark:text-gray-400">
-                Tidak ada transaksi kas.
+                Tidak ada data kwitansi.
               </td>
             </tr>
           )}

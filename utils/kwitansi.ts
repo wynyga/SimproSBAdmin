@@ -147,3 +147,50 @@ export const cetakKwitansiCO = async (kwitansiId: number) => {
     alert("Gagal membuka kwitansi CO.");
   }
 };
+
+export const getPaginatedKwitansi = async (
+  page: number,
+  search: string,
+  setError: (msg: string | null) => void
+) => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("Anda harus login.");
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/kwitansi?page=${page}&per_page=10&search=${encodeURIComponent(search)}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) throw new Error("Gagal mengambil data kwitansi.");
+    return await response.json();
+  } catch (err: any) {
+    setError(err instanceof Error ? err.message : "Terjadi kesalahan saat mengambil data.");
+    return null;
+  }
+};
+export const getAllKwitansi = async (setError: Function) => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("Anda harus login.");
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/kwitansi/all`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) throw new Error("Gagal mengambil data kwitansi.");
+    return await response.json();
+  } catch (err) {
+    setError(err instanceof Error ? err.message : "Terjadi kesalahan saat mengambil kwitansi.");
+    return [];
+  }
+};

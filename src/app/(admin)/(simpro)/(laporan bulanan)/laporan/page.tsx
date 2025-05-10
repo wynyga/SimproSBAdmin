@@ -31,7 +31,7 @@ export default function LaporanBulananPage() {
   const fetchData = useCallback(async () => {
     try {
       const [laporan, jurnal, gudang, stok] = await Promise.all([
-        getLaporanBulanan(setError),
+        getLaporanBulanan(bulan, tahun, setError),
         getJournalSummary(bulan, tahun, setError),
         getGudangOutSummary(bulan, tahun, setError),
         getStockInventory(bulan, tahun, setError),
