@@ -110,6 +110,11 @@ export default function CostTeePage() {
     }
   };
 
+  const getCostElementDescription = (code: string): string => {
+    const element = costElements.find((ce) => ce.cost_element_code === code);
+    return element ? `${element.description} (${code})` : code;
+  };
+
   return (
     <div className="min-h-screen px-4 xl:px-10">
       <PageBreadcrumb pageTitle="Manajemen Cost Tee" />
@@ -155,7 +160,9 @@ export default function CostTeePage() {
                     costTees.map((item) => (
                       <tr key={item.id} className="bg-white dark:bg-transparent">
                         <td className="border px-4 py-2">{item.cost_tee_code}</td>
-                        <td className="border px-4 py-2">{item.cost_element_code}</td>
+                        <td className="border px-4 py-2">
+                          {getCostElementDescription(item.cost_element_code)}
+                        </td>
                         <td className="border px-4 py-2">{item.description}</td>
                         <td className="border px-4 py-2">
                           <div className="flex items-center gap-2 justify-end">

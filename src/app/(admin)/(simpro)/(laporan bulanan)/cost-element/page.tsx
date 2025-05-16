@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getProfile } from "../../../../../../utils/auth"; 
+import { getProfile } from "../../../../../../utils/auth";
 import {
   getCostElements,
   addCostElement,
@@ -26,8 +26,8 @@ interface CostElement {
 
 interface CostCenter {
   id: number;
-  name: string;
   cost_centre_code: string;
+  description: string;
 }
 
 export default function CostElementPage() {
@@ -110,6 +110,11 @@ export default function CostElementPage() {
     }
   };
 
+  const getCostCenterDescription = (code: string): string => {
+    const center = costCenters.find((c) => c.cost_centre_code === code);
+    return center ? `${center.description} (${code})` : code;
+  };
+
   return (
     <div className="min-h-screen px-4 xl:px-10">
       <PageBreadcrumb pageTitle="Manajemen Cost Element" />
@@ -155,7 +160,9 @@ export default function CostElementPage() {
                     costElements.map((item) => (
                       <tr key={item.id} className="bg-white dark:bg-transparent">
                         <td className="border px-4 py-2">{item.cost_element_code}</td>
-                        <td className="border px-4 py-2">{item.cost_centre_code}</td>
+                        <td className="border px-4 py-2">
+                          {getCostCenterDescription(item.cost_centre_code)}
+                        </td>
                         <td className="border px-4 py-2">{item.description}</td>
                         <td className="border px-4 py-2">
                           <div className="flex items-center gap-2 justify-end">
