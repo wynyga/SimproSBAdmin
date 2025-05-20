@@ -10,6 +10,7 @@ interface TransaksiData {
   plafon_kpr: number;
   total_bayar: number;
   status_bayar: "lunas" | "cicil" | "utang";
+  sisa_hutang: number,
   unit: string | null;
   pembeli: string | null;
   minimum_dp: number;
@@ -91,7 +92,7 @@ export default function TransaksiPenjualanTable({ transaksiList, loading, error 
                   Rp {trx.total_bayar.toLocaleString("id-ID")}
                 </td>
                 <td className="px-4 py-2 text-right whitespace-nowrap">
-                  Rp {(trx.plafon_kpr - trx.total_bayar).toLocaleString("id-ID")}
+                  Rp {trx.sisa_hutang.toLocaleString("id-ID")}
                 </td>
                 <td className={`px-4 py-2 text-center font-semibold rounded whitespace-nowrap ${getStatusColor(trx.status_bayar)}`}>
                   {trx.status_bayar.toUpperCase()}

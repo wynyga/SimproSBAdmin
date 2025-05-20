@@ -30,8 +30,11 @@ export default function AuthLayout({
                   />
                 </Link>
                 <p className="text-center text-gray-400 dark:text-white/60">
-                  PT. Bumi Asih Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea officia fugit repellendus! Iusto vel atque dolorem ipsum? Obcaecati excepturi, maiores quis sed fugit a cumque soluta, maxime reiciendis at incidunt.
+                  PT. Bumi Asih.
                 </p>
+                  <p className="text-center text-gray-400 dark:text-white/60">
+                    Mitra Keluarga Bahagia
+                  </p>
               </div>
             </div>
           </div>

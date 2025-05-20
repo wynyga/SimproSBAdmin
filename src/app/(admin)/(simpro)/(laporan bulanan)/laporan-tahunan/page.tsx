@@ -70,17 +70,27 @@ export default function LaporanTahunanPage() {
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
               <div className="rounded-2xl border border-gray-200 bg-gray-50 p-6 text-center shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
                 <h4 className="mb-2 text-lg font-semibold text-gray-800 dark:text-white">Total Kas Masuk</h4>
-                <p className="text-xl font-bold text-green-600 dark:text-green-400">Rp {laporan.total_kas_masuk.total_rp}</p>
+                <p className="text-xl font-bold text-green-600 dark:text-green-400">
+                  Rp {laporan.total_kas_masuk.total_rp}
+                </p>
               </div>
               <div className="rounded-2xl border border-gray-200 bg-gray-50 p-6 text-center shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
                 <h4 className="mb-2 text-lg font-semibold text-gray-800 dark:text-white">Total Kas Keluar</h4>
-                <p className="text-xl font-bold text-red-600 dark:text-red-400">Rp {laporan.total_kas_keluar.total_rp}</p>
+                <p className="text-xl font-bold text-red-600 dark:text-red-400">
+                  Rp {laporan.total_kas_keluar.total_rp}
+                </p>
               </div>
               <div className="rounded-2xl border border-gray-200 bg-gray-50 p-6 text-center shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
                 <h4 className="mb-2 text-lg font-semibold text-gray-800 dark:text-white">Sisa Kas</h4>
-                <p className="text-xl font-bold text-blue-600 dark:text-blue-400">Rp {laporan.sisa_kas.total_rp}</p>
+                <p className="text-xl font-bold text-blue-600 dark:text-blue-400">
+                  Rp {laporan.sisa_kas.total_rp}
+                </p>
                 <span
-                  className={`mt-2 inline-block rounded-full px-3 py-1 text-xs font-medium ${laporan.sisa_kas.status === "SURPLUS" ? "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-300" : "bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-300"}`}
+                  className={`mt-2 inline-block rounded-full px-3 py-1 text-xs font-medium ${
+                    laporan.sisa_kas.status === "SURPLUS"
+                      ? "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-300"
+                      : "bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-300"
+                  }`}
                 >
                   {laporan.sisa_kas.status}
                 </span>
@@ -89,46 +99,60 @@ export default function LaporanTahunanPage() {
 
             {/* Accordion per Bulan */}
             <div className="mt-10 space-y-4">
-              {bulanList.map((namaBulan, index) => (
-                <div key={index} className="rounded-xl border border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-white/[0.05]">
-                  <button
-                    onClick={() => toggleAccordion(index + 1)}
-                    className="w-full px-6 py-4 text-left text-lg font-medium text-gray-800 dark:text-white"
+              {bulanList.map((namaBulan, index) => {
+                const detailBulan = laporan.rekap_detail.find((r: any) => r.bulan === index + 1);
+                return (
+                  <div
+                    key={index}
+                    className="rounded-xl border border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-white/[0.05]"
                   >
-                    {namaBulan}
-                  </button>
-                  {openAccordion === index + 1 && (
-                    <div className="px-6 pb-4">
-                      {laporan.rekap_detail && laporan.rekap_detail[index + 1] ? (
-                        <table className="w-full table-auto text-sm">
-                          <thead>
-                            <tr className="text-gray-600 dark:text-gray-300">
-                              <th className="py-2 text-left">Kategori</th>
-                              <th className="py-2 text-left">Jenis</th>
-                              <th className="py-2 text-right">Jumlah (Rp)</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {laporan.rekap_detail[index + 1].map((item: any, idx: number) => (
-                              <tr key={idx}>
-                                <td className="py-1 text-gray-700 dark:text-gray-200">{item.kategori}</td>
-                                <td className="py-1 text-sm text-gray-500 dark:text-gray-400">
-                                  {item.jenis === "KASIN" ? "Kas Masuk" : item.jenis === "KASOUT" ? "Kas Keluar" : "-"}
-                                </td>
-                                <td className="py-1 text-right text-gray-700 dark:text-gray-200">
-                                  {item.jumlah.toLocaleString("id-ID")}
-                                </td>
+                    <button
+                      onClick={() => toggleAccordion(index + 1)}
+                      className="w-full px-6 py-4 text-left text-lg font-medium text-gray-800 dark:text-white"
+                    >
+                      {namaBulan}
+                    </button>
+                    {openAccordion === index + 1 && (
+                      <div className="px-6 pb-4">
+                        {detailBulan && detailBulan.item.length > 0 ? (
+                          <table className="w-full table-auto text-sm">
+                            <thead>
+                              <tr className="text-gray-600 dark:text-gray-300">
+                                <th className="py-2 text-left">Kategori</th>
+                                <th className="py-2 text-left">Jenis</th>
+                                <th className="py-2 text-right">Jumlah (Rp)</th>
                               </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      ) : (
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Tidak ada data bulan ini.</p>
-                      )}
-                    </div>
-                  )}
-                </div>
-              ))}
+                            </thead>
+                            <tbody>
+                              {detailBulan.item.map((item: any, idx: number) => (
+                                <tr key={idx}>
+                                  <td className="py-1 text-gray-700 dark:text-gray-200">{item.kategori}</td>
+                                  <td className="py-1 text-sm text-gray-500 dark:text-gray-400">
+                                    {item.jenis_transaksi === "KASIN"
+                                      ? "Kas Masuk"
+                                      : item.jenis_transaksi === "KASOUT"
+                                      ? "Kas Keluar"
+                                      : "-"}
+                                  </td>
+                                  <td className="py-1 text-right text-gray-700 dark:text-gray-200">
+                                    {item.jumlah_raw
+                                    ? Number(item.jumlah_raw).toLocaleString("id-ID")
+                                    : "-"}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        ) : (
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            Tidak ada data bulan ini.
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
