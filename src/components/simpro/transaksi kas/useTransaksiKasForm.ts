@@ -4,7 +4,7 @@ import { useState } from "react";
 import { getCostTees } from "../../../../utils/CostTeeApi";
 import { getTransaksi } from "../../../../utils/Penjualan";
 import { storeTransaksiKas } from "../../../../utils/transaksi-kas";
-
+import { getAllUnit } from "../../../../utils/Unit";
 interface KeteranganOption {
   value: string;
   label: string;
@@ -62,13 +62,15 @@ export function useTransaksiKasForm(setError: Function) {
   };
 
   const handleSelectSumber = async (value: string) => {
+    // Set nilai awal + jenis transaksi otomatis jika penjualan
     setFormData((prev) => ({
       ...prev,
       sumber_transaksi: value,
       keterangan_transaksi_id: "",
-      kode: "", // reset jenis transaksi
+      kode: value === "penjualan" ? "101" : "",
     }));
-    setOptionsKeterangan([]);
+
+    setOptionsKeterangan([]); // Reset dropdown
 
     try {
       if (value === "cost_code") {
@@ -83,26 +85,26 @@ export function useTransaksiKasForm(setError: Function) {
           );
         }
       } else if (value === "penjualan") {
-        const result = await getTransaksi(setError);
-        const data = result?.data; // akses array di dalam response
-      
-        if (Array.isArray(data)) {
+        const result = await getAllUnit(setError);
+        if (Array.isArray(result)) {
           setOptionsKeterangan(
-            data.map((item: any) => ({
-              value: item.id.toString(),
-              label: `Unit ${item.unit?.nomor_unit || "-"} - ${item.user_perumahan?.nama_user || "-"}`,
-              rawData: item // jika ingin pakai lagi
+            result.map((unit: any) => ({
+              value: unit.id.toString(),
+              label: `Unit ${unit.nomor_unit ?? "-"}`,
+              rawData: unit,
             }))
           );
         } else {
-          console.error("Response penjualan tidak sesuai:", result);
+          console.error("Data unit kosong atau format tidak sesuai:", result);
           setOptionsKeterangan([]);
         }
-      }      
+      }
     } catch (error) {
       console.error("Gagal mengambil pilihan keterangan:", error);
+      setOptionsKeterangan([]);
     }
   };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

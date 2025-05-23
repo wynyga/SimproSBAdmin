@@ -129,10 +129,20 @@ export default function TransaksiKasForm({
           <Label>Jumlah</Label>
           <Input
             name="jumlah"
-            type="number"
-            placeholder="Contoh: 500000"
-            value={formData.jumlah}
-            onChange={handleChange}
+            type="text"
+            placeholder="Contoh: 500.000"
+            value={Number(formData.jumlah || 0).toLocaleString("id-ID")}
+            onChange={(e) => {
+              const raw = e.target.value.replace(/\./g, ""); // hilangkan titik
+              if (!isNaN(Number(raw))) {
+                handleChange({
+                  target: {
+                    name: "jumlah",
+                    value: raw,
+                  },
+                } as React.ChangeEvent<HTMLInputElement>);
+              }
+            }}
             required
           />
         </div>

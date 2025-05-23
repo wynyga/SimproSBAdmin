@@ -128,4 +128,30 @@ export const addTransaksi = async (data: any, setError: Function) => {
       return null;
     }
   };
+
+  export const getTransaksiPenjualanListAll = async (setError: Function) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("Anda harus login untuk mengakses data.");
+      }
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/penjualan/transaksi/list/all`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Gagal mengambil data transaksi penjualan.");
+      }
+
+      return await response.json();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Terjadi kesalahan saat mengambil data transaksi penjualan.");
+    }
+  };
+
   

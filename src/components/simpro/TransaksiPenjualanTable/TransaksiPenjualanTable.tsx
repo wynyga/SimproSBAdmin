@@ -61,7 +61,7 @@ export default function TransaksiPenjualanTable({ transaksiList, loading, error 
             <th className="px-4 py-2">DP</th>
             <th className="px-4 py-2">Plafon KPR</th>
             <th className="px-4 py-2">Sudah Dibayar</th>
-            <th className="px-4 py-2">Sisa Hutang</th>
+            {/* <th className="px-4 py-2">Sisa Hutang</th> */}
             <th className="px-4 py-2">Status Bayar</th>
           </tr>
         </thead>
@@ -91,9 +91,9 @@ export default function TransaksiPenjualanTable({ transaksiList, loading, error 
                 <td className="px-4 py-2 text-right whitespace-nowrap">
                   Rp {trx.total_bayar.toLocaleString("id-ID")}
                 </td>
-                <td className="px-4 py-2 text-right whitespace-nowrap">
+                {/* <td className="px-4 py-2 text-right whitespace-nowrap">
                   Rp {trx.sisa_hutang.toLocaleString("id-ID")}
-                </td>
+                </td> */}
                 <td className={`px-4 py-2 text-center font-semibold rounded whitespace-nowrap ${getStatusColor(trx.status_bayar)}`}>
                   {trx.status_bayar.toUpperCase()}
                 </td>
