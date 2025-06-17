@@ -30,8 +30,9 @@ export default function DashboardPage() {
           <h2 className="text-xl mt-2 text-gray-600 dark:text-white/70">
             <span className="font-semibold">PT. Bumi Asih</span>
           </h2>
+          {/* PERBAIKAN DI SINI */}
           <p className="mt-3 text-gray-500 dark:text-gray-400 italic">
-            "Mitra Keluarga Bahagia"
+            &ldquo;Mitra Keluarga Bahagia&rdquo;
           </p>
         </div>
 

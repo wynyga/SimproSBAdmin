@@ -3,6 +3,15 @@
 import React from "react";
 import { TransaksiDataWithRelasi } from "../../../../../utils/interfaceTransaksi";
 
+// 1. Definisikan interface untuk props komponen InputNumber
+interface InputNumberProps {
+  label: string;
+  name: string;
+  value: number;
+  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  disabled?: boolean;
+}
+
 interface Props {
   isOpen: boolean;
   onClose: () => void;
@@ -39,7 +48,7 @@ export default function EditTransaksiModal({
     const { name, value } = e.target;
     const updatedTransaksi = {
       ...transaksi,
-      [name]: name === "kpr_disetujui" ? value : +value,
+      [name]: name === "kpr_disetujui" ? value : Number(value) || 0,
     };
 
     // Hitung ulang total harga jual otomatis
@@ -99,13 +108,13 @@ export default function EditTransaksiModal({
           </div>
 
           {/* Input Fields */}
-          <InputNumber label="Harga Jual Standar" name="harga_jual_standar" value={transaksi.harga_jual_standar} handleChange={handleChange} />
-          <InputNumber label="Kelebihan Tanah" name="kelebihan_tanah" value={transaksi.kelebihan_tanah} handleChange={handleChange} />
-          <InputNumber label="Penambahan Luas Bangunan" name="penambahan_luas_bangunan" value={transaksi.penambahan_luas_bangunan} handleChange={handleChange} />
-          <InputNumber label="Perubahan Spek Bangunan" name="perubahan_spek_bangunan" value={transaksi.perubahan_spek_bangunan} handleChange={handleChange} />
-          <InputNumber label="Total Harga Jual" name="total_harga_jual" value={transaksi.total_harga_jual} handleChange={() => {}} disabled />
-          <InputNumber label="Minimum DP" name="minimum_dp" value={transaksi.minimum_dp} handleChange={handleChange} />
-          <InputNumber label="Biaya Booking" name="biaya_booking" value={transaksi.biaya_booking} handleChange={handleChange} />
+          <InputNumber label="Harga Jual Standar" name="harga_jual_standar" value={Number(transaksi.harga_jual_standar)} handleChange={handleChange} />
+          <InputNumber label="Kelebihan Tanah" name="kelebihan_tanah" value={Number(transaksi.kelebihan_tanah)} handleChange={handleChange} />
+          <InputNumber label="Penambahan Luas Bangunan" name="penambahan_luas_bangunan" value={Number(transaksi.penambahan_luas_bangunan)} handleChange={handleChange} />
+          <InputNumber label="Perubahan Spek Bangunan" name="perubahan_spek_bangunan" value={Number(transaksi.perubahan_spek_bangunan)} handleChange={handleChange} />
+          <InputNumber label="Total Harga Jual" name="total_harga_jual" value={Number(transaksi.total_harga_jual)} handleChange={() => {}} disabled />
+          <InputNumber label="Minimum DP" name="minimum_dp" value={Number(transaksi.minimum_dp)} handleChange={handleChange} />
+          <InputNumber label="Biaya Booking" name="biaya_booking" value={Number(transaksi.biaya_booking)} handleChange={handleChange} />
 
           {/* Status KPR */}
           <div>
@@ -138,7 +147,8 @@ export default function EditTransaksiModal({
 }
 
 // Komponen kecil input number
-function InputNumber({ label, name, value, handleChange, disabled = false }: any) {
+// 2. Ganti `any` dengan interface yang sudah dibuat
+function InputNumber({ label, name, value, handleChange, disabled = false }: InputNumberProps) {
   return (
     <div>
       <label className="block text-sm mb-1">{label}</label>

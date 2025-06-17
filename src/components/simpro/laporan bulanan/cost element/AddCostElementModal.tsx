@@ -1,3 +1,5 @@
+// src/components/simpro/laporan bulanan/cost element/AddCostElementModal.tsx
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -33,9 +35,12 @@ export default function AddCostElementModal({
   const [elementNumber, setElementNumber] = useState("");
   const [description, setDescription] = useState("");
 
+  // --- PERBAIKAN DI SINI ---
   useEffect(() => {
-    if (costCenters.length === 0) fetchCostCenters();
-  }, []);
+    if (costCenters.length === 0) {
+      fetchCostCenters();
+    }
+  }, [costCenters.length, fetchCostCenters]); // Tambahkan dependensi
 
   const fullElementCode = selectedCostCentreCode && elementNumber
     ? `${selectedCostCentreCode}${elementNumber}`

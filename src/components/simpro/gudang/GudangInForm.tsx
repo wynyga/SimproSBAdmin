@@ -61,17 +61,6 @@ export default function GudangInForm() {
     setFilteredItems(stockData[kategori] || []);
   };
 
-  const handleSelectKodeBarang = (kode: string) => {
-    const selectedItem = filteredItems.find((item) => item.type === kode);
-    if (selectedItem) {
-      setFormData((prev) => ({
-        ...prev,
-        kode_barang: selectedItem.type,
-        nama_barang: selectedItem.nama_barang,
-      }));
-    }
-  };
-
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {

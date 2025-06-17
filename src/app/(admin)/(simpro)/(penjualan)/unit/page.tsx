@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react"; // 1. Impor useCallback
 import { getPaginatedUnit, addUnit, updateUnit, deleteUnit } from "../../../../../../utils/Unit";
 import { getAllBlok } from "../../../../../../utils/blok";
 import { getAllTipeRumah } from "../../../../../../utils/tipeRumah";
@@ -46,30 +46,30 @@ export default function UnitPage() {
   const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
+    const fetchStaticData = async () => {
+      const [bloks, tipeRumah] = await Promise.all([
+        getAllBlok(setError),
+        getAllTipeRumah(setError),
+      ]);
+
+      setBlokList(Array.isArray(bloks) ? bloks : []);
+      setTipeList(Array.isArray(tipeRumah) ? tipeRumah : []);
+    };
     fetchStaticData();
   }, []);
 
-  useEffect(() => {
-    fetchUnits();
-  }, [currentPage, searchTerm]);
-
-  const fetchStaticData = async () => {
-    const [bloks, tipeRumah] = await Promise.all([
-      getAllBlok(setError),
-      getAllTipeRumah(setError),
-    ]);
-  
-    setBlokList(Array.isArray(bloks) ? bloks : []);
-    setTipeList(Array.isArray(tipeRumah) ? tipeRumah : []);
-  };
-  
-  const fetchUnits = async () => {
+  // 2. Bungkus fungsi dengan useCallback
+  const fetchUnits = useCallback(async () => {
     const res = await getPaginatedUnit(currentPage, searchTerm, setError);
     if (res) {
       setUnitList(res.data);
       setTotalPages(res.last_page);
     }
-  };
+  }, [currentPage, searchTerm]); // <-- Dependensi untuk useCallback
+
+  useEffect(() => {
+    fetchUnits();
+  }, [fetchUnits]); // 3. Gunakan fungsi yang sudah stabil sebagai dependensi
 
   const handleAdd = async (data: {
     blok_id: number;
@@ -113,7 +113,6 @@ export default function UnitPage() {
     <div className="min-h-screen px-4 xl:px-10">
       <PageBreadcrumb pageTitle="Manajemen Unit" />
       <ComponentCard title="Data Unit">
-
         {/* Search & Add */}
         <div className="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
           <input
@@ -212,8 +211,6 @@ export default function UnitPage() {
             </button>
           </div>
         )}
-
-
       </ComponentCard>
 
       {/* Modals */}

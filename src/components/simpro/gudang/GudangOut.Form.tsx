@@ -11,6 +11,7 @@ import { ChevronDownIcon } from "@/icons";
 import { getStock, gudangOut } from "../../../../utils/stock";
 import { getCostTees } from "../../../../utils/CostTeeApi";
 
+// --- INTERFACE BARU & YANG DIPERBARUI ---
 interface StockItem {
   type: string;
   nama_barang: string;
@@ -20,13 +21,26 @@ interface StockData {
   [category: string]: StockItem[];
 }
 
+// 1. Definisikan interface yang lebih detail untuk CostTee
+interface CostTee {
+  id: number;
+  cost_tee_code: string;
+  description: string;
+  cost_element?: {
+    cost_centre?: {
+      cost_code: string;
+    };
+  };
+}
+// --- AKHIR DARI INTERFACE ---
+
 export default function GudangOutForm() {
   const [categories, setCategories] = useState<string[]>([]);
   const [stockData, setStockData] = useState<StockData>({});
   const [filteredItems, setFilteredItems] = useState<StockItem[]>([]);
-  const [costTees, setCostTees] = useState<
-    { id: number; cost_tee_code: string; description: string }[]
-  >([]);
+  
+  // 2. Gunakan interface CostTee yang baru
+  const [costTees, setCostTees] = useState<CostTee[]>([]);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -52,8 +66,9 @@ export default function GudangOutForm() {
 
       const tees = await getCostTees(setError);
       if (tees) {
+        // 3. Ganti `any` dengan tipe `CostTee`
         const filtered = tees.filter(
-          (tee: any) => tee.cost_element?.cost_centre?.cost_code === "KASOUT"
+          (tee: CostTee) => tee.cost_element?.cost_centre?.cost_code === "KASOUT"
         );
         setCostTees(filtered);
       }
@@ -71,16 +86,16 @@ export default function GudangOutForm() {
     setFilteredItems(stockData[kategori] || []);
   };
 
-const handleSelectNamaBarang = (nama: string) => {
-  const item = filteredItems.find((i) => i.nama_barang === nama);
-  if (item) {
-    setFormData((prev) => ({
-      ...prev,
-      nama_barang: item.nama_barang,
-      kode_barang: item.type, 
-    }));
-  }
-};
+  const handleSelectNamaBarang = (nama: string) => {
+    const item = filteredItems.find((i) => i.nama_barang === nama);
+    if (item) {
+      setFormData((prev) => ({
+        ...prev,
+        nama_barang: item.nama_barang,
+        kode_barang: item.type,
+      }));
+    }
+  };
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>

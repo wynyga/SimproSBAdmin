@@ -2,10 +2,35 @@
 
 import React, { useEffect, useState } from "react";
 
+// --- Tipe & Interface Baru ---
+// 1. Definisikan tipe untuk data form
+type TransaksiFormData = {
+  user_id: string;
+  unit_id: string;
+  harga_jual_standar: number;
+  kelebihan_tanah: number;
+  penambahan_luas_bangunan: number;
+  perubahan_spek_bangunan: number;
+  total_harga_jual: number;
+  minimum_dp: number;
+  biaya_booking: number;
+  kpr_disetujui: string;
+};
+
+// 2. Definisikan interface untuk props komponen InputNumber
+interface InputNumberProps {
+  label: string;
+  name: string;
+  value: number;
+  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  disabled?: boolean;
+}
+
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: any) => void;
+  // 3. Ganti `any` dengan tipe yang sudah dibuat
+  onSubmit: (data: TransaksiFormData) => void;
   userList: { id: number; nama_user: string }[];
   unitList: { id: number; nomor_unit: string }[];
 }
@@ -17,7 +42,8 @@ export default function AddTransaksiModal({
   userList,
   unitList,
 }: Props) {
-  const [formData, setFormData] = useState({
+  // 4. Beri tipe pada state formData
+  const [formData, setFormData] = useState<TransaksiFormData>({
     user_id: "",
     unit_id: "",
     harga_jual_standar: 0,
@@ -50,7 +76,7 @@ export default function AddTransaksiModal({
     }
   }, [isOpen]);
 
-  const calculateTotalHarga = (data: typeof formData) => {
+  const calculateTotalHarga = (data: TransaksiFormData) => {
     return (
       Number(data.harga_jual_standar) +
       Number(data.kelebihan_tanah) +
@@ -62,16 +88,15 @@ export default function AddTransaksiModal({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
 
-    const updatedForm = {
+    const updatedForm: TransaksiFormData = {
       ...formData,
-      [name]: name === "kpr_disetujui" ? value : +value,
+      [name]: name === "kpr_disetujui" ? value : Number(value) || 0,
     };
 
-    // update otomatis total_harga_jual jika field harga
     updatedForm.total_harga_jual = calculateTotalHarga(updatedForm);
-
     setFormData(updatedForm);
   };
+
 
   const handleSubmit = () => {
     if (!formData.user_id || !formData.unit_id) {
@@ -152,8 +177,8 @@ export default function AddTransaksiModal({
   );
 }
 
-// Komponen input angka dengan format 500.000
-function InputNumber({ label, name, value, handleChange, disabled = false }: any) {
+// 5. Ganti `any` dengan interface yang sudah dibuat
+function InputNumber({ label, name, value, handleChange, disabled = false }: InputNumberProps) {
   return (
     <div>
       <label className="block text-sm mb-1">{label}</label>

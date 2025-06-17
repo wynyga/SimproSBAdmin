@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react"; // 1. Impor useCallback
 import {
   getPaginatedUsers,
   addUser,
@@ -34,17 +34,18 @@ export default function UserPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  useEffect(() => {
-    fetchUsers();
-  }, [searchTerm, currentPage]);
-
-  const fetchUsers = async () => {
+  // 2. Bungkus fungsi dengan useCallback
+  const fetchUsers = useCallback(async () => {
     const res = await getPaginatedUsers(currentPage, searchTerm, setError);
     if (res) {
       setUsers(res.data || []);
       setTotalPages(res.last_page || 1);
     }
-  };
+  }, [currentPage, searchTerm]); // <-- Dependensi untuk useCallback
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]); // 3. Gunakan fungsi yang sudah stabil sebagai dependensi
 
   const handleAddUser = async (data: {
     nama_user: string;
@@ -85,7 +86,6 @@ export default function UserPage() {
     <div className="min-h-screen px-4 xl:px-10">
       <PageBreadcrumb pageTitle="Manajemen Users (Pembeli)" />
       <ComponentCard title="Data User">
-
         {/* Search & Tambah */}
         <div className="mb-4 flex flex-col sm:flex-row justify-between gap-2">
           <input

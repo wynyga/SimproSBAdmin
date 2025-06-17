@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react"; // 1. Impor useCallback
 import { useRouter } from "next/navigation";
 import { getPaginatedKwitansi, cetakKwitansi } from "../../../../../../utils/kwitansi";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
@@ -49,16 +49,17 @@ export default function HistoryTransaksiKasPage() {
     checkAccess();
   }, []);
 
-  useEffect(() => {
-    fetchKwitansi();
-  }, [page, search]);
-
-  const fetchKwitansi = async () => {
+  // 2. Bungkus fungsi dengan useCallback dan tambahkan dependensinya
+  const fetchKwitansi = useCallback(async () => {
     setLoading(true);
     const data = await getPaginatedKwitansi(page, search, (err) => setError(err));
     setTransactions(data?.data || []);
     setLoading(false);
-  };
+  }, [page, search]); // Dependensi untuk useCallback
+
+  useEffect(() => {
+    fetchKwitansi();
+  }, [fetchKwitansi]); // 3. Gunakan fungsi yang sudah di-memoize sebagai dependensi
 
   const handleCetakKwitansi = async (id: number) => {
     try {

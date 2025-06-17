@@ -1,3 +1,4 @@
+// src/components/simpro/laporan bulanan/laporan bulanan/AddLaporanBulananModal.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -35,9 +36,10 @@ export default function AddLaporanBulananModal({
   const [tahun, setTahun] = useState(new Date().getFullYear());
   const [jumlah, setJumlah] = useState(0);
 
+  // --- PERBAIKAN DI SINI ---
   useEffect(() => {
     if (costTees.length === 0) fetchCostTees();
-  }, []);
+  }, [costTees.length, fetchCostTees]); // Tambahkan dependensi
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

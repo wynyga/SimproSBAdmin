@@ -31,7 +31,7 @@ export default function LaporanBulananPage() {
   const [kasMasuk, setKasMasuk] = useState<number>(0);
   const [kasKeluar, setKasKeluar] = useState<number>(0);
   const [kasSisa, setKasSisa] = useState<number>(0);
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
 
   const [isAllowed, setIsAllowed] = useState(false);
   const [checkingAccess, setCheckingAccess] = useState(true);

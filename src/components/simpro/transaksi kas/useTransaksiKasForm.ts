@@ -4,18 +4,48 @@ import { useState } from "react";
 import { getCostTees } from "../../../../utils/CostTeeApi";
 import { getTransaksi } from "../../../../utils/Penjualan";
 import { storeTransaksiKas } from "../../../../utils/transaksi-kas";
-import { getAllUnit } from "../../../../utils/Unit";
+interface CostTee {
+  id: number;
+  cost_tee_code: string;
+  description: string;
+  cost_element?: {
+    cost_centre?: {
+      cost_code: string;
+    };
+  };
+}
+
+interface Transaksi {
+  id: number;
+  unit?: { nomor_unit: string };
+  user_perumahan?: { nama_user: string };
+}
+
+
 interface KeteranganOption {
   value: string;
   label: string;
-  rawData?: any;
+  rawData?: CostTee | Transaksi; 
 }
 
-export function useTransaksiKasForm(setError: Function) {
+interface FormData {
+  tanggal: string;
+  sumber_transaksi: string;
+  keterangan_transaksi: string;
+  keterangan_transaksi_id: string;
+  kode: string;
+  jumlah: string;
+  metode_pembayaran: string;
+  keterangan_objek_transaksi: string;
+}
+
+type SetErrorFunc = (error: string | null) => void;
+
+export function useTransaksiKasForm(setError: SetErrorFunc) { 
   const [loading, setLoading] = useState(false);
   const [optionsKeterangan, setOptionsKeterangan] = useState<KeteranganOption[]>([]);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     tanggal: "",
     sumber_transaksi: "",
     keterangan_transaksi: "",
@@ -33,28 +63,27 @@ export function useTransaksiKasForm(setError: Function) {
 
   const handleSelectChange = (value: string, name: string) => {
     if (name === "keterangan_transaksi_id") {
+      const selected = optionsKeterangan.find((opt) => opt.value === value);
+      
       if (formData.sumber_transaksi === "cost_code") {
-        const selected = optionsKeterangan.find((opt) => opt.value === value);
-        const costCode = selected?.rawData?.cost_element?.cost_centre?.cost_code;
-  
+        // Casting rawData ke CostTee untuk akses properti yang aman
+        const costCode = (selected?.rawData as CostTee)?.cost_element?.cost_centre?.cost_code;
+
         if (costCode === "KASIN") {
           setFormData((prev) => ({ ...prev, [name]: value, kode: "101" }));
         } else if (costCode === "KASOUT") {
           setFormData((prev) => ({ ...prev, [name]: value, kode: "102" }));
         } else {
-          setFormData((prev) => ({ ...prev, [name]: value }));
+          setFormData((prev) => ({ ...prev, [name]: value, kode: "" }));
         }
-      } else if (formData.sumber_transaksi === "penjualan") {
-        // Semua penjualan dianggap kas masuk
-        setFormData((prev) => ({ ...prev, [name]: value, kode: "101" }));
       } else {
+        // Untuk "penjualan" atau sumber lain
         setFormData((prev) => ({ ...prev, [name]: value }));
       }
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
-  
 
   const handleDateChange = (date: Date) => {
     const formattedDate = date.toISOString().split("T")[0];
@@ -62,22 +91,20 @@ export function useTransaksiKasForm(setError: Function) {
   };
 
   const handleSelectSumber = async (value: string) => {
-    // Set nilai awal + jenis transaksi otomatis jika penjualan
     setFormData((prev) => ({
       ...prev,
       sumber_transaksi: value,
       keterangan_transaksi_id: "",
       kode: value === "penjualan" ? "101" : "",
     }));
-
-    setOptionsKeterangan([]); // Reset dropdown
+    setOptionsKeterangan([]);
 
     try {
       if (value === "cost_code") {
         const result = await getCostTees(setError);
         if (result) {
           setOptionsKeterangan(
-            result.map((item: any) => ({
+            result.map((item: CostTee) => ({ // Ganti 'any' dengan 'CostTee'
               value: item.id.toString(),
               label: `${item.cost_tee_code} - ${item.description}`,
               rawData: item,
@@ -85,20 +112,18 @@ export function useTransaksiKasForm(setError: Function) {
           );
         }
       } else if (value === "penjualan") {
-        const result = await getTransaksi(setError); // Ganti dari getAllUnit ke getTransaksi
-
-        const data = result?.data ?? result; // tergantung struktur respon API kamu
+        const result = await getTransaksi(setError);
+        const data = result?.data ?? result;
 
         if (Array.isArray(data)) {
           setOptionsKeterangan(
-            data.map((trx: any) => ({
+            data.map((trx: Transaksi) => ({ // Ganti 'any' dengan 'Transaksi'
               value: trx.id.toString(),
               label: `Unit ${trx.unit?.nomor_unit ?? "-"} - ${trx.user_perumahan?.nama_user ?? "-"}`,
               rawData: trx,
             }))
           );
         } else {
-          console.error("Data transaksi penjualan kosong atau tidak valid:", result);
           setOptionsKeterangan([]);
         }
       }
@@ -108,7 +133,6 @@ export function useTransaksiKasForm(setError: Function) {
     }
   };
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -116,7 +140,7 @@ export function useTransaksiKasForm(setError: Function) {
 
     try {
       if (!formData.sumber_transaksi || !formData.keterangan_transaksi_id || !formData.kode) {
-        throw new Error("Sumber transaksi, keterangan transaksi, dan jenis transaksi wajib diisi.");
+        throw new Error("Sumber, keterangan, dan jenis transaksi wajib diisi.");
       }
 
       const payload = {
@@ -131,9 +155,13 @@ export function useTransaksiKasForm(setError: Function) {
 
       await storeTransaksiKas(payload, setError);
       resetForm();
-    } catch (error: any) {
+    } catch (error: unknown) { // Ganti 'any' dengan 'unknown'
       console.error(error);
-      setError(error.message || "Terjadi kesalahan saat menyimpan transaksi.");
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Terjadi kesalahan yang tidak diketahui saat menyimpan transaksi.");
+      }
     } finally {
       setLoading(false);
     }

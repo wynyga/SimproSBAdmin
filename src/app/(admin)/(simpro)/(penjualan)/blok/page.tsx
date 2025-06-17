@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react"; // 1. Impor useCallback
 import {
   getPaginatedBlok,
   addBlok,
@@ -34,17 +34,18 @@ export default function BlokPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  useEffect(() => {
-    fetchBlok();
-  }, [currentPage, searchTerm]);
-
-  const fetchBlok = async () => {
+  // 2. Bungkus fungsi dengan useCallback
+  const fetchBlok = useCallback(async () => {
     const res = await getPaginatedBlok(currentPage, searchTerm, setError);
     if (res) {
       setBlokList(res.data);
       setTotalPages(res.last_page);
     }
-  };
+  }, [currentPage, searchTerm]); // <-- Dependensi untuk useCallback
+
+  useEffect(() => {
+    fetchBlok();
+  }, [fetchBlok]); // 3. Gunakan fetchBlok sebagai dependensi
 
   const handleAdd = async (namaBlok: string) => {
     await addBlok({ nama_blok: namaBlok }, setError);
@@ -74,7 +75,6 @@ export default function BlokPage() {
     <div className="min-h-screen px-4 xl:px-10">
       <PageBreadcrumb pageTitle="Manajemen Blok" />
       <ComponentCard title="Data Blok">
-
         {/* Search & Tambah */}
         <div className="mb-4 flex flex-col sm:flex-row justify-between gap-2">
           <input
@@ -156,7 +156,9 @@ export default function BlokPage() {
             >
               Sebelumnya
             </button>
-            <span>Halaman {currentPage} dari {totalPages}</span>
+            <span>
+              Halaman {currentPage} dari {totalPages}
+            </span>
             <button
               disabled={currentPage === totalPages}
               onClick={() => setCurrentPage((prev) => prev + 1)}

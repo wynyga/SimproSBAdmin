@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react"; // 1. Impor useCallback
 import { getAllUsers } from "../../../../../../utils/users";
 import { getAllUnit } from "../../../../../../utils/Unit";
 import {
@@ -17,6 +17,9 @@ import AddTransaksiModal from "@/components/simpro/penjualan/transaksi/AddTransa
 import EditTransaksiModal from "@/components/simpro/penjualan/transaksi/EditTransaksiModal";
 import ConfirmDeleteModal from "@/components/simpro/penjualan/ConfirmDeleteModal";
 import { TransaksiDataWithRelasi } from "../../../../../../utils/interfaceTransaksi";
+
+// 2. Buat tipe data untuk form tambah transaksi
+type AddTransaksiPayload = Omit<TransaksiDataWithRelasi, "id" | "user" | "unit">;
 
 export default function TransaksiPage() {
   const [transaksiList, setTransaksiList] = useState<TransaksiDataWithRelasi[]>([]);
@@ -38,10 +41,6 @@ export default function TransaksiPage() {
     fetchAllStaticData();
   }, []);
 
-  useEffect(() => {
-    fetchTransaksiData();
-  }, [searchTerm, currentPage]);
-
   const fetchAllStaticData = async () => {
     const userData = await getAllUsers(setError);
     const unitData = await getAllUnit(setError);
@@ -49,7 +48,8 @@ export default function TransaksiPage() {
     setUnits(Array.isArray(unitData) ? unitData : []);
   };
 
-  const fetchTransaksiData = async () => {
+  // 3. Bungkus fungsi dengan useCallback
+  const fetchTransaksiData = useCallback(async () => {
     setLoading(true);
     const res = await getPaginatedTransaksi(currentPage, searchTerm, setError);
     if (res) {
@@ -57,9 +57,14 @@ export default function TransaksiPage() {
       setTotalPages(res.last_page || 1);
     }
     setLoading(false);
-  };
+  }, [currentPage, searchTerm]); // <-- Dependensi untuk useCallback
 
-  const handleAddTransaksi = async (data: any) => {
+  useEffect(() => {
+    fetchTransaksiData();
+  }, [fetchTransaksiData]); // <-- Gunakan fungsi sebagai dependensi
+
+  // 4. Gunakan tipe yang sudah dibuat, bukan `any`
+  const handleAddTransaksi = async (data: AddTransaksiPayload) => {
     await addTransaksi(data, setError);
     fetchTransaksiData();
   };
@@ -126,7 +131,9 @@ export default function TransaksiPage() {
             >
               Sebelumnya
             </button>
-            <span>Halaman {currentPage} dari {totalPages}</span>
+            <span>
+              Halaman {currentPage} dari {totalPages}
+            </span>
             <button
               disabled={currentPage === totalPages}
               onClick={() => setCurrentPage((prev) => prev + 1)}

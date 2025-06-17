@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react"; // 1. Impor useCallback
 import {
   getPaginatedTipeRumah,
   addTipeRumah,
@@ -40,17 +40,18 @@ export default function TipeRumahPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  useEffect(() => {
-    fetchTipeRumah();
-  }, [currentPage, searchTerm]);
-
-  const fetchTipeRumah = async () => {
+  // 2. Bungkus fungsi dengan useCallback dan definisikan dependensinya
+  const fetchTipeRumah = useCallback(async () => {
     const res = await getPaginatedTipeRumah(currentPage, searchTerm, setErrorMessage);
     if (res) {
       setTipeRumah(res.data);
       setTotalPages(res.last_page);
     }
-  };
+  }, [currentPage, searchTerm]); // <-- Dependensi untuk useCallback
+
+  useEffect(() => {
+    fetchTipeRumah();
+  }, [fetchTipeRumah]); // 3. Gunakan fungsi yang sudah di-memoize sebagai dependensi
 
   const handleAdd = async (data: Omit<TipeRumah, "id">) => {
     setErrorMessage(null);
@@ -97,7 +98,6 @@ export default function TipeRumahPage() {
     <div className="min-h-screen px-4 xl:px-10">
       <PageBreadcrumb pageTitle="Manajemen Tipe Rumah" />
       <ComponentCard title="Data Tipe Rumah">
-
         {/* Search + Tambah */}
         <div className="mb-4 flex flex-col sm:flex-row justify-between gap-2">
           <input

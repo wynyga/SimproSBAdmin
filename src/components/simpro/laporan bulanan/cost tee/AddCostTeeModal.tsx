@@ -1,3 +1,5 @@
+// src/components/simpro/laporan bulanan/cost tee/AddCostTeeModal.tsx
+
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -33,9 +35,12 @@ export default function AddCostTeeModal({
   const [teeNumber, setTeeNumber] = useState("");
   const [description, setDescription] = useState("");
 
+  // --- PERBAIKAN DI SINI ---
   useEffect(() => {
-    if (costElements.length === 0) fetchCostElements();
-  }, []);
+    if (costElements.length === 0) {
+        fetchCostElements();
+    }
+  }, [costElements.length, fetchCostElements]); // Tambahkan dependensi
 
   const fullTeeCode = selectedCostElementCode && teeNumber
     ? `${selectedCostElementCode}${teeNumber}`

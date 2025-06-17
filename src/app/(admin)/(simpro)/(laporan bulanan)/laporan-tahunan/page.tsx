@@ -12,13 +12,40 @@ const bulanList = [
   "Juli", "Agustus", "September", "Oktober", "November", "Desember"
 ];
 
+// --- INTERFACE UNTUK TIPE DATA ---
+// 1. Tipe untuk setiap item dalam tabel rincian bulanan
+interface LaporanItem {
+  kategori: string;
+  jenis_transaksi: "KASIN" | "KASOUT";
+  jumlah_raw: number | string;
+}
+
+// 2. Tipe untuk rekap detail per bulan
+interface RekapDetail {
+  bulan: number;
+  item: LaporanItem[];
+}
+
+// 3. Tipe untuk keseluruhan objek laporan tahunan
+interface LaporanTahunanData {
+  total_kas_masuk: { total_rp: string };
+  total_kas_keluar: { total_rp: string };
+  sisa_kas: {
+    total_rp: string;
+    status: "SURPLUS" | "DEFISIT";
+  };
+  rekap_detail: RekapDetail[];
+}
+// --- AKHIR DARI INTERFACE ---
+
 export default function LaporanTahunanPage() {
   const router = useRouter();
   const tahunAwal = 2020;
   const tahunSekarang = new Date().getFullYear();
   const daftarTahun = Array.from({ length: tahunSekarang - tahunAwal + 1 }, (_, i) => tahunSekarang - i);
 
-  const [laporan, setLaporan] = useState<any>(null);
+  // Ganti `any` dengan interface yang sudah dibuat
+  const [laporan, setLaporan] = useState<LaporanTahunanData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [tahun, setTahun] = useState<number>(tahunSekarang);
   const [openAccordion, setOpenAccordion] = useState<number | null>(null);
@@ -140,7 +167,8 @@ export default function LaporanTahunanPage() {
 
             <div className="mt-10 space-y-4">
               {bulanList.map((namaBulan, index) => {
-                const detailBulan = laporan.rekap_detail.find((r: any) => r.bulan === index + 1);
+                // Ganti `any` dengan tipe yang sudah dibuat
+                const detailBulan = laporan.rekap_detail.find((r: RekapDetail) => r.bulan === index + 1);
                 return (
                   <div
                     key={index}
@@ -164,7 +192,8 @@ export default function LaporanTahunanPage() {
                               </tr>
                             </thead>
                             <tbody>
-                              {detailBulan.item.map((item: any, idx: number) => (
+                              {/* Ganti `any` dengan tipe yang sudah dibuat */}
+                              {detailBulan.item.map((item: LaporanItem, idx: number) => (
                                 <tr key={idx}>
                                   <td className="py-1 text-gray-700 dark:text-gray-200">{item.kategori}</td>
                                   <td className="py-1 text-sm text-gray-500 dark:text-gray-400">
