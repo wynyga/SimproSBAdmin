@@ -2,7 +2,10 @@
 
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { getLaporanTahunan } from "../../../../../../utils/LaporanBulanan";
+import { getProfile } from "../../../../../../utils/auth";
+import ComponentCard from "@/components/common/ComponentCard";
 
 const bulanList = [
   "Januari", "Februari", "Maret", "April", "Mei", "Juni",
@@ -10,29 +13,67 @@ const bulanList = [
 ];
 
 export default function LaporanTahunanPage() {
+  const router = useRouter();
   const tahunAwal = 2020;
   const tahunSekarang = new Date().getFullYear();
-  const daftarTahun = Array.from(
-    { length: tahunSekarang - tahunAwal + 1 },
-    (_, i) => tahunSekarang - i
-  );
+  const daftarTahun = Array.from({ length: tahunSekarang - tahunAwal + 1 }, (_, i) => tahunSekarang - i);
 
   const [laporan, setLaporan] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [tahun, setTahun] = useState<number>(tahunSekarang);
   const [openAccordion, setOpenAccordion] = useState<number | null>(null);
 
+  const [isAllowed, setIsAllowed] = useState(false);
+  const [checkingAccess, setCheckingAccess] = useState(true);
+
+  useEffect(() => {
+    const checkRole = async () => {
+      try {
+        const profile = await getProfile((err: string) => setError(err));
+        if (profile?.role === "Direktur") {
+          setIsAllowed(true);
+        }
+      } catch {
+        setError("Gagal memuat profil pengguna.");
+      } finally {
+        setCheckingAccess(false);
+      }
+    };
+    checkRole();
+  }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       const data = await getLaporanTahunan(tahun, setError);
       if (data) setLaporan(data);
     };
-    fetchData();
-  }, [tahun]);
+    if (isAllowed) fetchData();
+  }, [tahun, isAllowed]);
 
   const toggleAccordion = (bulan: number) => {
     setOpenAccordion(openAccordion === bulan ? null : bulan);
   };
+
+  if (checkingAccess) {
+    return <p className="text-sm text-gray-500 dark:text-white px-4 py-6">Memuat akses pengguna...</p>;
+  }
+
+  if (!isAllowed) {
+    return (
+      <div className="min-h-screen px-4 py-6">
+        <PageBreadcrumb pageTitle="Laporan Tahunan" />
+        <ComponentCard title="Akses Ditolak">
+          <p className="text-sm text-red-500">Anda tidak memiliki izin untuk mengakses halaman ini.</p>
+          <button
+            onClick={() => router.push("/dashboard")}
+            className="mt-4 rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
+          >
+            Kembali ke Dashboard
+          </button>
+        </ComponentCard>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -97,7 +138,6 @@ export default function LaporanTahunanPage() {
               </div>
             </div>
 
-            {/* Accordion per Bulan */}
             <div className="mt-10 space-y-4">
               {bulanList.map((namaBulan, index) => {
                 const detailBulan = laporan.rekap_detail.find((r: any) => r.bulan === index + 1);
@@ -136,8 +176,8 @@ export default function LaporanTahunanPage() {
                                   </td>
                                   <td className="py-1 text-right text-gray-700 dark:text-gray-200">
                                     {item.jumlah_raw
-                                    ? Number(item.jumlah_raw).toLocaleString("id-ID")
-                                    : "-"}
+                                      ? Number(item.jumlah_raw).toLocaleString("id-ID")
+                                      : "-"}
                                   </td>
                                 </tr>
                               ))}

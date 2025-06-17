@@ -150,10 +150,20 @@ export default function CreateStockForm() {
             <Label>Harga Satuan</Label>
             <Input
               name="harga_satuan"
-              type="number"
-              min="0"
-              value={formData.harga_satuan}
-              onChange={handleInputChange}
+              type="text"
+              placeholder="Contoh: 500.000"
+              value={Number(formData.harga_satuan || 0).toLocaleString("id-ID")}
+              onChange={(e) => {
+                const raw = e.target.value.replace(/\./g, "");
+                if (!isNaN(Number(raw))) {
+                  handleInputChange({
+                    target: {
+                      name: "harga_satuan",
+                      value: raw,
+                    },
+                  } as React.ChangeEvent<HTMLInputElement>);
+                }
+              }}
               required
             />
           </div>

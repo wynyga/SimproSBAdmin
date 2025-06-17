@@ -48,7 +48,11 @@ export default function HistoryTransaksiKasTable({ transactions, onCetakKwitansi
                 <td className="border px-4 py-2">
                   {item.transaksi_kas?.kode === "101" ? "Kas Masuk" : "Kas Keluar"}
                 </td>
-                <td className="border px-4 py-2">Rp {item.jumlah.toLocaleString("id-ID")}</td>
+                <td className="border px-4 py-2">
+                  Rp {Number(item.jumlah).toLocaleString("id-ID", {
+                    minimumFractionDigits: 0,
+                  })}
+                </td>
                 <td className="border px-4 py-2">{item.metode_pembayaran}</td>
                 <td className="border px-4 py-2">{item.transaksi_kas?.status}</td>
                 <td className="border px-4 py-2 text-center">

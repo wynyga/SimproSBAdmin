@@ -65,7 +65,7 @@ export default function SearchStockPage() {
     if (Object.keys(newValidationErrors).length > 0) {
       setValidationErrors(newValidationErrors);
       setError("Semua field harus diisi.");
-      return false; // <--- penting
+      return false; 
     }
   
     let errorCaught = false;

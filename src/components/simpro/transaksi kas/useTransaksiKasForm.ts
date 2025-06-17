@@ -85,17 +85,20 @@ export function useTransaksiKasForm(setError: Function) {
           );
         }
       } else if (value === "penjualan") {
-        const result = await getAllUnit(setError);
-        if (Array.isArray(result)) {
+        const result = await getTransaksi(setError); // Ganti dari getAllUnit ke getTransaksi
+
+        const data = result?.data ?? result; // tergantung struktur respon API kamu
+
+        if (Array.isArray(data)) {
           setOptionsKeterangan(
-            result.map((unit: any) => ({
-              value: unit.id.toString(),
-              label: `Unit ${unit.nomor_unit ?? "-"}`,
-              rawData: unit,
+            data.map((trx: any) => ({
+              value: trx.id.toString(),
+              label: `Unit ${trx.unit?.nomor_unit ?? "-"} - ${trx.user_perumahan?.nama_user ?? "-"}`,
+              rawData: trx,
             }))
           );
         } else {
-          console.error("Data unit kosong atau format tidak sesuai:", result);
+          console.error("Data transaksi penjualan kosong atau tidak valid:", result);
           setOptionsKeterangan([]);
         }
       }

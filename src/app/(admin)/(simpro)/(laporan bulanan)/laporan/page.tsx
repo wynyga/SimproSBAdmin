@@ -1,15 +1,20 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import {
   getLaporanBulanan,
   getJournalSummary,
   getGudangOutSummary,
   getStockInventory,
 } from "../../../../../../utils/LaporanBulanan";
+import { getProfile } from "../../../../../../utils/auth";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
+import ComponentCard from "@/components/common/ComponentCard";
 
 export default function LaporanBulananPage() {
+  const router = useRouter();
+
   const [bulan, setBulan] = useState<number>(new Date().getMonth() + 1);
   const [tahun, setTahun] = useState<number>(new Date().getFullYear());
   const [gudangOut, setGudangOut] = useState<{ code_account: string; total_rp: string }>({
@@ -26,7 +31,26 @@ export default function LaporanBulananPage() {
   const [kasMasuk, setKasMasuk] = useState<number>(0);
   const [kasKeluar, setKasKeluar] = useState<number>(0);
   const [kasSisa, setKasSisa] = useState<number>(0);
-  const [, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const [isAllowed, setIsAllowed] = useState(false);
+  const [checkingAccess, setCheckingAccess] = useState(true);
+
+  useEffect(() => {
+    const checkRole = async () => {
+      try {
+        const profile = await getProfile((err: string) => setError(err));
+        if (profile?.role === "Direktur") {
+          setIsAllowed(true);
+        }
+      } catch {
+        setError("Gagal memuat profil pengguna.");
+      } finally {
+        setCheckingAccess(false);
+      }
+    };
+    checkRole();
+  }, []);
 
   const fetchData = useCallback(async () => {
     try {
@@ -37,7 +61,6 @@ export default function LaporanBulananPage() {
         getStockInventory(bulan, tahun, setError),
       ]);
 
-      // Hitung Kas Masuk & Keluar dari Laporan
       let masuk = 0;
       let keluar = 0;
 
@@ -72,8 +95,29 @@ export default function LaporanBulananPage() {
   }, [bulan, tahun]);
 
   useEffect(() => {
-    fetchData();
-  }, [bulan, tahun, fetchData]);
+    if (isAllowed) fetchData();
+  }, [bulan, tahun, fetchData, isAllowed]);
+
+  if (checkingAccess) {
+    return <p className="text-sm text-gray-500 dark:text-white px-4 py-6">Memuat akses pengguna...</p>;
+  }
+
+  if (!isAllowed) {
+    return (
+      <div className="min-h-screen px-4 py-6">
+        <PageBreadcrumb pageTitle="Laporan Bulanan" />
+        <ComponentCard title="Akses Ditolak">
+          <p className="text-sm text-red-500">Anda tidak memiliki izin untuk mengakses halaman ini.</p>
+          <button
+            onClick={() => router.push("/dashboard")}
+            className="mt-4 rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
+          >
+            Kembali ke Dashboard
+          </button>
+        </ComponentCard>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen px-4 py-6 dark:bg-gray-900">

@@ -109,7 +109,6 @@ export default function AddAccountModal({
               onChange={(e) => setRole(e.target.value)}
               required
             >
-              <option value="user">User</option>
               <option value="admin">Admin</option>
               <option value="manager">Manager</option>
             </select>

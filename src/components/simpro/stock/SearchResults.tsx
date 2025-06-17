@@ -27,7 +27,7 @@ export default function SearchResults({
               <th className="px-4 py-2 font-medium">Stock Bahan</th>
               <th className="px-4 py-2 font-medium">Satuan</th>
               <th className="px-4 py-2 font-medium">Total Harga</th>
-              <th className="px-4 py-2 font-medium">Aksi</th>
+              {/* <th className="px-4 py-2 font-medium">Aksi</th> */}
             </tr>
           </thead>
           <tbody>
@@ -43,14 +43,14 @@ export default function SearchResults({
                   <td className="px-4 py-2">{stock.stock_bahan}</td>
                   <td className="px-4 py-2">{stock.satuan}</td>
                   <td className="px-4 py-2">Rp {stock.total_price}</td>
-                  <td className="px-4 py-2">
+                  {/* <td className="px-4 py-2">
                     <button
                       onClick={() => handleSelectStock(stock)}
                       className="rounded-md bg-yellow-500 px-3 py-1 text-white hover:bg-yellow-600 text-sm"
                     >
                       Edit
                     </button>
-                  </td>
+                  </td> */}
                 </tr>
               ))
             ) : (

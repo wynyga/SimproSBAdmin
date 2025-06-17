@@ -61,9 +61,13 @@ export default function AddTransaksiModal({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    const updatedForm = { ...formData, [name]: name === "kpr_disetujui" ? value : +value };
 
-    // Hitung total harga jual otomatis
+    const updatedForm = {
+      ...formData,
+      [name]: name === "kpr_disetujui" ? value : +value,
+    };
+
+    // update otomatis total_harga_jual jika field harga
     updatedForm.total_harga_jual = calculateTotalHarga(updatedForm);
 
     setFormData(updatedForm);
@@ -117,7 +121,7 @@ export default function AddTransaksiModal({
             </select>
           </div>
 
-          {/* Harga jual standard dan lainnya */}
+          {/* Harga */}
           <InputNumber label="Harga Jual Standar" name="harga_jual_standar" value={formData.harga_jual_standar} handleChange={handleChange} />
           <InputNumber label="Kelebihan Tanah" name="kelebihan_tanah" value={formData.kelebihan_tanah} handleChange={handleChange} />
           <InputNumber label="Penambahan Luas Bangunan" name="penambahan_luas_bangunan" value={formData.penambahan_luas_bangunan} handleChange={handleChange} />
@@ -148,16 +152,26 @@ export default function AddTransaksiModal({
   );
 }
 
-// Komponen kecil untuk input angka
+// Komponen input angka dengan format 500.000
 function InputNumber({ label, name, value, handleChange, disabled = false }: any) {
   return (
     <div>
       <label className="block text-sm mb-1">{label}</label>
       <input
-        type="number"
+        type="text"
         name={name}
-        value={value}
-        onChange={handleChange}
+        value={Number(value || 0).toLocaleString("id-ID")}
+        onChange={(e) => {
+          const raw = e.target.value.replace(/\./g, "");
+          if (!isNaN(Number(raw))) {
+            handleChange({
+              target: {
+                name,
+                value: raw,
+              },
+            } as React.ChangeEvent<HTMLInputElement>);
+          }
+        }}
         disabled={disabled}
         className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
       />

@@ -165,16 +165,25 @@ export default function GudangInForm() {
 
         {formData.kategori && (
           <div>
-            <Label>Kode Barang</Label>
+            <Label>Nama Barang</Label>
             <div className="relative">
               <Select
-                placeholder="Pilih kode barang"
+                placeholder="Pilih nama barang"
                 options={filteredItems.map((item) => ({
-                  value: item.type,
-                  label: item.type,
+                  value: item.nama_barang,
+                  label: item.nama_barang,
                 }))}
-                defaultValue={formData.kode_barang}
-                onChange={handleSelectKodeBarang}
+                defaultValue={formData.nama_barang}
+                onChange={(nama) => {
+                  const selected = filteredItems.find((item) => item.nama_barang === nama);
+                  if (selected) {
+                    setFormData((prev) => ({
+                      ...prev,
+                      nama_barang: selected.nama_barang,
+                      kode_barang: selected.type, // otomatis isi kode_barang
+                    }));
+                  }
+                }}
               />
               <span className="absolute text-gray-500 dark:text-gray-400 right-3 top-1/2 -translate-y-1/2 pointer-events-none">
                 <ChevronDownIcon />
@@ -184,10 +193,10 @@ export default function GudangInForm() {
         )}
 
         <div>
-          <Label>Nama Barang</Label>
+          <Label>Kode Barang</Label>
           <Input
-            name="nama_barang"
-            value={formData.nama_barang}
+            name="kode_barang"
+            value={formData.kode_barang}
             onChange={handleInputChange}
             disabled
           />

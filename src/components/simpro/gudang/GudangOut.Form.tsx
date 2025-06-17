@@ -71,16 +71,16 @@ export default function GudangOutForm() {
     setFilteredItems(stockData[kategori] || []);
   };
 
-  const handleSelectKodeBarang = (kode: string) => {
-    const item = filteredItems.find((i) => i.type === kode);
-    if (item) {
-      setFormData((prev) => ({
-        ...prev,
-        kode_barang: item.type,
-        nama_barang: item.nama_barang,
-      }));
-    }
-  };
+const handleSelectNamaBarang = (nama: string) => {
+  const item = filteredItems.find((i) => i.nama_barang === nama);
+  if (item) {
+    setFormData((prev) => ({
+      ...prev,
+      nama_barang: item.nama_barang,
+      kode_barang: item.type, 
+    }));
+  }
+};
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -160,16 +160,16 @@ export default function GudangOutForm() {
 
         {formData.kategori && (
           <div>
-            <Label>Kode Barang</Label>
+            <Label>Nama Barang</Label>
             <div className="relative">
               <Select
-                placeholder="Pilih kode barang"
+                placeholder="Pilih nama barang"
                 options={filteredItems.map((item) => ({
-                  value: item.type,
-                  label: item.type,
+                  value: item.nama_barang,
+                  label: item.nama_barang,
                 }))}
-                defaultValue={formData.kode_barang}
-                onChange={handleSelectKodeBarang}
+                defaultValue={formData.nama_barang}
+                onChange={handleSelectNamaBarang}
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500 dark:text-gray-400">
                 <ChevronDownIcon />
@@ -179,14 +179,15 @@ export default function GudangOutForm() {
         )}
 
         <div>
-          <Label>Nama Barang</Label>
+          <Label>Kode Barang</Label>
           <Input
-            name="nama_barang"
-            value={formData.nama_barang}
+            name="kode_barang"
+            value={formData.kode_barang}
             onChange={handleInputChange}
             disabled
           />
         </div>
+
 
         <div>
           <DatePicker
