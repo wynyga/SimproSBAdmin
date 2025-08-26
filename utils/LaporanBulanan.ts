@@ -1,34 +1,34 @@
-export const getLaporanBulanan = async (
-  bulan: number,
-  tahun: number,
-  setError: Function
-) => {
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) throw new Error("Anda harus login untuk mengakses data.");
+  export const getLaporanBulanan = async (
+    bulan: number,
+    tahun: number,
+    setError: Function
+  ) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("Anda harus login untuk mengakses data.");
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/lap_bulanan/${bulan}/${tahun}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/lap_bulanan/${bulan}/${tahun}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-    if (!response.ok) throw new Error("Gagal mengambil data laporan bulanan.");
-    return await response.json();
-  } catch (err) {
-    setError(
-      err instanceof Error
-        ? err.message
-        : "Terjadi kesalahan saat mengambil laporan bulanan."
-    );
-    return [];
-  }
-};
+      if (!response.ok) throw new Error("Gagal mengambil data laporan bulanan.");
+      return await response.json();
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Terjadi kesalahan saat mengambil laporan bulanan."
+      );
+      return [];
+    }
+  };
 
   
   // Menambahkan laporan baru
@@ -377,3 +377,38 @@ export const getLaporanTahunan = async (tahun: number, setError: Function) => {
     setError(err instanceof Error ? err.message : "Terjadi kesalahan saat mengambil laporan tahunan.");
   }
 };
+
+// Ambil Laporan Kas
+export const getLaporanKas = async (
+  bulan: number,
+  tahun: number,
+  setError: Function
+) => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("Anda harus login untuk mengakses data.");
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/lap_bulanan/getLaporanKas/${bulan}/${tahun}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) throw new Error("Gagal mengambil data laporan kas.");
+
+    return await response.json();
+  } catch (err) {
+    setError(
+      err instanceof Error
+        ? err.message
+        : "Terjadi kesalahan saat mengambil laporan kas."
+    );
+    return [];
+  }
+};
+
