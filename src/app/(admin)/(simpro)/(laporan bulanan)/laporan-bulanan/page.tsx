@@ -4,9 +4,9 @@ import React, { useEffect, useState } from "react";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import ComponentCard from "@/components/common/ComponentCard";
 import { FaDownload } from "react-icons/fa";
-import { getLaporanKas } from "../../../../../../utils/LaporanBulanan"; // Import fungsi getLaporanKas
+import { getLaporanKas } from "../../../../../../utils/LaporanBulanan";
 
-// Tipe data untuk setiap baris transaksi
+// --- Tipe data yang diperbarui ---
 interface Transaction {
   no: number;
   postingDate: string;
@@ -19,16 +19,19 @@ interface Transaction {
   balance: number;
 }
 
-// Tipe data untuk data laporan
 interface LaporanData {
   company: string;
   accountOrganizationUnit: string;
   period: string;
+  transactions_list: Transaction[];
   startingBalance: number;
   endingBalance: number;
-  totalTransactionDebit: number;
-  totalTransactionCredit: number;
-  transactions: Transaction[];
+  total_debit: {
+    count: number;
+    amount: number;
+  };
+  totalTransactionDebit:number;
+  totalTransactionCredit:number;
 }
 
 const bulanList = [
@@ -61,31 +64,10 @@ export default function LaporanBulananPage() {
       try {
         setLoading(true);
         setError(null);
-        // Menggunakan fungsi getLaporanKas yang diimpor
         const data = await getLaporanKas(selectedBulan, selectedTahun, setError);
         
-        // Memastikan data sesuai dengan format yang diharapkan
         if (data) {
-          setLaporan({
-            company: data.company,
-            accountOrganizationUnit: data.accountOrganizationUnit,
-            period: data.period,
-            startingBalance: data.startingBalance || 0,
-            endingBalance: data.endingBalance || 0,
-            totalTransactionDebit: data.totalTransactionDebit,
-            totalTransactionCredit: data.totalTransactionCredit,
-            transactions: data.transactions.map((t: any) => ({
-              no: t.no,
-              postingDate: t.postingDate,
-              postingTime: t.postingTime,
-              effDate: t.effDate,
-              effTime: t.effTime,
-              description: t.description,
-              debit: t.debit,
-              credit: t.credit,
-              balance: t.balance
-            }))
-          });
+          setLaporan(data);
         } else {
           setLaporan(null);
         }
@@ -168,43 +150,43 @@ export default function LaporanBulananPage() {
 
         {/* Header Informasi Perusahaan - Gaya Mendatar */}
         <div className="mb-6 rounded-md bg-gray-50 dark:bg-gray-800 p-4 shadow-sm">
-            <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
-              <div className="flex">
-                <span className="w-56 font-semibold">Company</span>
-                <span className="mx-2">:</span>
-                <span>{laporan.company}</span>
-              </div>
-              <div className="flex">
-                <span className="w-56 font-semibold">Account Organization Unit</span>
-                <span className="mx-2">:</span>
-                <span>{laporan.accountOrganizationUnit}</span>
-              </div>
-              <div className="flex">
-                <span className="w-56 font-semibold">Period</span>
-                <span className="mx-2">:</span>
-                <span>{laporan.period}</span>
-              </div>
-              <div className="flex">
-                <span className="w-56 font-semibold">Starting Balance</span>
-                <span className="mx-2">:</span>
-                <span>{formatRupiah(laporan.startingBalance)}</span>
-              </div>
-              <div className="flex">
-                <span className="w-56 font-semibold">Ending Balance</span>
-                <span className="mx-2">:</span>
-                <span>{formatRupiah(laporan.endingBalance)}</span>
-              </div>
-              <div className="flex">
-                <span className="w-56 font-semibold">Total Transaction Debit</span>
-                <span className="mx-2">:</span>
-                <span>{laporan.totalTransactionDebit}</span>
-              </div>
-              <div className="flex">
-                <span className="w-56 font-semibold">Total Transaction Credit</span>
-                <span className="mx-2">:</span>
-                <span>{laporan.totalTransactionCredit}</span>
-              </div>                        
+          <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+            <div className="flex">
+              <span className="w-56 font-semibold">Company</span>
+              <span className="mx-2">:</span>
+              <span>{laporan.company}</span>
             </div>
+            <div className="flex">
+              <span className="w-56 font-semibold">Account Organization Unit</span>
+              <span className="mx-2">:</span>
+              <span>{laporan.accountOrganizationUnit}</span>
+            </div>
+            <div className="flex">
+              <span className="w-56 font-semibold">Period</span>
+              <span className="mx-2">:</span>
+              <span>{laporan.period}</span>
+            </div>
+            <div className="flex">
+              <span className="w-56 font-semibold">Starting Balance</span>
+              <span className="mx-2">:</span>
+              <span>{formatRupiah(laporan.startingBalance)}</span>
+            </div>
+            <div className="flex">
+              <span className="w-56 font-semibold">Ending Balance</span>
+              <span className="mx-2">:</span>
+              <span>{formatRupiah(laporan.endingBalance)}</span>
+            </div>
+            <div className="flex">
+              <span className="w-56 font-semibold">Total Transaction Debit</span>
+              <span className="mx-2">:</span>
+              <span>{laporan.totalTransactionDebit}</span>
+            </div>
+            <div className="flex">
+              <span className="w-56 font-semibold">Total Transaction Credit</span>
+              <span className="mx-2">:</span>
+              <span>{laporan.totalTransactionCredit}</span>
+            </div>
+          </div>
         </div>
 
         {/* Tabel Data Transaksi */}
@@ -220,12 +202,13 @@ export default function LaporanBulananPage() {
                 <th className="border-r px-4 py-2 font-semibold">Description</th>
                 <th className="border-r px-4 py-2 font-semibold">Debit</th>
                 <th className="border-r px-4 py-2 font-semibold">Credit</th>
-                <th className="px-4 py-2 font-semibold">Balance</th>
+                <th className="px-4 py-2 font-semibold">Balance</th> 
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-transparent text-gray-800 dark:text-white">
-              {laporan.transactions.length > 0 ? (
-                laporan.transactions.map((transaction) => (
+              {/* Add a check for laporan.transactions_list before using it */}
+              {laporan.transactions_list && laporan.transactions_list.length > 0 ? (
+                laporan.transactions_list.map((transaction) => (
                   <tr key={transaction.no} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td className="border-r px-4 py-2">{transaction.no}</td>
                     <td className="border-r px-4 py-2">{transaction.postingDate}</td>
@@ -234,14 +217,14 @@ export default function LaporanBulananPage() {
                     <td className="border-r px-4 py-2">{transaction.effTime}</td>
                     <td className="border-r px-4 py-2 max-w-xs">{transaction.description}</td>
                     <td className="border-r px-4 py-2 text-right">
-                      {formatRupiah(transaction.debit)}
+                      {transaction.debit > 0 ? formatRupiah(transaction.debit) : "-"}
                     </td>
                     <td className="border-r px-4 py-2 text-right">
-                      {formatRupiah(transaction.credit)}
+                      {transaction.credit > 0 ? formatRupiah(transaction.credit) : "-"}
                     </td>
                     <td className="px-4 py-2 text-right">
                       {formatRupiah(transaction.balance)}
-                    </td>
+                    </td> 
                   </tr>
                 ))
               ) : (
@@ -256,5 +239,5 @@ export default function LaporanBulananPage() {
         </div>
       </ComponentCard>
     </div>
-  )
+  );
 }
