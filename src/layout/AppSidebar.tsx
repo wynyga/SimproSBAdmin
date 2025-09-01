@@ -96,7 +96,7 @@ const navItems: NavItem[] = [
     name: "Laporan",
     icon: <PageIcon />,
     subItems: [
-      { name: "Laporan", path: "/laporan", pro: false },
+      { name: "Laporan Bulanan", path: "/laporan-bulanan", pro: false },
       { name: "Laporan Tahunan", path: "/laporan-tahunan", pro: false },
       { name: "Cost Center", path: "/cost-center", pro: false },
       { name: "Cost Element", path: "/cost-element", pro: false },
