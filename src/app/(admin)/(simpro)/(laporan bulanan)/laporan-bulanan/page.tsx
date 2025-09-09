@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import ComponentCard from "@/components/common/ComponentCard";
-import { FaDownload } from "react-icons/fa";
 import { getLaporanKas } from "../../../../../../utils/LaporanBulanan";
 
 // --- Tipe data yang diperbarui ---
@@ -71,7 +70,7 @@ export default function LaporanBulananPage() {
         } else {
           setLaporan(null);
         }
-      } catch (e) {
+      } catch {
         setError("Gagal memuat data laporan.");
       } finally {
         setLoading(false);
