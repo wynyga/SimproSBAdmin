@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { formatRupiah } from "../../../../utils/formatRupiah";
 
 interface TipeRumahData {
   id: number;
@@ -106,46 +107,49 @@ export default function EditTipeRumahModal({
           <div>
             <label className="block text-sm font-medium mb-1">Harga Standar Tengah</label>
             <input
-              type="number"
+              type="text"
               className={inputClass("harga_standar_tengah")}
-              value={selectedTipe.harga_standar_tengah}
-              onChange={(e) =>
+              value={formatRupiah(selectedTipe.harga_standar_tengah)}
+              onChange={(e) => {
+                const raw = e.target.value.replace(/[^0-9]/g, ""); // hanya angka
                 setSelectedTipe({
                   ...selectedTipe,
-                  harga_standar_tengah: Number(e.target.value),
-                })
-              }
+                  harga_standar_tengah: Number(raw),
+                });
+              }}
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium mb-1">Harga Standar Sudut</label>
             <input
-              type="number"
+              type="text"
               className={inputClass("harga_standar_sudut")}
-              value={selectedTipe.harga_standar_sudut}
-              onChange={(e) =>
+              value={formatRupiah(selectedTipe.harga_standar_sudut)}
+              onChange={(e) => {
+                const raw = e.target.value.replace(/[^0-9]/g, ""); // hanya angka
                 setSelectedTipe({
                   ...selectedTipe,
-                  harga_standar_sudut: Number(e.target.value),
-                })
-              }
+                  harga_standar_sudut: Number(raw),
+                });
+              }}
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium mb-1">Penambahan Bangunan</label>
             <input
-              type="number"
-              className={inputClass("penambahan_bangunan")}
-              value={selectedTipe.penambahan_bangunan}
-              onChange={(e) =>
-                setSelectedTipe({
-                  ...selectedTipe,
-                  penambahan_bangunan: Number(e.target.value),
-                })
-              }
-            />
+                type="text"
+                className={inputClass("penambahan_bangunan")}
+                value={formatRupiah(selectedTipe.penambahan_bangunan)}
+                onChange={(e) => {
+                  const raw = e.target.value.replace(/[^0-9]/g, ""); // hanya angka
+                  setSelectedTipe({
+                    ...selectedTipe,
+                    penambahan_bangunan: Number(raw),
+                  });
+                }}
+              />
           </div>
         </div>
 

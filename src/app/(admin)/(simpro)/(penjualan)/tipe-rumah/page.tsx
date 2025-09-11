@@ -7,6 +7,7 @@ import {
   updateTipeRumah,
   deleteTipeRumah,
 } from "../../../../../../utils/tipeRumah";
+import { formatRupiah } from "../../../../../../utils/formatRupiah";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import ComponentCard from "@/components/common/ComponentCard";
 import Button from "@/components/ui/button/Button";
@@ -139,9 +140,9 @@ export default function TipeRumahPage() {
                     <td className="border px-4 py-2">{tipe.tipe_rumah}</td>
                     <td className="border px-4 py-2">{tipe.luas_bangunan} m²</td>
                     <td className="border px-4 py-2">{tipe.luas_kavling} m²</td>
-                    <td className="border px-4 py-2">Rp {tipe.harga_standar_tengah.toLocaleString("id-ID")}</td>
-                    <td className="border px-4 py-2">Rp {tipe.harga_standar_sudut.toLocaleString("id-ID")}</td>
-                    <td className="border px-4 py-2">Rp {tipe.penambahan_bangunan.toLocaleString("id-ID")}</td>
+                    <td className="border px-4 py-2">{formatRupiah(tipe.harga_standar_tengah)}</td>
+                    <td className="border px-4 py-2">{formatRupiah(tipe.harga_standar_sudut)}</td>
+                    <td className="border px-4 py-2">{formatRupiah(tipe.penambahan_bangunan)}</td>
                     <td className="border px-4 py-2 flex justify-end gap-2">
                       <Button
                         size="sm"

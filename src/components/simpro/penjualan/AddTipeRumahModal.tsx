@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { formatRupiah } from "../../../../utils/formatRupiah";
 
 interface Props {
   isOpen: boolean;
@@ -35,10 +36,19 @@ export default function AddTipeRumahModal({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === "tipe_rumah" ? value : Number(value),
-    }));
+
+    if (["harga_standar_tengah", "harga_standar_sudut", "penambahan_bangunan"].includes(name)) {
+      const raw = value.replace(/[^0-9]/g, ""); // hanya angka
+      setFormData((prev) => ({
+        ...prev,
+        [name]: Number(raw),
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: name === "tipe_rumah" ? value : Number(value),
+      }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -63,89 +73,93 @@ export default function AddTipeRumahModal({
         </div>
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Nama Tipe */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Nama Tipe Rumah</label>
+            <label className="block text-sm font-medium">Nama Tipe Rumah</label>
             <input
               type="text"
               name="tipe_rumah"
               required
               value={formData.tipe_rumah}
               onChange={handleChange}
-              className="w-full mt-1 rounded border border-gray-300 px-3 py-2 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              className="w-full mt-1 rounded border px-3 py-2 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             />
           </div>
+
+          {/* Luas Bangunan */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Luas Bangunan (m²)</label>
+            <label className="block text-sm font-medium">Luas Bangunan (m²)</label>
             <input
               type="number"
               name="luas_bangunan"
               required
               value={formData.luas_bangunan}
               onChange={handleChange}
-              className="w-full mt-1 rounded border border-gray-300 px-3 py-2 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              className="w-full mt-1 rounded border px-3 py-2 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             />
           </div>
+
+          {/* Luas Kavling */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Luas Kavling (m²)</label>
+            <label className="block text-sm font-medium">Luas Kavling (m²)</label>
             <input
               type="number"
               name="luas_kavling"
               required
               value={formData.luas_kavling}
               onChange={handleChange}
-              className="w-full mt-1 rounded border border-gray-300 px-3 py-2 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              className="w-full mt-1 rounded border px-3 py-2 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             />
           </div>
+
+          {/* Harga Standar Tengah */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Harga (Rp)</label>
+            <label className="block text-sm font-medium">Harga (Rp)</label>
             <input
-              type="number"
+              type="text"
               name="harga_standar_tengah"
               required
-              value={formData.harga_standar_tengah}
+              value={formData.harga_standar_tengah ? formatRupiah(formData.harga_standar_tengah) : ""}
               onChange={handleChange}
-              className="w-full mt-1 rounded border border-gray-300 px-3 py-2 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              className="w-full mt-1 rounded border px-3 py-2 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             />
           </div>
+
+          {/* Harga Standar Sudut */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Harga Sudut (Rp)</label>
+            <label className="block text-sm font-medium">Harga Sudut (Rp)</label>
             <input
-              type="number"
+              type="text"
               name="harga_standar_sudut"
               required
-              value={formData.harga_standar_sudut}
+              value={formData.harga_standar_sudut ? formatRupiah(formData.harga_standar_sudut) : ""}
               onChange={handleChange}
-              className="w-full mt-1 rounded border border-gray-300 px-3 py-2 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              className="w-full mt-1 rounded border px-3 py-2 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             />
           </div>
+
+          {/* Penambahan Bangunan */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Penambahan Bangunan (Rp)</label>
+            <label className="block text-sm font-medium">Penambahan Bangunan (Rp)</label>
             <input
-              type="number"
+              type="text"
               name="penambahan_bangunan"
               required
-              value={formData.penambahan_bangunan}
+              value={formData.penambahan_bangunan ? formatRupiah(formData.penambahan_bangunan) : ""}
               onChange={handleChange}
-              className="w-full mt-1 rounded border border-gray-300 px-3 py-2 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              className="w-full mt-1 rounded border px-3 py-2 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             />
           </div>
 
-          {error && (
-            <div className="col-span-2 mt-2 text-sm text-red-500">
-              {error}
-            </div>
-          )}
+          {error && <div className="col-span-2 text-sm text-red-500">{error}</div>}
 
           <div className="col-span-2 mt-6 flex justify-end gap-3">
-            <button
-              type="submit"
-              className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition"
-            >
+            <button type="submit" className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
               Simpan
             </button>
             <button
               type="button"
-              className="rounded border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-100 dark:border-gray-500 dark:text-white dark:hover:bg-gray-700 transition"
+              className="rounded border px-4 py-2 text-gray-700 dark:border-gray-500 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
               onClick={onClose}
             >
               Batal
