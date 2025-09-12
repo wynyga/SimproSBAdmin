@@ -1,230 +1,31 @@
 "use client";
 
-import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { getLaporanTahunan } from "../../../../../../utils/LaporanBulanan";
-import { getProfile } from "../../../../../../utils/auth";
-import ComponentCard from "@/components/common/ComponentCard";
-
-const bulanList = [
-  "Januari", "Februari", "Maret", "April", "Mei", "Juni",
-  "Juli", "Agustus", "September", "Oktober", "November", "Desember"
-];
-
-// --- INTERFACE UNTUK TIPE DATA ---
-// 1. Tipe untuk setiap item dalam tabel rincian bulanan
-interface LaporanItem {
-  kategori: string;
-  jenis_transaksi: "KASIN" | "KASOUT";
-  jumlah_raw: number | string;
-}
-
-// 2. Tipe untuk rekap detail per bulan
-interface RekapDetail {
-  bulan: number;
-  item: LaporanItem[];
-}
-
-// 3. Tipe untuk keseluruhan objek laporan tahunan
-interface LaporanTahunanData {
-  total_kas_masuk: { total_rp: string };
-  total_kas_keluar: { total_rp: string };
-  sisa_kas: {
-    total_rp: string;
-    status: "SURPLUS" | "DEFISIT";
-  };
-  rekap_detail: RekapDetail[];
-}
-// --- AKHIR DARI INTERFACE ---
+import PageBreadcrumb from "@/components/common/PageBreadCrumb";
+import { getLaporanTahunan } from "../../../../../../utils/LaporanTahunan"; 
+import LaporanTahunanTable from "@/components/simpro/laporan tahunan/LaporanTahunanTable";
 
 export default function LaporanTahunanPage() {
-  const router = useRouter();
-  const tahunAwal = 2020;
-  const tahunSekarang = new Date().getFullYear();
-  const daftarTahun = Array.from({ length: tahunSekarang - tahunAwal + 1 }, (_, i) => tahunSekarang - i);
-
-  // Ganti `any` dengan interface yang sudah dibuat
-  const [laporan, setLaporan] = useState<LaporanTahunanData | null>(null);
+  const [data, setData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
-  const [tahun, setTahun] = useState<number>(tahunSekarang);
-  const [openAccordion, setOpenAccordion] = useState<number | null>(null);
-
-  const [isAllowed, setIsAllowed] = useState(false);
-  const [checkingAccess, setCheckingAccess] = useState(true);
-
-  useEffect(() => {
-    const checkRole = async () => {
-      try {
-        const profile = await getProfile((err: string) => setError(err));
-        if (profile?.role === "Direktur") {
-          setIsAllowed(true);
-        }
-      } catch {
-        setError("Gagal memuat profil pengguna.");
-      } finally {
-        setCheckingAccess(false);
-      }
-    };
-    checkRole();
-  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await getLaporanTahunan(tahun, setError);
-      if (data) setLaporan(data);
+      const result = await getLaporanTahunan(2025, setError);
+      if (result) setData(result);
     };
-    if (isAllowed) fetchData();
-  }, [tahun, isAllowed]);
-
-  const toggleAccordion = (bulan: number) => {
-    setOpenAccordion(openAccordion === bulan ? null : bulan);
-  };
-
-  if (checkingAccess) {
-    return <p className="text-sm text-gray-500 dark:text-white px-4 py-6">Memuat akses pengguna...</p>;
-  }
-
-  if (!isAllowed) {
-    return (
-      <div className="min-h-screen px-4 py-6">
-        <PageBreadcrumb pageTitle="Laporan Tahunan" />
-        <ComponentCard title="Akses Ditolak">
-          <p className="text-sm text-red-500">Anda tidak memiliki izin untuk mengakses halaman ini.</p>
-          <button
-            onClick={() => router.push("/dashboard")}
-            className="mt-4 rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
-          >
-            Kembali ke Dashboard
-          </button>
-        </ComponentCard>
-      </div>
-    );
-  }
+    fetchData();
+  }, []);
 
   return (
     <div>
       <PageBreadcrumb pageTitle="Laporan Tahunan" />
       <div className="min-h-screen rounded-2xl border border-gray-200 bg-white px-5 py-7 dark:border-gray-800 dark:bg-white/[0.03] xl:px-10 xl:py-12">
-        <div className="mb-8 flex flex-col items-center justify-center gap-4">
-          <h3 className="text-2xl font-semibold text-gray-800 dark:text-white/90">
-            Ringkasan Keuangan Tahun {tahun}
-          </h3>
-          <select
-            value={tahun}
-            onChange={(e) => setTahun(Number(e.target.value))}
-            className="rounded-md border border-gray-300 px-4 py-2 text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
-          >
-            {daftarTahun.map((th) => (
-              <option key={th} value={th}>
-                {th}
-              </option>
-            ))}
-          </select>
-        </div>
-
         {error && (
-          <div className="rounded bg-red-100 p-4 text-center text-red-700 dark:bg-red-800 dark:text-red-100">
-            {error}
-          </div>
+          <p className="text-red-500 mb-4 font-medium">Error: {error}</p>
         )}
-
-        {!laporan && !error && (
-          <div className="text-center text-gray-500 dark:text-gray-400">Loading...</div>
-        )}
-
-        {laporan && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-              <div className="rounded-2xl border border-gray-200 bg-gray-50 p-6 text-center shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
-                <h4 className="mb-2 text-lg font-semibold text-gray-800 dark:text-white">Total Kas Masuk</h4>
-                <p className="text-xl font-bold text-green-600 dark:text-green-400">
-                  Rp {laporan.total_kas_masuk.total_rp}
-                </p>
-              </div>
-              <div className="rounded-2xl border border-gray-200 bg-gray-50 p-6 text-center shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
-                <h4 className="mb-2 text-lg font-semibold text-gray-800 dark:text-white">Total Kas Keluar</h4>
-                <p className="text-xl font-bold text-red-600 dark:text-red-400">
-                  Rp {laporan.total_kas_keluar.total_rp}
-                </p>
-              </div>
-              <div className="rounded-2xl border border-gray-200 bg-gray-50 p-6 text-center shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
-                <h4 className="mb-2 text-lg font-semibold text-gray-800 dark:text-white">Sisa Kas</h4>
-                <p className="text-xl font-bold text-blue-600 dark:text-blue-400">
-                  Rp {laporan.sisa_kas.total_rp}
-                </p>
-                <span
-                  className={`mt-2 inline-block rounded-full px-3 py-1 text-xs font-medium ${
-                    laporan.sisa_kas.status === "SURPLUS"
-                      ? "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-300"
-                      : "bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-300"
-                  }`}
-                >
-                  {laporan.sisa_kas.status}
-                </span>
-              </div>
-            </div>
-
-            <div className="mt-10 space-y-4">
-              {bulanList.map((namaBulan, index) => {
-                // Ganti `any` dengan tipe yang sudah dibuat
-                const detailBulan = laporan.rekap_detail.find((r: RekapDetail) => r.bulan === index + 1);
-                return (
-                  <div
-                    key={index}
-                    className="rounded-xl border border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-white/[0.05]"
-                  >
-                    <button
-                      onClick={() => toggleAccordion(index + 1)}
-                      className="w-full px-6 py-4 text-left text-lg font-medium text-gray-800 dark:text-white"
-                    >
-                      {namaBulan}
-                    </button>
-                    {openAccordion === index + 1 && (
-                      <div className="px-6 pb-4">
-                        {detailBulan && detailBulan.item.length > 0 ? (
-                          <table className="w-full table-auto text-sm">
-                            <thead>
-                              <tr className="text-gray-600 dark:text-gray-300">
-                                <th className="py-2 text-left">Kategori</th>
-                                <th className="py-2 text-left">Jenis</th>
-                                <th className="py-2 text-right">Jumlah (Rp)</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {/* Ganti `any` dengan tipe yang sudah dibuat */}
-                              {detailBulan.item.map((item: LaporanItem, idx: number) => (
-                                <tr key={idx}>
-                                  <td className="py-1 text-gray-700 dark:text-gray-200">{item.kategori}</td>
-                                  <td className="py-1 text-sm text-gray-500 dark:text-gray-400">
-                                    {item.jenis_transaksi === "KASIN"
-                                      ? "Kas Masuk"
-                                      : item.jenis_transaksi === "KASOUT"
-                                      ? "Kas Keluar"
-                                      : "-"}
-                                  </td>
-                                  <td className="py-1 text-right text-gray-700 dark:text-gray-200">
-                                    {item.jumlah_raw
-                                      ? Number(item.jumlah_raw).toLocaleString("id-ID")
-                                      : "-"}
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        ) : (
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
-                            Tidak ada data bulan ini.
-                          </p>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
+        {!data && !error && <p className="text-gray-500">Loading...</p>}
+        {data && <LaporanTahunanTable data={data} />}
       </div>
     </div>
   );
