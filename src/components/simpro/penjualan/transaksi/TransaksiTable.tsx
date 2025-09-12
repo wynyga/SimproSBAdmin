@@ -31,7 +31,7 @@ export default function TransaksiTable({
     "Total Harga",
     "DP",
     "Biaya Booking",
-    "Plafon KPR", // ➔ Ini dia tambahan barumu
+    "Plafon KPR",
     "Status KPR",
     "Aksi",
   ];
@@ -76,7 +76,7 @@ export default function TransaksiTable({
                   <td className="px-4 py-2">Rp {Number(item.total_harga_jual).toLocaleString("id-ID")}</td>
                   <td className="px-4 py-2">Rp {Number(item.minimum_dp).toLocaleString("id-ID")}</td>
                   <td className="px-4 py-2">Rp {Number(item.biaya_booking).toLocaleString("id-ID")}</td>
-                  <td className="px-4 py-2">Rp {Number(item.plafon_kpr ?? 0).toLocaleString("id-ID")}</td> 
+                  <td className="px-4 py-2">Rp {Number(item.plafon_kpr ?? 0).toLocaleString("id-ID")}</td>
                   <td className="px-4 py-2">{item.kpr_disetujui}</td>
                   <td className="px-4 py-2 flex gap-2 justify-end">
                     <Button

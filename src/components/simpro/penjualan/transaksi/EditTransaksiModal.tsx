@@ -1,9 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { TransaksiDataWithRelasi } from "../../../../../utils/interfaceTransaksi";
 
-// 1. Definisikan interface untuk props komponen InputNumber
 interface InputNumberProps {
   label: string;
   name: string;
@@ -33,6 +32,15 @@ export default function EditTransaksiModal({
   unitList,
   error,
 }: Props) {
+  const [useNewUser, setUseNewUser] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      // reset pilihan saat modal dibuka
+      setUseNewUser(false);
+    }
+  }, [isOpen]);
+
   if (!isOpen || !transaksi) return null;
 
   const calculateTotalHarga = (data: TransaksiDataWithRelasi) => {
@@ -46,50 +54,126 @@ export default function EditTransaksiModal({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    const updatedTransaksi = {
+    const updatedTransaksi: any = {
       ...transaksi,
-      [name]: name === "kpr_disetujui" ? value : Number(value) || 0,
+      [name]: ["kpr_disetujui", "user_id", "unit_id", "nama_user", "alamat_user", "no_telepon"].includes(name)
+        ? value
+        : Number(value) || 0,
     };
 
-    // Hitung ulang total harga jual otomatis
     updatedTransaksi.total_harga_jual = calculateTotalHarga(updatedTransaksi);
-
     setTransaksi(updatedTransaksi);
   };
 
   const handleSubmit = async () => {
+    const payload: any = { ...transaksi };
+
+    if (useNewUser) {
+      if (!payload.nama_user || !payload.alamat_user || !payload.no_telepon) {
+        alert("Data user baru wajib diisi.");
+        return;
+      }
+      delete payload.user_id;
+    } else {
+      if (!payload.user_id) {
+        alert("User lama wajib dipilih.");
+        return;
+      }
+      delete payload.nama_user;
+      delete payload.alamat_user;
+      delete payload.no_telepon;
+    }
+
     const success = await onSubmit();
     if (success) onClose();
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-      <div className="w-full max-w-4xl rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800 dark:text-white">
+      <div className="w-full max-w-4xl rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800 dark:text-white max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h4 className="text-lg font-semibold">Edit Transaksi</h4>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">✕</button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Select User */}
-          <div>
-            <label className="block text-sm mb-1">Pembeli</label>
-            <select
-              name="user_id"
-              value={transaksi.user_id}
-              onChange={handleChange}
-              className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            >
-              <option value="">Pilih Pembeli</option>
-              {userList.map((user) => (
-                <option key={user.id} value={user.id}>
-                  {user.nama_user}
-                </option>
-              ))}
-            </select>
-          </div>
+        {/* Pilihan user lama atau baru */}
+        <div className="mb-4">
+          <label className="mr-4">
+            <input
+              type="radio"
+              checked={!useNewUser}
+              onChange={() => setUseNewUser(false)}
+            />{" "}
+            Pilih User Lama
+          </label>
+          <label className="ml-6">
+            <input
+              type="radio"
+              checked={useNewUser}
+              onChange={() => setUseNewUser(true)}
+            />{" "}
+            Tambah User Baru
+          </label>
+        </div>
 
-          {/* Select Unit */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* User Lama */}
+          {!useNewUser && (
+            <div>
+              <label className="block text-sm mb-1">Pembeli</label>
+              <select
+                name="user_id"
+                value={transaksi.user_id}
+                onChange={handleChange}
+                className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              >
+                <option value="">Pilih Pembeli</option>
+                {userList.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.nama_user}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* User Baru */}
+          {useNewUser && (
+            <>
+              <div>
+                <label className="block text-sm mb-1">Nama Pembeli</label>
+                <input
+                  type="text"
+                  name="nama_user"
+                  value={(transaksi as any).nama_user || ""}
+                  onChange={handleChange}
+                  className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-sm mb-1">Alamat</label>
+                <input
+                  type="text"
+                  name="alamat_user"
+                  value={(transaksi as any).alamat_user || ""}
+                  onChange={handleChange}
+                  className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-sm mb-1">No Telepon</label>
+                <input
+                  type="text"
+                  name="no_telepon"
+                  value={(transaksi as any).no_telepon || ""}
+                  onChange={handleChange}
+                  className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                />
+              </div>
+            </>
+          )}
+
+          {/* Unit */}
           <div>
             <label className="block text-sm mb-1">Unit</label>
             <select
@@ -107,7 +191,7 @@ export default function EditTransaksiModal({
             </select>
           </div>
 
-          {/* Input Fields */}
+          {/* Input Harga & DP */}
           <InputNumber label="Harga Jual Standar" name="harga_jual_standar" value={Number(transaksi.harga_jual_standar)} handleChange={handleChange} />
           <InputNumber label="Kelebihan Tanah" name="kelebihan_tanah" value={Number(transaksi.kelebihan_tanah)} handleChange={handleChange} />
           <InputNumber label="Penambahan Luas Bangunan" name="penambahan_luas_bangunan" value={Number(transaksi.penambahan_luas_bangunan)} handleChange={handleChange} />
@@ -134,10 +218,16 @@ export default function EditTransaksiModal({
         {error && <p className="text-sm text-red-500 mt-4">{error}</p>}
 
         <div className="mt-6 flex justify-end gap-3">
-          <button onClick={handleSubmit} className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition">
+          <button
+            onClick={handleSubmit}
+            className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition"
+          >
             Simpan Perubahan
           </button>
-          <button onClick={onClose} className="rounded border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-100 dark:border-gray-500 dark:text-white dark:hover:bg-gray-700 transition">
+          <button
+            onClick={onClose}
+            className="rounded border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-100 dark:border-gray-500 dark:text-white dark:hover:bg-gray-700 transition"
+          >
             Batal
           </button>
         </div>
@@ -146,17 +236,23 @@ export default function EditTransaksiModal({
   );
 }
 
-// Komponen kecil input number
-// 2. Ganti `any` dengan interface yang sudah dibuat
+// Komponen input number
 function InputNumber({ label, name, value, handleChange, disabled = false }: InputNumberProps) {
   return (
     <div>
       <label className="block text-sm mb-1">{label}</label>
       <input
-        type="number"
+        type="text"
         name={name}
-        value={value}
-        onChange={handleChange}
+        value={Number(value || 0).toLocaleString("id-ID")}
+        onChange={(e) => {
+          const raw = e.target.value.replace(/\./g, "");
+          if (!isNaN(Number(raw))) {
+            handleChange({
+              target: { name, value: raw },
+            } as React.ChangeEvent<HTMLInputElement>);
+          }
+        }}
         disabled={disabled}
         className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
       />

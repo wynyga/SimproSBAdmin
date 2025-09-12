@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react"; // 1. Impor useCallback
+import React, { useState, useEffect, useCallback } from "react";
 import { getAllUsers } from "../../../../../../utils/users";
 import { getAllUnit } from "../../../../../../utils/Unit";
 import {
@@ -18,8 +18,23 @@ import EditTransaksiModal from "@/components/simpro/penjualan/transaksi/EditTran
 import ConfirmDeleteModal from "@/components/simpro/penjualan/ConfirmDeleteModal";
 import { TransaksiDataWithRelasi } from "../../../../../../utils/interfaceTransaksi";
 
-// 2. Buat tipe data untuk form tambah transaksi
-type AddTransaksiPayload = Omit<TransaksiDataWithRelasi, "id" | "user" | "unit">;
+// ✅ Tambahkan field baru yang sesuai dengan backend
+type AddTransaksiPayload = {
+  user_id?: string;
+  nama_user?: string;
+  alamat_user?: string;
+  no_telepon?: string;
+  unit_id: string;
+  harga_jual_standar: number;
+  kelebihan_tanah: number;
+  penambahan_luas_bangunan: number;
+  perubahan_spek_bangunan: number;
+  total_harga_jual: number;
+  minimum_dp: number;
+  biaya_booking: number;
+  plafon_kpr?: number;
+  kpr_disetujui: string;
+};
 
 export default function TransaksiPage() {
   const [transaksiList, setTransaksiList] = useState<TransaksiDataWithRelasi[]>([]);
@@ -48,7 +63,6 @@ export default function TransaksiPage() {
     setUnits(Array.isArray(unitData) ? unitData : []);
   };
 
-  // 3. Bungkus fungsi dengan useCallback
   const fetchTransaksiData = useCallback(async () => {
     setLoading(true);
     const res = await getPaginatedTransaksi(currentPage, searchTerm, setError);
@@ -57,13 +71,12 @@ export default function TransaksiPage() {
       setTotalPages(res.last_page || 1);
     }
     setLoading(false);
-  }, [currentPage, searchTerm]); // <-- Dependensi untuk useCallback
+  }, [currentPage, searchTerm]);
 
   useEffect(() => {
     fetchTransaksiData();
-  }, [fetchTransaksiData]); // <-- Gunakan fungsi sebagai dependensi
+  }, [fetchTransaksiData]);
 
-  // 4. Gunakan tipe yang sudah dibuat, bukan `any`
   const handleAddTransaksi = async (data: AddTransaksiPayload) => {
     await addTransaksi(data, setError);
     fetchTransaksiData();

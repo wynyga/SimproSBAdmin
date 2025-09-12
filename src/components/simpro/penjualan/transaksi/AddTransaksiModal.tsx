@@ -2,10 +2,12 @@
 
 import React, { useEffect, useState } from "react";
 
-// --- Tipe & Interface Baru ---
-// 1. Definisikan tipe untuk data form
+// --- Tipe & Interface ---
 type TransaksiFormData = {
-  user_id: string;
+  user_id?: string;
+  nama_user?: string;
+  alamat_user?: string;
+  no_telepon?: string;
   unit_id: string;
   harga_jual_standar: number;
   kelebihan_tanah: number;
@@ -17,7 +19,6 @@ type TransaksiFormData = {
   kpr_disetujui: string;
 };
 
-// 2. Definisikan interface untuk props komponen InputNumber
 interface InputNumberProps {
   label: string;
   name: string;
@@ -29,7 +30,6 @@ interface InputNumberProps {
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  // 3. Ganti `any` dengan tipe yang sudah dibuat
   onSubmit: (data: TransaksiFormData) => void;
   userList: { id: number; nama_user: string }[];
   unitList: { id: number; nomor_unit: string }[];
@@ -42,9 +42,11 @@ export default function AddTransaksiModal({
   userList,
   unitList,
 }: Props) {
-  // 4. Beri tipe pada state formData
   const [formData, setFormData] = useState<TransaksiFormData>({
     user_id: "",
+    nama_user: "",
+    alamat_user: "",
+    no_telepon: "",
     unit_id: "",
     harga_jual_standar: 0,
     kelebihan_tanah: 0,
@@ -57,11 +59,15 @@ export default function AddTransaksiModal({
   });
 
   const [error, setError] = useState<string | null>(null);
+  const [useNewUser, setUseNewUser] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       setFormData({
         user_id: "",
+        nama_user: "",
+        alamat_user: "",
+        no_telepon: "",
         unit_id: "",
         harga_jual_standar: 0,
         kelebihan_tanah: 0,
@@ -72,6 +78,7 @@ export default function AddTransaksiModal({
         biaya_booking: 0,
         kpr_disetujui: "Ya",
       });
+      setUseNewUser(false);
       setError(null);
     }
   }, [isOpen]);
@@ -90,19 +97,37 @@ export default function AddTransaksiModal({
 
     const updatedForm: TransaksiFormData = {
       ...formData,
-      [name]: name === "kpr_disetujui" ? value : Number(value) || 0,
+      [name]: ["kpr_disetujui", "user_id", "unit_id", "nama_user", "alamat_user", "no_telepon"].includes(name)
+        ? value
+        : Number(value) || 0,
     };
 
     updatedForm.total_harga_jual = calculateTotalHarga(updatedForm);
     setFormData(updatedForm);
   };
 
-
   const handleSubmit = () => {
-    if (!formData.user_id || !formData.unit_id) {
-      setError("Pembeli dan Unit wajib diisi.");
+    if (!formData.unit_id) {
+      setError("Unit wajib diisi.");
       return;
     }
+
+    if (useNewUser) {
+      if (!formData.nama_user || !formData.alamat_user || !formData.no_telepon) {
+        setError("Data user baru wajib diisi.");
+        return;
+      }
+      delete formData.user_id;
+    } else {
+      if (!formData.user_id) {
+        setError("Pembeli wajib dipilih.");
+        return;
+      }
+      delete formData.nama_user;
+      delete formData.alamat_user;
+      delete formData.no_telepon;
+    }
+
     onSubmit(formData);
     onClose();
   };
@@ -117,20 +142,78 @@ export default function AddTransaksiModal({
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">✕</button>
         </div>
 
+        {/* Toggle pilih user lama atau tambah baru */}
+        <div className="mb-4">
+          <label className="mr-4">
+            <input
+              type="radio"
+              checked={!useNewUser}
+              onChange={() => setUseNewUser(false)}
+            />{" "}
+            Pilih User Lama
+          </label>
+          <label className="ml-6">
+            <input
+              type="radio"
+              checked={useNewUser}
+              onChange={() => setUseNewUser(true)}
+            />{" "}
+            Tambah User Baru
+          </label>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Select User */}
-          <div>
-            <label className="block text-sm mb-1">Pembeli</label>
-            <select name="user_id" value={formData.user_id} onChange={handleChange}
-              className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-              <option value="">Pilih Pembeli</option>
-              {userList.map((user) => (
-                <option key={user.id} value={user.id}>
-                  {user.nama_user}
-                </option>
-              ))}
-            </select>
-          </div>
+          {/* User Lama */}
+          {!useNewUser && (
+            <div>
+              <label className="block text-sm mb-1">Pembeli</label>
+              <select name="user_id" value={formData.user_id} onChange={handleChange}
+                className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                <option value="">Pilih Pembeli</option>
+                {userList.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.nama_user}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* User Baru */}
+          {useNewUser && (
+            <>
+              <div>
+                <label className="block text-sm mb-1">Nama Pembeli</label>
+                <input
+                  type="text"
+                  name="nama_user"
+                  value={formData.nama_user}
+                  onChange={handleChange}
+                  className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-sm mb-1">Alamat</label>
+                <input
+                  type="text"
+                  name="alamat_user"
+                  value={formData.alamat_user}
+                  onChange={handleChange}
+                  className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-sm mb-1">No Telepon</label>
+                <input
+                  type="text"
+                  name="no_telepon"
+                  value={formData.no_telepon}
+                  onChange={handleChange}
+                  className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                />
+              </div>
+            </>
+          )}
 
           {/* Select Unit */}
           <div>
@@ -146,7 +229,7 @@ export default function AddTransaksiModal({
             </select>
           </div>
 
-          {/* Harga */}
+          {/* Input Harga & DP */}
           <InputNumber label="Harga Jual Standar" name="harga_jual_standar" value={formData.harga_jual_standar} handleChange={handleChange} />
           <InputNumber label="Kelebihan Tanah" name="kelebihan_tanah" value={formData.kelebihan_tanah} handleChange={handleChange} />
           <InputNumber label="Penambahan Luas Bangunan" name="penambahan_luas_bangunan" value={formData.penambahan_luas_bangunan} handleChange={handleChange} />
@@ -177,7 +260,7 @@ export default function AddTransaksiModal({
   );
 }
 
-// 5. Ganti `any` dengan interface yang sudah dibuat
+// Input Number Component
 function InputNumber({ label, name, value, handleChange, disabled = false }: InputNumberProps) {
   return (
     <div>

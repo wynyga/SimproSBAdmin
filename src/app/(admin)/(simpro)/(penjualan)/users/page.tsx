@@ -98,12 +98,12 @@ export default function UserPage() {
             }}
             className="w-full sm:w-64 rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
           />
-          <Button
+          {/* <Button
             className="bg-blue-600 hover:bg-blue-700 text-white"
             onClick={() => setShowAddModal(true)}
           >
             Tambah User
-          </Button>
+          </Button> */}
         </div>
 
         {/* Tabel */}
@@ -114,7 +114,7 @@ export default function UserPage() {
                 <th className="border px-4 py-2">Nama</th>
                 <th className="border px-4 py-2">Alamat</th>
                 <th className="border px-4 py-2">No. Telepon</th>
-                <th className="border px-4 py-2">Aksi</th>
+                {/* <th className="border px-4 py-2">Aksi</th> */}
               </tr>
             </thead>
             <tbody>
@@ -124,7 +124,7 @@ export default function UserPage() {
                     <td className="border px-4 py-2">{user.nama_user}</td>
                     <td className="border px-4 py-2">{user.alamat_user}</td>
                     <td className="border px-4 py-2">{user.no_telepon}</td>
-                    <td className="border px-4 py-2 flex justify-end gap-2">
+                    {/* <td className="border px-4 py-2 flex justify-end gap-2">
                       <Button
                         size="sm"
                         className="bg-yellow-500 hover:bg-yellow-600 text-white"
@@ -145,7 +145,7 @@ export default function UserPage() {
                       >
                         Hapus
                       </Button>
-                    </td>
+                    </td> */}
                   </tr>
                 ))
               ) : (
