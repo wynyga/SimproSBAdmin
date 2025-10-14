@@ -5,17 +5,32 @@ import { TransaksiDataWithRelasi } from "../../../../../utils/interfaceTransaksi
 
 interface InputNumberProps {
   label: string;
-  name: string;
+  name:
+    | "harga_jual_standar"
+    | "kelebihan_tanah"
+    | "penambahan_luas_bangunan"
+    | "perubahan_spek_bangunan"
+    | "total_harga_jual"
+    | "minimum_dp"
+    | "biaya_booking";
   value: number;
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   disabled?: boolean;
 }
 
+type NewUserFields = {
+  nama_user?: string;
+  alamat_user?: string;
+  no_telepon?: string;
+};
+
+type EditableTransaksi = TransaksiDataWithRelasi & Partial<NewUserFields>;
+
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  transaksi: TransaksiDataWithRelasi;
-  setTransaksi: (data: TransaksiDataWithRelasi) => void;
+  transaksi: EditableTransaksi;
+  setTransaksi: (data: EditableTransaksi) => void;
   onSubmit: () => Promise<boolean>;
   userList: { id: number; nama_user: string }[];
   unitList: { id: number; nomor_unit: string }[];
@@ -36,14 +51,13 @@ export default function EditTransaksiModal({
 
   useEffect(() => {
     if (isOpen) {
-      // reset pilihan saat modal dibuka
       setUseNewUser(false);
     }
   }, [isOpen]);
 
   if (!isOpen || !transaksi) return null;
 
-  const calculateTotalHarga = (data: TransaksiDataWithRelasi) => {
+  const calculateTotalHarga = (data: EditableTransaksi) => {
     return (
       Number(data.harga_jual_standar) +
       Number(data.kelebihan_tanah) +
@@ -52,36 +66,79 @@ export default function EditTransaksiModal({
     );
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    const updatedTransaksi: any = {
-      ...transaksi,
-      [name]: ["kpr_disetujui", "user_id", "unit_id", "nama_user", "alamat_user", "no_telepon"].includes(name)
-        ? value
-        : Number(value) || 0,
-    };
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target as { name: string; value: string };
 
-    updatedTransaksi.total_harga_jual = calculateTotalHarga(updatedTransaksi);
-    setTransaksi(updatedTransaksi);
+    const next: EditableTransaksi = { ...transaksi };
+
+    // Ketik aman per-field tanpa any
+    switch (name) {
+      // Numeric keys
+      case "harga_jual_standar":
+        next.harga_jual_standar = Number(value) || 0;
+        break;
+      case "kelebihan_tanah":
+        next.kelebihan_tanah = Number(value) || 0;
+        break;
+      case "penambahan_luas_bangunan":
+        next.penambahan_luas_bangunan = Number(value) || 0;
+        break;
+      case "perubahan_spek_bangunan":
+        next.perubahan_spek_bangunan = Number(value) || 0;
+        break;
+      case "total_harga_jual":
+        next.total_harga_jual = Number(value) || 0;
+        break;
+      case "minimum_dp":
+        next.minimum_dp = Number(value) || 0;
+        break;
+      case "biaya_booking":
+        next.biaya_booking = Number(value) || 0;
+        break;
+
+      // ID keys (select → string → number)
+      case "user_id":
+        next.user_id = value === "" ? 0 : Number(value);
+        break;
+      case "unit_id":
+        next.unit_id = value === "" ? 0 : Number(value);
+        break;
+
+      // Text keys
+      case "kpr_disetujui":
+        next.kpr_disetujui = value;
+        break;
+      case "nama_user":
+        next.nama_user = value;
+        break;
+      case "alamat_user":
+        next.alamat_user = value;
+        break;
+      case "no_telepon":
+        next.no_telepon = value;
+        break;
+
+      default:
+        break;
+    }
+
+    next.total_harga_jual = calculateTotalHarga(next);
+    setTransaksi(next);
   };
 
   const handleSubmit = async () => {
-    const payload: any = { ...transaksi };
-
     if (useNewUser) {
-      if (!payload.nama_user || !payload.alamat_user || !payload.no_telepon) {
+      if (!transaksi.nama_user || !transaksi.alamat_user || !transaksi.no_telepon) {
         alert("Data user baru wajib diisi.");
         return;
       }
-      delete payload.user_id;
     } else {
-      if (!payload.user_id) {
+      if (!transaksi.user_id) {
         alert("User lama wajib dipilih.");
         return;
       }
-      delete payload.nama_user;
-      delete payload.alamat_user;
-      delete payload.no_telepon;
     }
 
     const success = await onSubmit();
@@ -93,7 +150,13 @@ export default function EditTransaksiModal({
       <div className="w-full max-w-4xl rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800 dark:text-white max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h4 className="text-lg font-semibold">Edit Transaksi</h4>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">✕</button>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            aria-label="Tutup"
+          >
+            ✕
+          </button>
         </div>
 
         {/* Pilihan user lama atau baru */}
@@ -145,7 +208,7 @@ export default function EditTransaksiModal({
                 <input
                   type="text"
                   name="nama_user"
-                  value={(transaksi as any).nama_user || ""}
+                  value={transaksi.nama_user ?? ""}
                   onChange={handleChange}
                   className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
@@ -155,7 +218,7 @@ export default function EditTransaksiModal({
                 <input
                   type="text"
                   name="alamat_user"
-                  value={(transaksi as any).alamat_user || ""}
+                  value={transaksi.alamat_user ?? ""}
                   onChange={handleChange}
                   className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
@@ -165,7 +228,7 @@ export default function EditTransaksiModal({
                 <input
                   type="text"
                   name="no_telepon"
-                  value={(transaksi as any).no_telepon || ""}
+                  value={transaksi.no_telepon ?? ""}
                   onChange={handleChange}
                   className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
@@ -192,13 +255,51 @@ export default function EditTransaksiModal({
           </div>
 
           {/* Input Harga & DP */}
-          <InputNumber label="Harga Jual Standar" name="harga_jual_standar" value={Number(transaksi.harga_jual_standar)} handleChange={handleChange} />
-          <InputNumber label="Kelebihan Tanah" name="kelebihan_tanah" value={Number(transaksi.kelebihan_tanah)} handleChange={handleChange} />
-          <InputNumber label="Penambahan Luas Bangunan" name="penambahan_luas_bangunan" value={Number(transaksi.penambahan_luas_bangunan)} handleChange={handleChange} />
-          <InputNumber label="Perubahan Spek Bangunan" name="perubahan_spek_bangunan" value={Number(transaksi.perubahan_spek_bangunan)} handleChange={handleChange} />
-          <InputNumber label="Total Harga Jual" name="total_harga_jual" value={Number(transaksi.total_harga_jual)} handleChange={() => {}} disabled />
-          <InputNumber label="Minimum DP" name="minimum_dp" value={Number(transaksi.minimum_dp)} handleChange={handleChange} />
-          <InputNumber label="Biaya Booking" name="biaya_booking" value={Number(transaksi.biaya_booking)} handleChange={handleChange} />
+          <InputNumber
+            label="Harga Jual Standar"
+            name="harga_jual_standar"
+            value={Number(transaksi.harga_jual_standar)}
+            handleChange={handleChange}
+          />
+          <InputNumber
+            label="Kelebihan Tanah"
+            name="kelebihan_tanah"
+            value={Number(transaksi.kelebihan_tanah)}
+            handleChange={handleChange}
+          />
+          <InputNumber
+            label="Penambahan Luas Bangunan"
+            name="penambahan_luas_bangunan"
+            value={Number(transaksi.penambahan_luas_bangunan)}
+            handleChange={handleChange}
+          />
+          <InputNumber
+            label="Perubahan Spek Bangunan"
+            name="perubahan_spek_bangunan"
+            value={Number(transaksi.perubahan_spek_bangunan)}
+            handleChange={handleChange}
+          />
+          <InputNumber
+            label="Total Harga Jual"
+            name="total_harga_jual"
+            value={Number(transaksi.total_harga_jual)}
+            handleChange={() => {
+              /* read-only */
+            }}
+            disabled
+          />
+          <InputNumber
+            label="Minimum DP"
+            name="minimum_dp"
+            value={Number(transaksi.minimum_dp)}
+            handleChange={handleChange}
+          />
+          <InputNumber
+            label="Biaya Booking"
+            name="biaya_booking"
+            value={Number(transaksi.biaya_booking)}
+            handleChange={handleChange}
+          />
 
           {/* Status KPR */}
           <div>
@@ -237,7 +338,13 @@ export default function EditTransaksiModal({
 }
 
 // Komponen input number
-function InputNumber({ label, name, value, handleChange, disabled = false }: InputNumberProps) {
+function InputNumber({
+  label,
+  name,
+  value,
+  handleChange,
+  disabled = false,
+}: InputNumberProps) {
   return (
     <div>
       <label className="block text-sm mb-1">{label}</label>
@@ -248,8 +355,10 @@ function InputNumber({ label, name, value, handleChange, disabled = false }: Inp
         onChange={(e) => {
           const raw = e.target.value.replace(/\./g, "");
           if (!isNaN(Number(raw))) {
+            // cast event buatan ke tipe yang sesuai, tanpa any
             handleChange({
-              target: { name, value: raw },
+              target: { name, value: raw } as unknown as EventTarget &
+                HTMLInputElement,
             } as React.ChangeEvent<HTMLInputElement>);
           }
         }}

@@ -2,16 +2,46 @@
 
 import React, { useEffect, useState } from "react";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import { getLaporanTahunan } from "../../../../../../utils/LaporanTahunan"; 
+import { getLaporanTahunan } from "../../../../../../utils/LaporanTahunan";
 import LaporanTahunanTable from "@/components/simpro/laporan tahunan/LaporanTahunanTable";
 
+// Tipe-tipe ini sebaiknya berada di file terpusat (e.g., src/types/laporan.ts)
+// dan di-import di sini serta di komponen lainnya.
+interface TeeData {
+  cost_tee_code: string;
+  description: string;
+  jumlah: number | string;
+}
+
+interface CostElementData {
+  cost_element_code: string;
+  description: string;
+  total: number;
+  tees: TeeData[];
+}
+
+interface CostCentreData {
+  cost_centre_code: string;
+  description: string;
+  total: number;
+  elements: CostElementData[];
+}
+
+interface LaporanTahunanData {
+  KASIN: CostCentreData[];
+  KASOUT: CostCentreData[];
+}
+
 export default function LaporanTahunanPage() {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<LaporanTahunanData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      const result = await getLaporanTahunan(2025, setError);
+      const result: LaporanTahunanData | null = await getLaporanTahunan(
+        2025,
+        setError
+      );
       if (result) setData(result);
     };
     fetchData();
