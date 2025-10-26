@@ -77,14 +77,17 @@ export default function EditUnitModal({
 
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">Blok</label>
-            <select
-              value={unit.blok_id}
-              onChange={(e) =>
-                setUnit({ ...unit, blok_id: Number(e.target.value) })
-              }
-              className="w-full rounded border border-gray-300 px-3 py-2 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-              required
-            >
+              <select
+                value={unit.blok_id}
+                onChange={(e) => {
+                  console.log("Sebelum ubah:", unit); // 🟡 tampilkan state lama
+                  console.log("Value terpilih (blok):", e.target.value);
+                  setUnit({ ...unit, blok_id: Number(e.target.value) });
+                }}
+                className="w-full rounded border border-gray-300 px-3 py-2 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                required
+              >
+
               <option value="">Pilih Blok</option>
               {blokOptions.map((blok) => (
                 <option key={blok.id} value={blok.id}>
@@ -96,14 +99,16 @@ export default function EditUnitModal({
 
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">Tipe Rumah</label>
-            <select
-              value={unit.tipe_rumah_id}
-              onChange={(e) =>
-                setUnit({ ...unit, tipe_rumah_id: Number(e.target.value) })
-              }
-              className="w-full rounded border border-gray-300 px-3 py-2 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-              required
-            >
+              <select
+                value={unit.tipe_rumah_id}
+                onChange={(e) => {
+                  console.log("Sebelum ubah:", unit);
+                  console.log("Value terpilih (tipe):", e.target.value);
+                  setUnit({ ...unit, tipe_rumah_id: Number(e.target.value) });
+                }}
+                className="w-full rounded border border-gray-300 px-3 py-2 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                required
+              >
               <option value="">Pilih Tipe</option>
               {tipeOptions.map((tipe) => (
                 <option key={tipe.id} value={tipe.id}>

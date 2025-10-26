@@ -1,52 +1,50 @@
 "use client";
 
-import { useState } from "react";
-// 1. Import fungsi API yang baru Anda berikan
+// 1. Import useRef
+import { useState, useRef } from "react";
 import { getCostTeeByCode } from "../../../../utils/CostTeeApi";
-// 2. Import fungsi 'store' yang sudah ada
 import { storeTransaksiKas } from "../../../../utils/transaksi-kas";
 
-// Tipe berdasarkan contoh output JSON Anda
+// ... (Interface tidak berubah) ...
 interface CostTee {
   id: number;
   cost_tee_code: string;
   description: string;
 }
 
-// Tipe untuk dropdown
 interface KeteranganOption {
   value: string;
   label: string;
 }
 
-// 3. Interface FormData baru (lebih sederhana)
 interface FormData {
   tanggal: string;
   keterangan_transaksi_id: string;
-  kode: string; // "101" (Cash In) or "102" (Cash Out)
+  kode: string; 
   jumlah: string;
   metode_pembayaran: string;
   keterangan_objek_transaksi: string;
-  sumber_transaksi: string;
 }
 
 type SetErrorFunc = (error: string | null) => void;
 
+
 export function useTransaksiKasForm(setError: SetErrorFunc) {
   const [loading, setLoading] = useState(false);
+  // 2. Buat sebuah "kunci" (lock) menggunakan useRef
+  const isSubmitting = useRef(false); 
+  
   const [optionsKeterangan, setOptionsKeterangan] = useState<KeteranganOption[]>(
     []
   );
-
-  // 4. State formData baru
+  // ... (State formData dan fungsi handleChange, dll. tidak berubah) ...
   const [formData, setFormData] = useState<FormData>({
     tanggal: "",
     keterangan_transaksi_id: "",
-    kode: "", // Dimulai kosong, diisi oleh tombol
+    kode: "",
     jumlah: "",
     metode_pembayaran: "",
     keterangan_objek_transaksi: "",
-    sumber_transaksi: "cost_code",
   });
 
   const handleChange = (
@@ -56,14 +54,11 @@ export function useTransaksiKasForm(setError: SetErrorFunc) {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // 5. handleSelectChange disederhanakan (logika KASIN/KASOUT dihapus)
   const handleSelectChange = (value: string, name: string) => {
-    // Hanya set nilai, tidak ada logika 'kode' lagi di sini
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleDateChange = (date: Date | null) => {
-    // Handle jika pengguna menghapus tanggal
     if (!date) {
       setFormData((prev) => ({ ...prev, tanggal: "" }));
       return;
@@ -72,25 +67,19 @@ export function useTransaksiKasForm(setError: SetErrorFunc) {
     setFormData((prev) => ({ ...prev, tanggal: formattedDate }));
   };
 
-  // 6. Handler BARU (pengganti handleSelectSumber)
   const handleJenisTransaksiChange = async (value: "101" | "102") => {
-    // Set 'kode' dan reset 'keterangan'
+    // ... (Tidak ada perubahan di fungsi ini) ...
     setFormData((prev) => ({
       ...prev,
       kode: value,
       keterangan_transaksi_id: "",
     }));
-    setOptionsKeterangan([]); // Kosongkan opsi
-    setError(null); // Bersihkan error sebelumnya
+    setOptionsKeterangan([]);
+    setError(null);
 
     try {
-      // Tentukan parameter API berdasarkan 'kode'
       const apiCostCode = value === "101" ? "KASIN" : "KASOUT";
-
-      // Panggil API baru Anda
       const result = await getCostTeeByCode(apiCostCode, setError);
-
-      // Proses hasil API
       if (Array.isArray(result)) {
         setOptionsKeterangan(
           result.map((item: CostTee) => ({
@@ -112,14 +101,22 @@ export function useTransaksiKasForm(setError: SetErrorFunc) {
     }
   };
 
-  // 7. handleSubmit disesuaikan
+
+  // --- PERUBAHAN UTAMA DI SINI ---
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // 3. Cek apakah "kunci" sedang aktif. Jika ya, hentikan fungsi.
+    if (isSubmitting.current) {
+      return; 
+    }
+
+    // 4. Aktifkan "kunci" secara instan
+    isSubmitting.current = true;
     setLoading(true);
     setError(null);
 
     try {
-      // Validasi baru
       if (
         !formData.kode ||
         !formData.keterangan_transaksi_id ||
@@ -132,7 +129,6 @@ export function useTransaksiKasForm(setError: SetErrorFunc) {
         );
       }
 
-      // 8. Payload baru (tanpa sumber_transaksi)
       const payload = {
         tanggal: formData.tanggal,
         keterangan_transaksi_id: Number(formData.keterangan_transaksi_id),
@@ -143,7 +139,7 @@ export function useTransaksiKasForm(setError: SetErrorFunc) {
       };
 
       await storeTransaksiKas(payload, setError);
-      resetForm(); // Reset form setelah sukses
+      resetForm(); 
     } catch (error: unknown) {
       console.error(error);
       if (error instanceof Error) {
@@ -154,12 +150,14 @@ export function useTransaksiKasForm(setError: SetErrorFunc) {
         );
       }
     } finally {
+      // 5. Selalu buka "kunci" setelah selesai (baik sukses atau gagal)
       setLoading(false);
+      isSubmitting.current = false;
     }
   };
 
-  // 9. resetForm disesuaikan
   const resetForm = () => {
+    // ... (Tidak ada perubahan di fungsi ini) ...
     setFormData({
       tanggal: "",
       keterangan_transaksi_id: "",
@@ -167,12 +165,10 @@ export function useTransaksiKasForm(setError: SetErrorFunc) {
       jumlah: "",
       metode_pembayaran: "",
       keterangan_objek_transaksi: "",
-      sumber_transaksi: "cost_code",
     });
     setOptionsKeterangan([]);
   };
 
-  // 10. Return value di-update
   return {
     formData,
     loading,
@@ -180,7 +176,7 @@ export function useTransaksiKasForm(setError: SetErrorFunc) {
     handleChange,
     handleSelectChange,
     handleDateChange,
-    handleJenisTransaksiChange, // Handler baru
+    handleJenisTransaksiChange,
     handleSubmit,
   };
 }

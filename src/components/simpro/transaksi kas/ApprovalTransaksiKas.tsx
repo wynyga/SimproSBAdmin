@@ -1,7 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { getTransaksiKas,verifyTransaksiKas,rejectTransaksiKas } from "../../../../utils/transaksi-kas";
+import {
+  getTransaksiKas,
+  verifyTransaksiKas,
+  rejectTransaksiKas,
+} from "../../../../utils/transaksi-kas";
 import ComponentCard from "@/components/common/ComponentCard";
 import Button from "@/components/ui/button/Button";
 import { createKwitansi } from "../../../../utils/kwitansi";
@@ -15,6 +19,7 @@ interface TransaksiKasData {
   metode_pembayaran: string;
   dibuat_oleh: string;
   status: string;
+  keterangan_objek_transaksi?: string; 
 }
 
 export default function ApprovalTransaksiKas() {
@@ -30,23 +35,29 @@ export default function ApprovalTransaksiKas() {
     setLoading(true);
     setError(null);
 
-    await getTransaksiKas((result: { transaksiKas: TransaksiKasData[] }) => {
-      if (result && Array.isArray(result.transaksiKas)) {
-        const filteredData = result.transaksiKas.filter((item) => item.status === "pending");
-        setPendingApprovals(filteredData);
-      } else {
-        setPendingApprovals([]);
-      }
-    }, setError);
+    await getTransaksiKas(
+      (result: { transaksiKas: TransaksiKasData[] }) => {
+        if (result && Array.isArray(result.transaksiKas)) {
+          const filteredData = result.transaksiKas.filter(
+            (item) => item.status === "pending"
+          );
+          setPendingApprovals(filteredData);
+        } else {
+          setPendingApprovals([]);
+        }
+      },
+      setError
+    );
 
     setLoading(false);
   };
+
   const handleVerify = async (id: number) => {
     setLoading(true);
     setError(null);
     try {
       await verifyTransaksiKas(id, setError); // 1. approve transaksi kas
-      await createKwitansi(id, setError);     // 2. langsung create kwitansi
+      await createKwitansi(id, setError);     // 2. buat kwitansi otomatis
       await fetchPendingApprovals();          // 3. refresh list
     } catch (e) {
       console.error("Gagal verifikasi:", e);
@@ -69,7 +80,11 @@ export default function ApprovalTransaksiKas() {
       </h2>
 
       {error && <p className="text-sm text-red-500 mb-4">{error}</p>}
-      {loading && <p className="text-sm text-gray-500 dark:text-gray-400">Memuat data...</p>}
+      {loading && (
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          Memuat data...
+        </p>
+      )}
 
       {pendingApprovals.length > 0 ? (
         <div className="grid gap-6 sm:grid-cols-2">
@@ -84,13 +99,21 @@ export default function ApprovalTransaksiKas() {
                   {item.kode === "101" ? "Kas Masuk" : "Kas Keluar"}
                 </div>
                 <div>
-                  <span className="font-medium">Jumlah:</span> Rp {(+item.jumlah).toLocaleString("id-ID")}
+                  <span className="font-medium">Jumlah:</span> Rp{" "}
+                  {(+item.jumlah).toLocaleString("id-ID")}
                 </div>
                 <div>
-                  <span className="font-medium">Metode Pembayaran:</span> {item.metode_pembayaran}
+                  <span className="font-medium">Metode Pembayaran:</span>{" "}
+                  {item.metode_pembayaran}
                 </div>
+
                 <div>
                   <span className="font-medium">Dibuat Oleh:</span> {item.dibuat_oleh}
+                </div>
+                
+                {/* INI ADALAH BARIS YANG ANDA MINTA */}
+                <div>
+                  <span className="font-medium">Keterangan:</span> {item.keterangan_objek_transaksi}
                 </div>
               </div>
 
@@ -114,7 +137,9 @@ export default function ApprovalTransaksiKas() {
           ))}
         </div>
       ) : (
-        <p className="text-sm text-gray-500 mt-4">Tidak ada transaksi kas yang menunggu persetujuan.</p>
+        <p className="text-sm text-gray-500 mt-4">
+          Tidak ada transaksi kas yang menunggu persetujuan.
+        </p>
       )}
     </div>
   );

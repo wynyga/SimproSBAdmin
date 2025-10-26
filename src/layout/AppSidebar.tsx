@@ -75,11 +75,11 @@ const navItems: NavItem[] = [
     ],
   },
   {
-    name: "Manajemen Stock",
+    name: "Stok Rumah & Penjualan",
     icon: <TableIcon />,
     subItems: [
       { name: "Tipe Rumah", path: "/tipe-rumah", pro: false },
-      { name: "Blok", path: "/blok", pro: false },
+      { name: "Blok & Jumlah", path: "/blok", pro: false },
       { name: "Unit", path: "/unit", pro: false },
     ],
   },
