@@ -49,6 +49,40 @@ export const getCostTees = async (setError: Function) => {
       setError(err instanceof Error ? err.message : "Terjadi kesalahan saat mengambil data Cost Tee.");
     }
   };
+
+  // Mendapatkan cost tee berdasarkan cost_code
+  export const getCostTeeByCode = async (costCode: string, setError: Function) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("Anda harus login untuk mengakses data.");
+      }
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/cost_tee/code/${costCode}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Gagal mengambil data Cost Tee dengan cost_code: ${costCode}`);
+      }
+
+      return await response.json();
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Terjadi kesalahan saat mengambil data Cost Tee berdasarkan cost_code."
+      );
+    }
+  };
+
   
   // Menambahkan cost tee baru
   export const addCostTee = async (data: any, setError: Function) => {
