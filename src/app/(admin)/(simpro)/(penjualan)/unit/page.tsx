@@ -80,22 +80,21 @@ export default function UnitPage() {
     await fetchUnits();
   };
 
-  const handleUpdate = async (): Promise<boolean> => {
-    if (!selectedUnit || !selectedUnit.nomor_unit.trim()) {
+  const handleUpdate = async (data: Unit): Promise<boolean> => {
+    console.log("PAGE: Menerima data ini dari Modal:", data);
+    if (!data || !data.nomor_unit.trim()) {
       setError("Nomor unit tidak boleh kosong.");
       return false;
     }
-
     await updateUnit(
-      selectedUnit.id,
+      data.id,
       {
-        blok_id: selectedUnit.blok_id,
-        tipe_rumah_id: selectedUnit.tipe_rumah_id,
-        nomor_unit: selectedUnit.nomor_unit,
+        blok_id: data.blok_id,
+        tipe_rumah_id: data.tipe_rumah_id,
+        nomor_unit: data.nomor_unit,
       },
       setError
     );
-
     await fetchUnits();
     return true;
   };
@@ -226,11 +225,11 @@ export default function UnitPage() {
         <EditUnitModal
           isOpen={showEditModal}
           onClose={() => setShowEditModal(false)}
-          unit={selectedUnit}
-          setUnit={setSelectedUnit}
+          unit={selectedUnit} // Kirim unit yang dipilih
+          // 5. HAPUS 'setUnit'
           blokOptions={blokList}
           tipeOptions={tipeList}
-          onSubmit={handleUpdate}
+          onSubmit={handleUpdate} // Kirim fungsi handleUpdate
           error={error}
         />
       )}
