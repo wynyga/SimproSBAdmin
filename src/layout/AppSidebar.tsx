@@ -68,7 +68,8 @@ const navItems: NavItem[] = [
     name: "Material Inventory",
     icon: <ListIcon />,
     subItems: [
-      { name: "Stock", path: "/stock", pro: false },
+      { name: "Managemen Stock Material", path: "/Managemen-Stock-Material", pro: false },
+      { name: "Stock Material Gudang", path: "/gudang", pro: false },
       { name: "Gudang Input", path: "/gudang-input", pro: false },
       { name: "Gudang Output", path: "/gudang-output", pro: false },
       { name: "Buat Stock", path: "/create-stock", pro: false },
