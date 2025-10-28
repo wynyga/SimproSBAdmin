@@ -70,8 +70,8 @@ const navItems: NavItem[] = [
     subItems: [
       { name: "Managemen Stock Material", path: "/Managemen-Stock-Material", pro: false },
       { name: "Stock Material Gudang", path: "/Stock-Material-Gudang", pro: false },
-      { name: "Gudang Input", path: "/gudang-input", pro: false },
-      { name: "Gudang Output", path: "/gudang-output", pro: false },
+      { name: "Menu Barang Diterima", path: "/gudang-input", pro: false },
+      { name: "Barang Keluar", path: "/gudang-output", pro: false },
       { name: "Buat Stock", path: "/create-stock", pro: false },
     ],
   },

@@ -124,12 +124,12 @@ export default function TipeRumahPage() {
           <table className="min-w-full border border-gray-300 dark:border-gray-700 text-sm text-gray-700 dark:text-white">
             <thead className="bg-gray-100 dark:bg-gray-700">
               <tr>
-                <th className="border px-4 py-2">Nama</th>
+                <th className="border px-4 py-2">Type Rumah</th>
                 <th className="border px-4 py-2">Luas Bangunan</th>
                 <th className="border px-4 py-2">Luas Kavling</th>
-                <th className="border px-4 py-2">Total Harga</th>
-                <th className="border px-4 py-2">Harga Sudut</th>
-                <th className="border px-4 py-2">Penambahan</th>
+                <th className="border px-4 py-2">Harga Jual</th>
+                {/* <th className="border px-4 py-2">Harga Sudut</th>
+                <th className="border px-4 py-2">Penambahan</th> */}
                 <th className="border px-4 py-2">Aksi</th>
               </tr>
             </thead>
@@ -141,8 +141,8 @@ export default function TipeRumahPage() {
                     <td className="border px-4 py-2">{tipe.luas_bangunan} m²</td>
                     <td className="border px-4 py-2">{tipe.luas_kavling} m²</td>
                     <td className="border px-4 py-2">{formatRupiah(tipe.harga_standar_tengah)}</td>
-                    <td className="border px-4 py-2">{formatRupiah(tipe.harga_standar_sudut)}</td>
-                    <td className="border px-4 py-2">{formatRupiah(tipe.penambahan_bangunan)}</td>
+                    {/* <td className="border px-4 py-2">{formatRupiah(tipe.harga_standar_sudut)}</td>
+                    <td className="border px-4 py-2">{formatRupiah(tipe.penambahan_bangunan)}</td> */}
                     <td className="border px-4 py-2 flex justify-end gap-2">
                       <Button
                         size="sm"

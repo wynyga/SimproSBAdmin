@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { TransaksiDataWithRelasi } from "../../../../../utils/interfaceTransaksi";
 
 interface InputNumberProps {
@@ -32,7 +32,6 @@ interface Props {
   transaksi: EditableTransaksi;
   setTransaksi: (data: EditableTransaksi) => void;
   onSubmit: () => Promise<boolean>;
-  userList: { id: number; nama_user: string }[];
   unitList: { id: number; nomor_unit: string }[];
   error?: string | null;
 }
@@ -43,18 +42,9 @@ export default function EditTransaksiModal({
   transaksi,
   setTransaksi,
   onSubmit,
-  userList,
   unitList,
   error,
 }: Props) {
-  const [useNewUser, setUseNewUser] = useState(false);
-
-  useEffect(() => {
-    if (isOpen) {
-      setUseNewUser(false);
-    }
-  }, [isOpen]);
-
   if (!isOpen || !transaksi) return null;
 
   const calculateTotalHarga = (data: EditableTransaksi) => {
@@ -73,9 +63,9 @@ export default function EditTransaksiModal({
 
     const next: EditableTransaksi = { ...transaksi };
 
-    // Ketik aman per-field tanpa any
     switch (name) {
-      // Numeric keys
+      // ... (case numeric lainnya)
+      
       case "harga_jual_standar":
         next.harga_jual_standar = Number(value) || 0;
         break;
@@ -116,8 +106,11 @@ export default function EditTransaksiModal({
       case "alamat_user":
         next.alamat_user = value;
         break;
+
+      // ✅ PERUBAHAN: Hanya izinkan input angka untuk no_telepon
       case "no_telepon":
-        next.no_telepon = value;
+        const numericValue = value.replace(/[^0-9]/g, ""); // Hapus non-angka
+        next.no_telepon = numericValue;
         break;
 
       default:
@@ -129,16 +122,28 @@ export default function EditTransaksiModal({
   };
 
   const handleSubmit = async () => {
-    if (useNewUser) {
-      if (!transaksi.nama_user || !transaksi.alamat_user || !transaksi.no_telepon) {
-        alert("Data user baru wajib diisi.");
-        return;
-      }
-    } else {
-      if (!transaksi.user_id) {
-        alert("User lama wajib dipilih.");
-        return;
-      }
+    // ✅ PERUBAHAN: Validasi diperketat
+    if (!transaksi.nama_user) {
+      alert("Nama pembeli wajib diisi.");
+      return;
+    }
+    if (!transaksi.alamat_user) {
+      alert("Alamat pembeli wajib diisi.");
+      return;
+    }
+    if (!transaksi.no_telepon) {
+      alert("Nomor telepon wajib diisi.");
+      return;
+    }
+    // Validasi minimal 10 digit
+    if (transaksi.no_telepon.length < 10) {
+      alert("Nomor telepon minimal harus 10 angka.");
+      return;
+    }
+    // Validasi unit_id
+    if (!transaksi.unit_id || transaksi.unit_id === 0) {
+      alert("Unit wajib dipilih.");
+      return;
     }
 
     const success = await onSubmit();
@@ -159,82 +164,39 @@ export default function EditTransaksiModal({
           </button>
         </div>
 
-        {/* Pilihan user lama atau baru */}
-        <div className="mb-4">
-          <label className="mr-4">
-            <input
-              type="radio"
-              checked={!useNewUser}
-              onChange={() => setUseNewUser(false)}
-            />{" "}
-            Pilih User Lama
-          </label>
-          <label className="ml-6">
-            <input
-              type="radio"
-              checked={useNewUser}
-              onChange={() => setUseNewUser(true)}
-            />{" "}
-            Tambah User Baru
-          </label>
-        </div>
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* User Lama */}
-          {!useNewUser && (
-            <div>
-              <label className="block text-sm mb-1">Pembeli</label>
-              <select
-                name="user_id"
-                value={transaksi.user_id}
-                onChange={handleChange}
-                className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              >
-                <option value="">Pilih Pembeli</option>
-                {userList.map((user) => (
-                  <option key={user.id} value={user.id}>
-                    {user.nama_user}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {/* User Baru */}
-          {useNewUser && (
-            <>
-              <div>
-                <label className="block text-sm mb-1">Nama Pembeli</label>
-                <input
-                  type="text"
-                  name="nama_user"
-                  value={transaksi.nama_user ?? ""}
-                  onChange={handleChange}
-                  className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                />
-              </div>
-              <div>
-                <label className="block text-sm mb-1">Alamat</label>
-                <input
-                  type="text"
-                  name="alamat_user"
-                  value={transaksi.alamat_user ?? ""}
-                  onChange={handleChange}
-                  className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                />
-              </div>
-              <div>
-                <label className="block text-sm mb-1">No Telepon</label>
-                <input
-                  type="text"
-                  name="no_telepon"
-                  value={transaksi.no_telepon ?? ""}
-                  onChange={handleChange}
-                  className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                />
-              </div>
-            </>
-          )}
+          {/* User Baru (Selalu tampil) */}
+          <div>
+            <label className="block text-sm mb-1">Nama Pembeli</label>
+            <input
+              type="text"
+              name="nama_user"
+              value={transaksi.nama_user ?? ""}
+              onChange={handleChange}
+              className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            />
+          </div>
+          <div>
+            <label className="block text-sm mb-1">Alamat</label>
+            <input
+              type="text"
+              name="alamat_user"
+              value={transaksi.alamat_user ?? ""}
+              onChange={handleChange}
+              className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            />
+          </div>
+          <div>
+            <label className="block text-sm mb-1">No Telepon</label>
+            <input
+              type="tel" // ✅ Ganti tipe ke "tel" untuk UX mobile yg lebih baik
+              name="no_telepon"
+              value={transaksi.no_telepon ?? ""}
+              onChange={handleChange}
+              placeholder="Contoh: 081234567890"
+              className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            />
+          </div>
 
           {/* Unit */}
           <div>
@@ -337,7 +299,7 @@ export default function EditTransaksiModal({
   );
 }
 
-// Komponen input number
+// Komponen input number (Tidak berubah)
 function InputNumber({
   label,
   name,

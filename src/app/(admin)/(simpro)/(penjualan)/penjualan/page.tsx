@@ -162,7 +162,6 @@ export default function TransaksiPage() {
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
         onSubmit={handleAddTransaksi}
-        userList={users}
         unitList={units}
       />
 
@@ -173,7 +172,6 @@ export default function TransaksiPage() {
           transaksi={selectedTransaksi}
           setTransaksi={setSelectedTransaksi}
           onSubmit={handleUpdateTransaksi}
-          userList={users}
           unitList={units}
           error={error}
         />
