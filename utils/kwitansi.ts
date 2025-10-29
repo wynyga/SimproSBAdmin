@@ -151,16 +151,28 @@ export const cetakKwitansiCO = async (kwitansiId: number) => {
 export const getPaginatedKwitansi = async (
   page: number,
   search: string,
-  setError: (msg: string | null) => void
+  perPage: number,
+  onError: (error: string) => void
 ) => {
   try {
     const token = localStorage.getItem("token");
-    if (!token) throw new Error("Anda harus login.");
+    if (!token) {
+      throw new Error("Anda harus login.");
+    }
 
+    // 1. Membangun query parameters
+    const params = new URLSearchParams();
+    params.append("page", String(page));
+    params.append("per_page", String(perPage));
+    if (search) {
+      params.append("search", search);
+    }
+
+    // 2. Fetch ke route 'index' ('/'), BUKAN '/all'
+    // URL akan menjadi: /api/kwitansi?page=1&per_page=20&search=...
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/kwitansi?page=${page}&per_page=10&search=${encodeURIComponent(search)}`,
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/kwitansi?${params.toString()}`,
       {
-        method: "GET",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -168,13 +180,21 @@ export const getPaginatedKwitansi = async (
       }
     );
 
-    if (!response.ok) throw new Error("Gagal mengambil data kwitansi.");
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Gagal mengambil data kwitansi.");
+    }
+
+    // 3. Kembalikan data (sesuai format controller: { data: [...], meta: {...} })
     return await response.json();
-  } catch (err: any) {
-    setError(err instanceof Error ? err.message : "Terjadi kesalahan saat mengambil data.");
-    return null;
+
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Terjadi kesalahan";
+    onError(message); // Menggunakan callback 'onError' dari page.tsx
+    return null; // Kembalikan null agar page.tsx bisa menanganinya
   }
 };
+
 export const getAllKwitansi = async (setError: Function) => {
   try {
     const token = localStorage.getItem("token");

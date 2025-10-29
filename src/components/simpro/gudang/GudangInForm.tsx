@@ -158,18 +158,27 @@ export default function GudangInForm() {
             <div className="relative">
               <Select
                 placeholder="Pilih nama barang"
+                
+                // PERUBAHAN 1: 'options' menggunakan kode_barang sebagai value
                 options={filteredItems.map((item) => ({
-                  value: item.nama_barang,
-                  label: item.nama_barang,
+                  value: item.kode_barang, // <-- Gunakan ID unik
+                  label: item.nama_barang, // <-- Ini untuk tampilan
                 }))}
-                value={formData.nama_barang}
-                onChange={(nama) => {
-                  const selected = filteredItems.find((item) => item.nama_barang === nama);
+
+                // PERUBAHAN 2: 'value' dari Select sekarang adalah kode_barang
+                value={formData.kode_barang}
+                
+                // PERUBAHAN 3: 'onChange' sekarang menerima 'kode'
+                onChange={(kode) => {
+                  // Cari item berdasarkan 'kode' yang dipilih
+                  const selected = filteredItems.find(
+                    (item) => item.kode_barang === kode
+                  );
                   if (selected) {
                     setFormData((prev) => ({
                       ...prev,
-                      nama_barang: selected.nama_barang,
-                      kode_barang: selected.kode_barang, // otomatis isi kode_barang
+                      nama_barang: selected.nama_barang, // Tetap isi nama_barang
+                      kode_barang: selected.kode_barang, // Isi kode_barang dari 'kode'
                     }));
                   }
                 }}
