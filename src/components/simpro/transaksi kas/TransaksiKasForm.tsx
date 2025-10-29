@@ -82,7 +82,7 @@ export default function TransaksiKasForm({
                 { value: "102", label: "Kas Keluar" },
               ]}
               placeholder="Pilih Jenis Transaksi"
-              defaultValue={formData.kode}
+              value={formData.kode}
               onChange={(value) => handleJenisTransaksiChange(value as "101" | "102")}
               className="dark:bg-dark-900"
             />
@@ -105,7 +105,7 @@ export default function TransaksiKasForm({
                     ? "Pilih Keterangan Kas Masuk (KI...)"
                     : "Pilih Keterangan Kas Keluar (KO...)"
                 }
-                defaultValue={formData.keterangan_transaksi_id}
+                value={formData.keterangan_transaksi_id}
                 onChange={(value) =>
                   handleSelectChange(value, "keterangan_transaksi_id")
                 }
@@ -152,7 +152,7 @@ export default function TransaksiKasForm({
             <Select
               key={`metode-${formData.metode_pembayaran}`}
               options={metodePembayaranOptions}
-              defaultValue={formData.metode_pembayaran}
+              value={formData.metode_pembayaran}
               placeholder="Pilih metode pembayaran"
               onChange={(value) => handleSelectChange(value, "metode_pembayaran")}
               className="dark:bg-dark-900"
