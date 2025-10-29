@@ -13,7 +13,7 @@ import { getCostTees } from "../../../../utils/CostTeeApi";
 
 // --- INTERFACE BARU & YANG DIPERBARUI ---
 interface StockItem {
-  type: string;
+  kode_barang: string;
   nama_barang: string;
 }
 
@@ -57,11 +57,15 @@ export default function GudangOutForm() {
   });
 
   useEffect(() => {
-    const fetchInitial = async () => {
-      const stock = await getStock();
-      if (stock) {
-        setStockData(stock);
-        setCategories(Object.keys(stock));
+  const fetchInitial = async () => {
+      const response = await getStock(); 
+      if (response && response.data) {
+        setStockData(response.data);
+        setCategories(Object.keys(response.data)); 
+      }
+      if (response) {
+        setStockData(response);
+        setCategories(Object.keys(response));
       }
 
       const tees = await getCostTees(setError);
@@ -92,7 +96,7 @@ export default function GudangOutForm() {
       setFormData((prev) => ({
         ...prev,
         nama_barang: item.nama_barang,
-        kode_barang: item.type,
+        kode_barang: item.kode_barang|| "",
       }));
     }
   };
@@ -164,7 +168,7 @@ export default function GudangOutForm() {
                 value: cat,
                 label: cat.replace(/_/g, " "),
               }))}
-              defaultValue={formData.kategori}
+              value={formData.kategori}
               onChange={handleSelectKategori}
             />
             <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500 dark:text-gray-400">
@@ -183,7 +187,7 @@ export default function GudangOutForm() {
                   value: item.nama_barang,
                   label: item.nama_barang,
                 }))}
-                defaultValue={formData.nama_barang}
+                value={formData.nama_barang}
                 onChange={handleSelectNamaBarang}
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500 dark:text-gray-400">
@@ -222,7 +226,7 @@ export default function GudangOutForm() {
                 value: tee.id.toString(),
                 label: tee.description,
               }))}
-              defaultValue={formData.peruntukan}
+              value={formData.peruntukan}
               onChange={(val) =>
                 setFormData((prev) => ({ ...prev, peruntukan: val }))
               }

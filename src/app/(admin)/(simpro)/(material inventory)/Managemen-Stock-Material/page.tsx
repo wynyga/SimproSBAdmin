@@ -133,7 +133,7 @@ export default function StockPage() {
                     <div>Type</div>
                     <div>Nama Barang</div>
                     <div>Uty</div>
-                    <div>Satuan</div> {/* <-- PERUBAHAN: Kolom ditambah */}
+                    <div>Satuan</div> 
                     <div>Harga Satuan</div>
                     <div>Aksi</div>
                   </div>

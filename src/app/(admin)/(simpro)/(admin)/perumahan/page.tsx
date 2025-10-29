@@ -124,8 +124,8 @@ export default function PerumahanPage() {
                 <table className="min-w-full border border-gray-300 dark:border-gray-700 text-sm">
                   <thead className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white">
                     <tr>
-                      <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left font-semibold">Nama</th>
-                      <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left font-semibold">Inisial</th>
+                      <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left font-semibold">Nama Properti Perumahan</th>
+                      <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left font-semibold">Kode</th>
                       <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left font-semibold">Lokasi</th>
                       <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left font-semibold">Aksi</th>
                     </tr>

@@ -1,7 +1,7 @@
 "use client";
 
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import GudangOutForm from "@/components/simpro/gudang/GudangOut.Form";
+import GudangOutForm from "@/components/simpro/gudang/GudangOutForm";
 
 export default function GudangKeluarPage() {
   return (

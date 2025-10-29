@@ -11,7 +11,7 @@ import TextArea from "@/components/form/input/TextArea";
 import { getStock, gudangIn } from "../../../../utils/stock";
 
 interface StockItem {
-  type: string;
+  kode_barang: string;
   nama_barang: string;
 }
 
@@ -143,7 +143,7 @@ export default function GudangInForm() {
                 value: cat,
                 label: cat.replace(/_/g, " "),
               }))}
-              defaultValue={formData.kategori}
+              value={formData.kategori}
               onChange={handleSelectKategori}
             />
             <span className="absolute text-gray-500 dark:text-gray-400 right-3 top-1/2 -translate-y-1/2 pointer-events-none">
@@ -162,14 +162,14 @@ export default function GudangInForm() {
                   value: item.nama_barang,
                   label: item.nama_barang,
                 }))}
-                defaultValue={formData.nama_barang}
+                value={formData.nama_barang}
                 onChange={(nama) => {
                   const selected = filteredItems.find((item) => item.nama_barang === nama);
                   if (selected) {
                     setFormData((prev) => ({
                       ...prev,
                       nama_barang: selected.nama_barang,
-                      kode_barang: selected.type, // otomatis isi kode_barang
+                      kode_barang: selected.kode_barang, // otomatis isi kode_barang
                     }));
                   }
                 }}
@@ -232,7 +232,7 @@ export default function GudangInForm() {
                 { value: "Dua Mingguan", label: "Dua Mingguan" },
                 { value: "Bulanan", label: "Bulanan" },
               ]}
-              defaultValue={formData.sistem_pembayaran}
+              value={formData.sistem_pembayaran}
               onChange={(value) =>
                 setFormData((prev) => ({
                   ...prev,
