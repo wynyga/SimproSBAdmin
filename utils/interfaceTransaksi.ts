@@ -13,6 +13,7 @@ export interface TransaksiData {
     biaya_booking: number | string; 
     plafon_kpr?: number | string;   
     kpr_disetujui: "Ya" | "Tidak" | string;
+    uang_tanda_jadi: number;
 }
 
 export interface TransaksiDataWithRelasi extends TransaksiData {
@@ -23,5 +24,19 @@ export interface TransaksiDataWithRelasi extends TransaksiData {
         nomor_unit: string;
         blok?: { nama_blok: string };
         tipe_rumah?: { tipe_rumah: string };
+        kategori?: string;
     };
+}
+
+export interface UnitDetail {
+  id: number;
+  nomor_unit: string;
+  // ✅ Kategori ada di 'unit'
+  kategori: 'standar' | 'non standar' | 'sudut' | string | null; 
+  
+  // ✅ Harga Jual ada di dalam 'tipe_rumah'
+  tipe_rumah: {
+    id: number;
+    harga_jual: number; 
+  } | null;
 }

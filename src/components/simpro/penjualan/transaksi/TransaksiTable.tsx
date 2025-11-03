@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { TransaksiDataWithRelasi } from "../../../../../utils/interfaceTransaksi";
+import { TransaksiDataWithRelasi} from "../../../../../utils/interfaceTransaksi";
 import Button from "@/components/ui/button/Button";
 
 interface Props {
@@ -21,9 +21,9 @@ export default function TransaksiTable({
 }: Props) {
   const headers = [
     "Pembeli",
-    "Unit",
     "Blok",
-    "Tipe Rumah",
+    "Unit",
+    "Kategori",
     "Harga Jual",
     "Kelebihan Tanah",
     "Penambahan Bangunan",
@@ -31,7 +31,7 @@ export default function TransaksiTable({
     "Total Harga",
     "DP",
     "Biaya Booking",
-    "Plafon KPR",
+    "Uang Tanda Jadi",
     "Status KPR",
     "Aksi",
   ];
@@ -66,9 +66,9 @@ export default function TransaksiTable({
               {transaksiList.map((item) => (
                 <tr key={item.id}>
                   <td className="px-4 py-2">{item.user_perumahan?.nama_user || "-"}</td>
-                  <td className="px-4 py-2">{item.unit?.nomor_unit || "-"}</td>
                   <td className="px-4 py-2">{item.unit?.blok?.nama_blok || "-"}</td>
-                  <td className="px-4 py-2">{item.unit?.tipe_rumah?.tipe_rumah || "-"}</td>
+                  <td className="px-4 py-2">{item.unit?.nomor_unit || "-"}</td>
+                  <td className="px-4 py-2">{item.unit?.kategori || "-"}</td>
                   <td className="px-4 py-2">Rp {Number(item.harga_jual_standar).toLocaleString("id-ID")}</td>
                   <td className="px-4 py-2">Rp {Number(item.kelebihan_tanah).toLocaleString("id-ID")}</td>
                   <td className="px-4 py-2">Rp {Number(item.penambahan_luas_bangunan).toLocaleString("id-ID")}</td>
@@ -76,7 +76,7 @@ export default function TransaksiTable({
                   <td className="px-4 py-2">Rp {Number(item.total_harga_jual).toLocaleString("id-ID")}</td>
                   <td className="px-4 py-2">Rp {Number(item.minimum_dp).toLocaleString("id-ID")}</td>
                   <td className="px-4 py-2">Rp {Number(item.biaya_booking).toLocaleString("id-ID")}</td>
-                  <td className="px-4 py-2">Rp {Number(item.plafon_kpr ?? 0).toLocaleString("id-ID")}</td>
+                  <td className="px-4 py-2">Rp {Number(item.uang_tanda_jadi).toLocaleString("id-ID")}</td>
                   <td className="px-4 py-2">{item.kpr_disetujui}</td>
                   <td className="px-4 py-2 flex gap-2 justify-end">
                     <Button
