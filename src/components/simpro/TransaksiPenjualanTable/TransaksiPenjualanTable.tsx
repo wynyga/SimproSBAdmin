@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 
+// Interface tetap sama, tidak masalah jika datanya ada
+// tapi tidak kita tampilkan
 interface TransaksiData {
   id: number;
   unit_id: number;
@@ -10,7 +12,7 @@ interface TransaksiData {
   plafon_kpr: number;
   total_bayar: number;
   status_bayar: "lunas" | "cicil" | "utang";
-  sisa_hutang: number,
+  sisa_hutang: number;
   unit: string | null;
   pembeli: string | null;
   minimum_dp: number;
@@ -22,22 +24,15 @@ interface Props {
   error: string | null;
 }
 
-export default function TransaksiPenjualanTable({ transaksiList, loading, error }: Props) {
+export default function TransaksiPenjualanTable({
+  transaksiList,
+  loading,
+  error,
+}: Props) {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "lunas":
-        return "text-green-700 bg-green-100";
-      case "cicil":
-        return "text-yellow-700 bg-yellow-100";
-      case "utang":
-        return "text-red-700 bg-red-100";
-      default:
-        return "";
-    }
-  };
+  // Fungsi getStatusColor dihapus, sudah tidak diperlukan
 
   const paginatedList = transaksiList.slice(
     (currentPage - 1) * itemsPerPage,
@@ -50,6 +45,10 @@ export default function TransaksiPenjualanTable({ transaksiList, loading, error 
     setCurrentPage(newPage);
   };
 
+  // Menghitung colSpan baru. Kolom kita sekarang:
+  // Unit, Pembeli, Harga Jual, DP (Total 4)
+  const colSpan = 4;
+
   return (
     <div className="overflow-x-auto rounded border dark:border-gray-700">
       <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-gray-700 dark:text-white text-sm">
@@ -59,55 +58,49 @@ export default function TransaksiPenjualanTable({ transaksiList, loading, error 
             <th className="px-4 py-2">Pembeli</th>
             <th className="px-4 py-2">Harga Jual</th>
             <th className="px-4 py-2">DP</th>
-            {/* <th className="px-4 py-2">Plafon KPR</th> */}
-            <th className="px-4 py-2">Sudah Dibayar</th>
-            <th className="px-4 py-2">Sisa Hutang</th>
-            <th className="px-4 py-2">Status Bayar</th>
+            {/* Kolom Sudah Dibayar, Sisa Hutang, dan Status Bayar DIHAPUS */}
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
           {loading ? (
             <tr>
-              <td colSpan={8} className="px-4 py-4 text-center">Loading...</td>
+              <td colSpan={colSpan} className="px-4 py-4 text-center">
+                Loading...
+              </td>
             </tr>
           ) : error ? (
             <tr>
-              <td colSpan={8} className="px-4 py-4 text-center text-red-500">{error}</td>
+              <td colSpan={colSpan} className="px-4 py-4 text-center text-red-500">
+                {error}
+              </td>
             </tr>
           ) : paginatedList.length > 0 ? (
             paginatedList.map((trx) => (
               <tr key={trx.id}>
                 <td className="px-4 py-2 whitespace-nowrap">{trx.unit || "-"}</td>
-                <td className="px-4 py-2 whitespace-nowrap">{trx.pembeli || "-"}</td>
+                <td className="px-4 py-2 whitespace-nowrap">
+                  {trx.pembeli || "-"}
+                </td>
                 <td className="px-4 py-2 text-right whitespace-nowrap">
                   Rp {trx.total_harga_jual.toLocaleString("id-ID")}
                 </td>
                 <td className="px-4 py-2 text-right whitespace-nowrap">
                   Rp {trx.minimum_dp.toLocaleString("id-ID")}
                 </td>
-                {/* <td className="px-4 py-2 text-right whitespace-nowrap">
-                  Rp {trx.plafon_kpr.toLocaleString("id-ID")}
-                </td> */}
-                <td className="px-4 py-2 text-right whitespace-nowrap">
-                  Rp {trx.total_bayar.toLocaleString("id-ID")}
-                </td>
-                <td className="px-4 py-2 text-right whitespace-nowrap">
-                  Rp {trx.sisa_hutang.toLocaleString("id-ID")}
-                </td>
-                <td className={`px-4 py-2 text-center font-semibold rounded whitespace-nowrap ${getStatusColor(trx.status_bayar)}`}>
-                  {trx.status_bayar.toUpperCase()}
-                </td>
+                {/* Kolom Sudah Dibayar, Sisa Hutang, dan Status Bayar DIHAPUS */}
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan={8} className="px-4 py-4 text-center">Tidak ada transaksi.</td>
+              <td colSpan={colSpan} className="px-4 py-4 text-center">
+                Tidak ada transaksi.
+              </td>
             </tr>
           )}
         </tbody>
       </table>
 
-      {/* Pagination */}
+      {/* Pagination (Tidak berubah) */}
       <div className="flex justify-center items-center space-x-2 mt-6">
         {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
           <button

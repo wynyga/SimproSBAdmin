@@ -9,7 +9,8 @@ interface Unit {
   nomor_unit: string;
   blok_id: number;
   tipe_rumah_id: number;
-  kategori: string; // <-- Tambahkan ini
+  kategori: string; 
+  status_penjualan: string;
 }
 
 interface Blok {

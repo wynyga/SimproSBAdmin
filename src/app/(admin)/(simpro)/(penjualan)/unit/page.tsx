@@ -16,13 +16,14 @@ import ConfirmDeleteModal from "@/components/simpro/penjualan/ConfirmDeleteModal
 import AddUnitModal from "@/components/simpro/penjualan/unit/AddUnitModal";
 import EditUnitModal from "@/components/simpro/penjualan/unit/EditUnitModal";
 
-// 1. Perbarui Interface Unit
+// 1. Perbarui Interface Unit (Tambahkan status_penjualan)
 interface Unit {
   id: number;
   nomor_unit: string;
   blok_id: number;
   tipe_rumah_id: number;
-  kategori: string; // <-- Tambahkan ini
+  kategori: string;
+  status_penjualan: string; // <-- TAMBAHAN BARU
 }
 
 interface Blok {
@@ -77,18 +78,18 @@ export default function UnitPage() {
     fetchUnits();
   }, [fetchUnits]);
 
-  // 2. Perbarui handleAdd untuk menyertakan 'kategori'
+  // Handler add (sudah benar, tidak perlu kirim status)
   const handleAdd = async (data: {
     blok_id: number;
     tipe_rumah_id: number;
     nomor_unit: string;
-    kategori: string; // <-- Tambahkan ini
+    kategori: string;
   }) => {
     await addUnit(data, setError);
     await fetchUnits();
   };
 
-  // 3. Perbarui handleUpdate untuk mengirim 'kategori'
+  // Handler update (sudah benar, tidak perlu kirim status)
   const handleUpdate = async (data: Unit): Promise<boolean> => {
     if (!data || !data.nomor_unit.trim()) {
       setError("Nomor unit tidak boleh kosong.");
@@ -100,7 +101,7 @@ export default function UnitPage() {
         blok_id: data.blok_id,
         tipe_rumah_id: data.tipe_rumah_id,
         nomor_unit: data.nomor_unit,
-        kategori: data.kategori, // <-- Tambahkan ini
+        kategori: data.kategori,
       },
       setError
     );
@@ -141,7 +142,7 @@ export default function UnitPage() {
           </Button>
         </div>
 
-        {/* 4. Perbarui Tabel */}
+        {/* 2. Perbarui Tabel */}
         <div className="overflow-auto rounded border dark:border-gray-700">
           <table className="min-w-full border border-gray-300 dark:border-gray-700 text-sm text-gray-700 dark:text-white">
             <thead className="bg-gray-100 dark:bg-gray-700">
@@ -149,6 +150,8 @@ export default function UnitPage() {
                 <th className="border px-4 py-2 text-left">Blok</th>
                 <th className="border px-4 py-2 text-left">Nomor Unit</th>
                 <th className="border px-4 py-2 text-left">Kategori</th>
+                {/* TAMBAHKAN HEADER BARU */}
+                <th className="border px-4 py-2 text-left">Status</th>
                 <th className="border px-4 py-2 text-right">Aksi</th>
               </tr>
             </thead>
@@ -157,17 +160,26 @@ export default function UnitPage() {
                 unitList.map((unit) => (
                   <tr key={unit.id} className="bg-white dark:bg-transparent">
                     <td className="border px-4 py-2">
-                      {blokList.find((b) => b.id === unit.blok_id)
-                        ?.nama_blok || "-"}
+                      {blokList.find((b) => b.id === unit.blok_id)?.nama_blok || "-"}
                     </td>
                     <td className="border px-4 py-2">{unit.nomor_unit}</td>
-                    {/* <td className="border px-4 py-2">
-                      {tipeList.find((t) => t.id === unit.tipe_rumah_id)
-                        ?.tipe_rumah || "-"}
-                    </td> */}
                     <td className="border px-4 py-2 capitalize">
                       {unit.kategori || "-"}
                     </td>
+
+                    {/* 3. TAMBAHKAN SEL DATA BARU (TD) */}
+                    <td className="border px-4 py-2">
+                      {unit.status_penjualan === "laku" ? (
+                        <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-300">
+                          Laku
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
+                          Belum Laku
+                        </span>
+                      )}
+                    </td>
+
                     <td className="border px-4 py-2">
                       <div className="flex justify-end gap-2">
                         <Button
@@ -196,9 +208,9 @@ export default function UnitPage() {
                 ))
               ) : (
                 <tr>
-                  {/* 5. Perbarui colSpan */}
+                  {/* 4. Perbarui colSpan */}
                   <td
-                    colSpan={5}
+                    colSpan={5} // Sekarang ada 5 kolom
                     className="text-center py-4 text-gray-500 dark:text-gray-400"
                   >
                     Tidak ada data unit.
@@ -209,6 +221,7 @@ export default function UnitPage() {
           </table>
         </div>
 
+        {/* Pagination (tidak berubah) */}
         {totalPages > 1 && (
           <div className="flex justify-center items-center gap-2 mt-4 text-sm text-gray-800 dark:text-gray-100">
             <button
@@ -233,7 +246,7 @@ export default function UnitPage() {
         )}
       </ComponentCard>
 
-      {/* Modals */}
+      {/* Modals (tidak berubah) */}
       <AddUnitModal
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
