@@ -3,11 +3,13 @@
 // 1. Impor useState dan useEffect
 import React, { useState, useEffect } from "react";
 
+// 2. Perbarui Interface Unit
 interface Unit {
   id: number;
   nomor_unit: string;
   blok_id: number;
   tipe_rumah_id: number;
+  kategori: string; // <-- Tambahkan ini
 }
 
 interface Blok {
@@ -20,14 +22,14 @@ interface TipeRumah {
   tipe_rumah: string;
 }
 
+// 3. Interface 'Props' sekarang otomatis benar
+// karena 'Unit' sudah diperbarui
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  unit: Unit; // Prop 'unit' HANYA sebagai data awal
-  // setUnit DIHAPUS
+  unit: Unit;
   blokOptions: Blok[];
   tipeOptions: TipeRumah[];
-  // 2. onSubmit akan mengirimkan 'data'
   onSubmit: (data: Unit) => Promise<boolean>;
   error?: string | null;
 }
@@ -41,25 +43,19 @@ export default function EditUnitModal({
   onSubmit,
   error,
 }: Props) {
-  // 3. Buat state LOKAL untuk form
   const [formData, setFormData] = useState<Unit>(unit);
 
-  // 4. Sinkronkan state lokal JIKA prop 'unit' berubah
-  // (Ini terjadi saat Anda menutup dan membuka modal untuk unit lain)
   useEffect(() => {
     if (unit) {
       setFormData(unit);
     }
-  }, [unit]); // Hanya bergantung pada prop 'unit'
+  }, [unit]);
 
   if (!isOpen || !unit) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // 5. DEBUGGING: Tampilkan data yang AKAN DIKIRIM
     console.log("MODAL: Mengirim data ini ke Page.tsx:", formData);
-
     const success = await onSubmit(formData); // Kirim state LOKAL
     if (success) onClose();
   };
@@ -78,30 +74,12 @@ export default function EditUnitModal({
         </div>
 
         <form onSubmit={handleSubmit}>
-          {/* Input Nomor Unit */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Nomor Unit</label>
-            <input
-              type="text"
-              // 6. Gunakan state LOKAL (formData)
-              value={formData.nomor_unit}
-              onChange={(e) =>
-                // 7. Update state LOKAL (setFormData)
-                setFormData({ ...formData, nomor_unit: e.target.value })
-              }
-              className="w-full rounded border border-gray-300 px-3 py-2 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-              required
-            />
-          </div>
-
           {/* Input Blok */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">Blok</label>
             <select
-              // 6. Gunakan state LOKAL (formData)
               value={formData.blok_id}
               onChange={(e) => {
-                // 7. Update state LOKAL (setFormData)
                 setFormData({ ...formData, blok_id: Number(e.target.value) });
               }}
               className="w-full rounded border border-gray-300 px-3 py-2 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
@@ -120,11 +98,12 @@ export default function EditUnitModal({
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">Tipe Rumah</label>
             <select
-              // 6. Gunakan state LOKAL (formData)
               value={formData.tipe_rumah_id}
               onChange={(e) => {
-                // 7. Update state LOKAL (setFormData)
-                setFormData({ ...formData, tipe_rumah_id: Number(e.target.value) });
+                setFormData({
+                  ...formData,
+                  tipe_rumah_id: Number(e.target.value),
+                });
               }}
               className="w-full rounded border border-gray-300 px-3 py-2 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
               required
@@ -136,6 +115,39 @@ export default function EditUnitModal({
                 </option>
               ))}
             </select>
+          </div>
+
+          {/* 4. TAMBAHKAN INPUT KATEGORI */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1">Kategori</label>
+            <select
+              // 5. Atasi bug 'null' dengan fallback ke string kosong
+              value={formData.kategori || ""}
+              onChange={(e) => {
+                setFormData({ ...formData, kategori: e.target.value });
+              }}
+              className="w-full rounded border border-gray-300 px-3 py-2 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              required
+            >
+              <option value="">Pilih Kategori</option>
+              <option value="standar">Standar</option>
+              <option value="non standar">Non Standar</option>
+              <option value="sudut">Sudut</option>
+            </select>
+          </div>
+
+          {/* Input Nomor Unit */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1">Nomor Unit</label>
+            <input
+              type="text"
+              value={formData.nomor_unit}
+              onChange={(e) =>
+                setFormData({ ...formData, nomor_unit: e.target.value })
+              }
+              className="w-full rounded border border-gray-300 px-3 py-2 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              required
+            />
           </div>
 
           {error && <p className="text-sm text-red-500 mt-2">{error}</p>}

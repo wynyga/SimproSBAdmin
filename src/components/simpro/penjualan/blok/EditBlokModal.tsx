@@ -2,16 +2,18 @@
 
 import React from "react";
 
+// 1. PERBARUI INTERFACE INI
 interface Blok {
   id: number;
   nama_blok: string;
+  units_count: number; // <-- Tambahkan properti ini
 }
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   blok: Blok;
-  setBlok: (blok: Blok) => void;
+  setBlok: (blok: Blok) => void; // Tipe ini sekarang juga merujuk ke Blok yang baru
   onSubmit: () => Promise<boolean>;
   error?: string | null;
 }
@@ -24,6 +26,10 @@ export default function EditBlokModal({
   onSubmit,
   error,
 }: Props) {
+  
+  // Fungsi ini sekarang sudah benar dan tidak perlu diubah.
+  // Karena 'blok' (dari prop) kini memiliki 'units_count',
+  // operator '...' akan otomatis menyertakannya ke objek baru.
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBlok({ ...blok, nama_blok: e.target.value });
   };

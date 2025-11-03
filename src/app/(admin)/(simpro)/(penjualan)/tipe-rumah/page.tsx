@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react"; // 1. Impor useCallback
+import React, { useEffect, useState, useCallback } from "react";
 import {
   getPaginatedTipeRumah,
   addTipeRumah,
@@ -15,13 +15,14 @@ import AddTipeRumahModal from "@/components/simpro/penjualan/AddTipeRumahModal";
 import EditTipeRumahModal from "@/components/simpro/penjualan/EditTipeRumahModal";
 import ConfirmDeleteModal from "@/components/simpro/penjualan/ConfirmDeleteModal";
 
+// 1. Perbarui Interface TipeRumah
 interface TipeRumah {
   id: number;
   tipe_rumah: string;
   luas_bangunan: number;
   luas_kavling: number;
-  harga_standar_tengah: number;
-  harga_standar_sudut: number;
+  harga_standar: number; // <-- Ganti nama
+  harga_jual: number; // <-- Ganti nama
   penambahan_bangunan: number;
 }
 
@@ -34,25 +35,30 @@ export default function TipeRumahPage() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const [validationErrors, setValidationErrors] = useState<{ [key: string]: boolean }>({});
+  const [validationErrors, setValidationErrors] = useState<{
+    [key: string]: boolean;
+  }>({});
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  // 2. Bungkus fungsi dengan useCallback dan definisikan dependensinya
   const fetchTipeRumah = useCallback(async () => {
-    const res = await getPaginatedTipeRumah(currentPage, searchTerm, setErrorMessage);
+    const res = await getPaginatedTipeRumah(
+      currentPage,
+      searchTerm,
+      setErrorMessage
+    );
     if (res) {
       setTipeRumah(res.data);
       setTotalPages(res.last_page);
     }
-  }, [currentPage, searchTerm]); // <-- Dependensi untuk useCallback
+  }, [currentPage, searchTerm]);
 
   useEffect(() => {
     fetchTipeRumah();
-  }, [fetchTipeRumah]); // 3. Gunakan fungsi yang sudah di-memoize sebagai dependensi
+  }, [fetchTipeRumah]);
 
   const handleAdd = async (data: Omit<TipeRumah, "id">) => {
     setErrorMessage(null);
@@ -65,17 +71,25 @@ export default function TipeRumahPage() {
     setValidationErrors({});
     if (!selectedTipe) return false;
 
+    // 2. Perbarui validasi emptyFields
     const emptyFields = [
       "tipe_rumah",
       "luas_bangunan",
       "luas_kavling",
-      "harga_standar_tengah",
-      "harga_standar_sudut",
+      "harga_standar", // <-- Ganti nama
+      "harga_jual", // <-- Ganti nama
       "penambahan_bangunan",
-    ].filter((field) => !selectedTipe[field as keyof TipeRumah] && selectedTipe[field as keyof TipeRumah] !== 0);
+    ].filter(
+      (field) =>
+        !selectedTipe[field as keyof TipeRumah] &&
+        selectedTipe[field as keyof TipeRumah] !== 0
+    );
 
     if (emptyFields.length > 0) {
-      const errorMap = emptyFields.reduce((acc, key) => ({ ...acc, [key]: true }), {});
+      const errorMap = emptyFields.reduce(
+        (acc, key) => ({ ...acc, [key]: true }),
+        {}
+      );
       setValidationErrors(errorMap);
       setErrorMessage("Semua field wajib diisi.");
       return false;
@@ -119,18 +133,17 @@ export default function TipeRumahPage() {
           </Button>
         </div>
 
-        {/* Table */}
+        {/* 3. Perbarui Tabel */}
         <div className="overflow-auto rounded border dark:border-gray-700">
           <table className="min-w-full border border-gray-300 dark:border-gray-700 text-sm text-gray-700 dark:text-white">
             <thead className="bg-gray-100 dark:bg-gray-700">
               <tr>
-                <th className="border px-4 py-2">Type Rumah</th>
-                <th className="border px-4 py-2">Luas Bangunan</th>
-                <th className="border px-4 py-2">Luas Kavling</th>
-                <th className="border px-4 py-2">Harga Jual</th>
-                {/* <th className="border px-4 py-2">Harga Sudut</th>
-                <th className="border px-4 py-2">Penambahan</th> */}
-                <th className="border px-4 py-2">Aksi</th>
+                <th className="border px-4 py-2 text-left">Tipe Rumah</th>
+                <th className="border px-4 py-2 text-center">L. Bangunan</th>
+                <th className="border px-4 py-2 text-center">L. Kavling</th>
+                <th className="border px-4 py-2 text-right">Harga Standar</th>
+                <th className="border px-4 py-2 text-right">Harga Jual</th>
+                <th className="border px-4 py-2 text-center">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -138,38 +151,51 @@ export default function TipeRumahPage() {
                 tipeRumah.map((tipe) => (
                   <tr key={tipe.id} className="bg-white dark:bg-transparent">
                     <td className="border px-4 py-2">{tipe.tipe_rumah}</td>
-                    <td className="border px-4 py-2">{tipe.luas_bangunan} m²</td>
-                    <td className="border px-4 py-2">{tipe.luas_kavling} m²</td>
-                    <td className="border px-4 py-2">{formatRupiah(tipe.harga_standar_tengah)}</td>
-                    {/* <td className="border px-4 py-2">{formatRupiah(tipe.harga_standar_sudut)}</td>
-                    <td className="border px-4 py-2">{formatRupiah(tipe.penambahan_bangunan)}</td> */}
-                    <td className="border px-4 py-2 flex justify-end gap-2">
-                      <Button
-                        size="sm"
-                        className="bg-yellow-500 hover:bg-yellow-600 text-white"
-                        onClick={() => {
-                          setSelectedTipe(tipe);
-                          setShowEditModal(true);
-                        }}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        size="sm"
-                        className="bg-red-600 hover:bg-red-700 text-white"
-                        onClick={() => {
-                          setDeleteId(tipe.id);
-                          setShowDeleteModal(true);
-                        }}
-                      >
-                        Hapus
-                      </Button>
+                    <td className="border px-4 py-2 text-center">
+                      {tipe.luas_bangunan} m²
+                    </td>
+                    <td className="border px-4 py-2 text-center">
+                      {tipe.luas_kavling} m²
+                    </td>
+                    <td className="border px-4 py-2 text-right">
+                      {formatRupiah(tipe.harga_standar)}
+                    </td>
+                    <td className="border px-4 py-2 text-right">
+                      {formatRupiah(tipe.harga_jual)}
+                    </td>
+                    <td className="border px-4 py-2">
+                      <div className="flex justify-center gap-2">
+                        <Button
+                          size="sm"
+                          className="bg-yellow-500 hover:bg-yellow-600 text-white"
+                          onClick={() => {
+                            setSelectedTipe(tipe);
+                            setShowEditModal(true);
+                          }}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="bg-red-600 hover:bg-red-700 text-white"
+                          onClick={() => {
+                            setDeleteId(tipe.id);
+                            setShowDeleteModal(true);
+                          }}
+                        >
+                          Hapus
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} className="text-center py-4 text-gray-500 dark:text-gray-400">
+                  {/* 4. Perbarui colSpan */}
+                  <td
+                    colSpan={7}
+                    className="text-center py-4 text-gray-500 dark:text-gray-400"
+                  >
                     Tidak ada data tipe rumah.
                   </td>
                 </tr>
@@ -189,7 +215,8 @@ export default function TipeRumahPage() {
               Sebelumnya
             </button>
             <span className="mx-2">
-              Halaman <strong>{currentPage}</strong> dari <strong>{totalPages}</strong>
+              Halaman <strong>{currentPage}</strong> dari{" "}
+              <strong>{totalPages}</strong>
             </span>
             <button
               disabled={currentPage === totalPages}

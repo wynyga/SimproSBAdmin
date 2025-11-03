@@ -2,22 +2,22 @@
 
 import React from "react";
 import { formatRupiah } from "../../../../utils/formatRupiah";
-
-interface TipeRumahData {
+// Interface ini sudah benar
+interface TipeRumah {
   id: number;
   tipe_rumah: string;
   luas_bangunan: number;
   luas_kavling: number;
-  harga_standar_tengah: number;
-  harga_standar_sudut: number;
+  harga_standar: number;
+  harga_jual: number;
   penambahan_bangunan: number;
 }
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  selectedTipe: TipeRumahData | null;
-  setSelectedTipe: (tipe: TipeRumahData | null) => void;
+  selectedTipe: TipeRumah | null;
+  setSelectedTipe: (tipe: TipeRumah | null) => void;
   handleUpdateTipe: () => Promise<boolean>;
   validationErrors: { [key: string]: boolean };
   errorMessage: string | null;
@@ -75,7 +75,9 @@ export default function EditTipeRumahModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Luas Bangunan (m²)</label>
+            <label className="block text-sm font-medium mb-1">
+              Luas Bangunan (m²)
+            </label>
             <input
               type="number"
               className={inputClass("luas_bangunan")}
@@ -90,7 +92,9 @@ export default function EditTipeRumahModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Luas Kavling (m²)</label>
+            <label className="block text-sm font-medium mb-1">
+              Luas Kavling (m²)
+            </label>
             <input
               type="number"
               className={inputClass("luas_kavling")}
@@ -104,52 +108,59 @@ export default function EditTipeRumahModal({
             />
           </div>
 
+          {/* Harga Standar */}
           <div>
-            <label className="block text-sm font-medium mb-1">Harga Standar Tengah</label>
+            <label className="block text-sm font-medium mb-1">
+              Harga Standar
+            </label>
             <input
               type="text"
-              className={inputClass("harga_standar_tengah")}
-              value={formatRupiah(selectedTipe.harga_standar_tengah)}
+              className={inputClass("harga_standar")}
+              value={formatRupiah(selectedTipe.harga_standar)}
               onChange={(e) => {
-                const raw = e.target.value.replace(/[^0-9]/g, ""); // hanya angka
+                const raw = e.target.value.replace(/[^0-9]/g, "");
                 setSelectedTipe({
                   ...selectedTipe,
-                  harga_standar_tengah: Number(raw),
+                  harga_standar: Number(raw),
                 });
               }}
             />
           </div>
 
+          {/* Harga Jual */}
           <div>
-            <label className="block text-sm font-medium mb-1">Harga Standar Sudut</label>
+            <label className="block text-sm font-medium mb-1">Harga Jual</label>
             <input
               type="text"
-              className={inputClass("harga_standar_sudut")}
-              value={formatRupiah(selectedTipe.harga_standar_sudut)}
+              className={inputClass("harga_jual")}
+              value={formatRupiah(selectedTipe.harga_jual)}
               onChange={(e) => {
-                const raw = e.target.value.replace(/[^0-9]/g, ""); // hanya angka
+                const raw = e.target.value.replace(/[^0-9]/g, "");
                 setSelectedTipe({
                   ...selectedTipe,
-                  harga_standar_sudut: Number(raw),
+                  harga_jual: Number(raw),
                 });
               }}
             />
           </div>
 
+          {/* Penambahan Bangunan */}
           <div>
-            <label className="block text-sm font-medium mb-1">Penambahan Bangunan</label>
+            <label className="block text-sm font-medium mb-1">
+              Penambahan Bangunan
+            </label>
             <input
-                type="text"
-                className={inputClass("penambahan_bangunan")}
-                value={formatRupiah(selectedTipe.penambahan_bangunan)}
-                onChange={(e) => {
-                  const raw = e.target.value.replace(/[^0-9]/g, ""); // hanya angka
-                  setSelectedTipe({
-                    ...selectedTipe,
-                    penambahan_bangunan: Number(raw),
-                  });
-                }}
-              />
+              type="text"
+              className={inputClass("penambahan_bangunan")}
+              value={formatRupiah(selectedTipe.penambahan_bangunan)}
+              onChange={(e) => {
+                const raw = e.target.value.replace(/[^0-9]/g, "");
+                setSelectedTipe({
+                  ...selectedTipe,
+                  penambahan_bangunan: Number(raw),
+                });
+              }}
+            />
           </div>
         </div>
 
@@ -175,3 +186,4 @@ export default function EditTipeRumahModal({
     </div>
   );
 }
+

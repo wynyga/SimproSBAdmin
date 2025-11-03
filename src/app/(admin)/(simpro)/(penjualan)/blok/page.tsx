@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react"; // 1. Impor useCallback
+import React, { useEffect, useState, useCallback } from "react";
 import {
   getPaginatedBlok,
   addBlok,
@@ -14,9 +14,11 @@ import ConfirmDeleteModal from "@/components/simpro/penjualan/ConfirmDeleteModal
 import AddBlokModal from "@/components/simpro/penjualan/blok/AddBlokModal";
 import EditBlokModal from "@/components/simpro/penjualan/blok/EditBlokModal";
 
+// 1. Perbarui Interface
 interface Blok {
   id: number;
   nama_blok: string;
+  units_count: number; // <-- Tambahkan properti ini
 }
 
 export default function BlokPage() {
@@ -34,18 +36,17 @@ export default function BlokPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  // 2. Bungkus fungsi dengan useCallback
   const fetchBlok = useCallback(async () => {
     const res = await getPaginatedBlok(currentPage, searchTerm, setError);
     if (res) {
       setBlokList(res.data);
       setTotalPages(res.last_page);
     }
-  }, [currentPage, searchTerm]); // <-- Dependensi untuk useCallback
+  }, [currentPage, searchTerm]);
 
   useEffect(() => {
     fetchBlok();
-  }, [fetchBlok]); // 3. Gunakan fetchBlok sebagai dependensi
+  }, [fetchBlok]);
 
   const handleAdd = async (namaBlok: string) => {
     await addBlok({ nama_blok: namaBlok }, setError);
@@ -57,7 +58,11 @@ export default function BlokPage() {
       setError("Nama blok tidak boleh kosong.");
       return false;
     }
-    await updateBlok(selectedBlok.id, { nama_blok: selectedBlok.nama_blok }, setError);
+    await updateBlok(
+      selectedBlok.id,
+      { nama_blok: selectedBlok.nama_blok },
+      setError
+    );
     await fetchBlok();
     return true;
   };
@@ -100,8 +105,16 @@ export default function BlokPage() {
           <table className="min-w-full border border-gray-300 dark:border-gray-700 text-sm">
             <thead className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white">
               <tr>
-                <th className="border px-4 py-2 text-left font-semibold">Nama Blok</th>
-                <th className="border px-4 py-2 text-left font-semibold">Aksi</th>
+                <th className="border px-4 py-2 text-left font-semibold">
+                  Nama Blok
+                </th>
+                {/* 2. Tambahkan Header "Jumlah Unit" */}
+                <th className="border px-4 py-2 text-center font-semibold">
+                  Jumlah Unit
+                </th>
+                <th className="border px-4 py-2 text-right font-semibold">
+                  Aksi
+                </th>
               </tr>
             </thead>
             <tbody className="text-gray-800 dark:text-white">
@@ -109,6 +122,12 @@ export default function BlokPage() {
                 blokList.map((blok) => (
                   <tr key={blok.id} className="bg-white dark:bg-transparent">
                     <td className="border px-4 py-2">{blok.nama_blok}</td>
+                    
+                    {/* 3. Tampilkan data 'units_count' */}
+                    <td className="border px-4 py-2 text-center">
+                      {blok.units_count}
+                    </td>
+                    
                     <td className="border px-4 py-2">
                       <div className="flex gap-2 justify-end">
                         <Button
@@ -137,7 +156,11 @@ export default function BlokPage() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={2} className="text-center py-4 text-gray-500 dark:text-gray-400">
+                  {/* 4. Perbarui colSpan menjadi 3 */}
+                  <td
+                    colSpan={3}
+                    className="text-center py-4 text-gray-500 dark:text-gray-400"
+                  >
                     Tidak ada data blok.
                   </td>
                 </tr>

@@ -80,7 +80,7 @@ const navItems: NavItem[] = [
     icon: <TableIcon />,
     subItems: [
       { name: "Tipe Rumah", path: "/tipe-rumah", pro: false },
-      { name: "Blok & Jumlah", path: "/blok", pro: false },
+      { name: "Blok & Jumlah Unit", path: "/blok", pro: false },
       { name: "Unit", path: "/unit", pro: false },
     ],
   },

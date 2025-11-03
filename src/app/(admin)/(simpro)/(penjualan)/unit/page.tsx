@@ -1,7 +1,12 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react"; // 1. Impor useCallback
-import { getPaginatedUnit, addUnit, updateUnit, deleteUnit } from "../../../../../../utils/Unit";
+import React, { useEffect, useState, useCallback } from "react";
+import {
+  getPaginatedUnit,
+  addUnit,
+  updateUnit,
+  deleteUnit,
+} from "../../../../../../utils/Unit";
 import { getAllBlok } from "../../../../../../utils/blok";
 import { getAllTipeRumah } from "../../../../../../utils/tipeRumah";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
@@ -11,11 +16,13 @@ import ConfirmDeleteModal from "@/components/simpro/penjualan/ConfirmDeleteModal
 import AddUnitModal from "@/components/simpro/penjualan/unit/AddUnitModal";
 import EditUnitModal from "@/components/simpro/penjualan/unit/EditUnitModal";
 
+// 1. Perbarui Interface Unit
 interface Unit {
   id: number;
   nomor_unit: string;
   blok_id: number;
   tipe_rumah_id: number;
+  kategori: string; // <-- Tambahkan ini
 }
 
 interface Blok {
@@ -58,30 +65,31 @@ export default function UnitPage() {
     fetchStaticData();
   }, []);
 
-  // 2. Bungkus fungsi dengan useCallback
   const fetchUnits = useCallback(async () => {
     const res = await getPaginatedUnit(currentPage, searchTerm, setError);
     if (res) {
       setUnitList(res.data);
       setTotalPages(res.last_page);
     }
-  }, [currentPage, searchTerm]); // <-- Dependensi untuk useCallback
+  }, [currentPage, searchTerm]);
 
   useEffect(() => {
     fetchUnits();
-  }, [fetchUnits]); // 3. Gunakan fungsi yang sudah stabil sebagai dependensi
+  }, [fetchUnits]);
 
+  // 2. Perbarui handleAdd untuk menyertakan 'kategori'
   const handleAdd = async (data: {
     blok_id: number;
     tipe_rumah_id: number;
     nomor_unit: string;
+    kategori: string; // <-- Tambahkan ini
   }) => {
     await addUnit(data, setError);
     await fetchUnits();
   };
 
+  // 3. Perbarui handleUpdate untuk mengirim 'kategori'
   const handleUpdate = async (data: Unit): Promise<boolean> => {
-    console.log("PAGE: Menerima data ini dari Modal:", data);
     if (!data || !data.nomor_unit.trim()) {
       setError("Nomor unit tidak boleh kosong.");
       return false;
@@ -92,6 +100,7 @@ export default function UnitPage() {
         blok_id: data.blok_id,
         tipe_rumah_id: data.tipe_rumah_id,
         nomor_unit: data.nomor_unit,
+        kategori: data.kategori, // <-- Tambahkan ini
       },
       setError
     );
@@ -120,7 +129,7 @@ export default function UnitPage() {
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
-              setCurrentPage(1); // reset page ke 1 kalau search
+              setCurrentPage(1);
             }}
             className="w-full sm:w-60 rounded border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
           />
@@ -132,55 +141,66 @@ export default function UnitPage() {
           </Button>
         </div>
 
-        {/* Table */}
+        {/* 4. Perbarui Tabel */}
         <div className="overflow-auto rounded border dark:border-gray-700">
           <table className="min-w-full border border-gray-300 dark:border-gray-700 text-sm text-gray-700 dark:text-white">
             <thead className="bg-gray-100 dark:bg-gray-700">
               <tr>
-                <th className="border px-4 py-2">Nomor Unit</th>
-                <th className="border px-4 py-2">Blok</th>
-                <th className="border px-4 py-2">Tipe Rumah</th>
-                <th className="border px-4 py-2">Aksi</th>
+                <th className="border px-4 py-2 text-left">Blok</th>
+                <th className="border px-4 py-2 text-left">Nomor Unit</th>
+                <th className="border px-4 py-2 text-left">Kategori</th>
+                <th className="border px-4 py-2 text-right">Aksi</th>
               </tr>
             </thead>
             <tbody>
               {unitList.length > 0 ? (
                 unitList.map((unit) => (
                   <tr key={unit.id} className="bg-white dark:bg-transparent">
+                    <td className="border px-4 py-2">
+                      {blokList.find((b) => b.id === unit.blok_id)
+                        ?.nama_blok || "-"}
+                    </td>
                     <td className="border px-4 py-2">{unit.nomor_unit}</td>
-                    <td className="border px-4 py-2">
-                      {blokList.find((b) => b.id === unit.blok_id)?.nama_blok || "-"}
+                    {/* <td className="border px-4 py-2">
+                      {tipeList.find((t) => t.id === unit.tipe_rumah_id)
+                        ?.tipe_rumah || "-"}
+                    </td> */}
+                    <td className="border px-4 py-2 capitalize">
+                      {unit.kategori || "-"}
                     </td>
                     <td className="border px-4 py-2">
-                      {tipeList.find((t) => t.id === unit.tipe_rumah_id)?.tipe_rumah || "-"}
-                    </td>
-                    <td className="border px-4 py-2 flex justify-end gap-2">
-                      <Button
-                        size="sm"
-                        className="bg-yellow-500 hover:bg-yellow-600 text-white"
-                        onClick={() => {
-                          setSelectedUnit(unit);
-                          setShowEditModal(true);
-                        }}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        size="sm"
-                        className="bg-red-600 hover:bg-red-700 text-white"
-                        onClick={() => {
-                          setDeleteId(unit.id);
-                          setShowDeleteModal(true);
-                        }}
-                      >
-                        Hapus
-                      </Button>
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          size="sm"
+                          className="bg-yellow-500 hover:bg-yellow-600 text-white"
+                          onClick={() => {
+                            setSelectedUnit(unit);
+                            setShowEditModal(true);
+                          }}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="bg-red-600 hover:bg-red-700 text-white"
+                          onClick={() => {
+                            setDeleteId(unit.id);
+                            setShowDeleteModal(true);
+                          }}
+                        >
+                          Hapus
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={4} className="text-center py-4 text-gray-500 dark:text-gray-400">
+                  {/* 5. Perbarui colSpan */}
+                  <td
+                    colSpan={5}
+                    className="text-center py-4 text-gray-500 dark:text-gray-400"
+                  >
                     Tidak ada data unit.
                   </td>
                 </tr>
@@ -199,7 +219,8 @@ export default function UnitPage() {
               Sebelumnya
             </button>
             <span className="mx-2">
-              Halaman <strong>{currentPage}</strong> dari <strong>{totalPages}</strong>
+              Halaman <strong>{currentPage}</strong> dari{" "}
+              <strong>{totalPages}</strong>
             </span>
             <button
               disabled={currentPage === totalPages}
@@ -225,11 +246,10 @@ export default function UnitPage() {
         <EditUnitModal
           isOpen={showEditModal}
           onClose={() => setShowEditModal(false)}
-          unit={selectedUnit} // Kirim unit yang dipilih
-          // 5. HAPUS 'setUnit'
+          unit={selectedUnit}
           blokOptions={blokList}
           tipeOptions={tipeList}
-          onSubmit={handleUpdate} // Kirim fungsi handleUpdate
+          onSubmit={handleUpdate}
           error={error}
         />
       )}
