@@ -42,6 +42,8 @@ export default function StockPage() {
   };
 
   const handleOpenEditModal = (item: StockItem) => {
+    // Fungsi ini tidak perlu diubah.
+    // Modal tetap bisa menampilkan 'stock_bahan' meskipun tidak bisa di-submit
     setStockItemToEdit({
       kode_barang: item.kode_barang,
       nama_barang: item.nama_barang,
@@ -65,28 +67,45 @@ export default function StockPage() {
 
     setErrorMsg(null);
 
-    const dataToUpdate = {
-      nama_barang: stockItemToEdit.nama_barang,
-      uty: stockItemToEdit.uty,
-      satuan: stockItemToEdit.satuan,
-      harga_satuan: parseFloat(String(stockItemToEdit.harga_satuan)),
-      stock_bahan: parseFloat(String(stockItemToEdit.stock_bahan)),
-    };
+    // --- REFAKTOR DIMULAI DI SINI ---
 
-    if (isNaN(dataToUpdate.harga_satuan)) {
+    // 1. [FIX BUG] Membersihkan input 'harga_satuan'
+    //    Data dari API adalah string terformat (cth: "50.000,00")
+    //    Kita harus membersihkannya menjadi angka (cth: 50000.00)
+    const cleanHargaString = String(stockItemToEdit.harga_satuan)
+      .replace(/\./g, "")  // Hapus pemisah ribuan (titik)
+      .replace(/,/g, "."); // Ganti koma desimal dengan titik
+
+    const parsedHarga = parseFloat(cleanHargaString);
+
+    if (isNaN(parsedHarga)) {
       setErrorMsg("Harga harus berupa angka yang valid.");
       return false;
     }
 
+    // 2. [PENYESUAIAN] Menyesuaikan data dengan StockController@update
+    //    Controller HANYA menerima 'nama_barang', 'uty', 'satuan', dan 'harga_satuan'.
+    //    'stock_bahan' TIDAK dikirim dalam update ini.
+    const dataToUpdate = {
+      nama_barang: stockItemToEdit.nama_barang,
+      uty: stockItemToEdit.uty,
+      satuan: stockItemToEdit.satuan,
+      harga_satuan: parsedHarga, // Gunakan angka yang sudah dibersihkan
+      // 'stock_bahan' sengaja DIHAPUS dari objek ini
+      // sesuai dengan logika controller update() baru Anda.
+    };
+
+    // --- REFAKTOR SELESAI ---
+
     try {
       const result = await updateStock(
         stockItemToEdit.kode_barang,
-        dataToUpdate,
+        dataToUpdate, // Objek 'dataToUpdate' sekarang sudah sesuai dengan API
         (err: string) => setErrorMsg(err)
       );
 
       if (result) {
-        await fetchData();
+        await fetchData(); // Muat ulang data untuk menampilkan perubahan
         return true;
       }
       return false;
@@ -122,12 +141,14 @@ export default function StockPage() {
                 <span className="font-medium">{btn.label}</span>
               </button>
 
-              {activeDropdown === index && (
+{activeDropdown === index && (
                 <div className="mt-4 border-t border-gray-200 dark:border-gray-700 pt-4 text-sm">
+                  {/* Header Tabel */}
                   <div className="grid grid-cols-12 gap-4 font-semibold text-gray-600 dark:text-white/80 mb-2">
-                    <div className="col-span-2">Type</div>
+                    <div className="col-span-2">Kode</div>
+                    {/* Diubah menjadi 4 untuk mengisi ruang dari kolom stok */}
                     <div className="col-span-4">Nama Barang</div>
-                    <div className="col-span-1">Jumlah</div>
+                    <div className="col-span-1">Uty</div>
                     <div className="col-span-1">Satuan</div>
                     <div className="col-span-2">Harga Satuan</div>
                     <div className="col-span-2">Aksi</div>
@@ -140,7 +161,9 @@ export default function StockPage() {
                         className="grid grid-cols-12 gap-4 py-2 border-t border-gray-100 dark:border-gray-800 text-gray-800 dark:text-white text-sm items-center"
                       >
                         <div className="col-span-2">{item.kode_barang}</div>
+                        {/* Diubah menjadi 4 agar sejajar dengan header */}
                         <div className="col-span-4">{item.nama_barang}</div>
+                        {/* Kolom item.stock_bahan dihapus */}
                         <div className="col-span-1">{item.uty}</div>
                         <div className="col-span-1">{item.satuan}</div>
                         <div className="col-span-2">{item.harga_satuan}</div>

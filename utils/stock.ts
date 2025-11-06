@@ -284,7 +284,7 @@ export const addStock = async (data: any, setError: Function) => {
 
 export const updateStock = async (
     kode_barang: string,
-    data: { nama_barang: string; uty: string; satuan: string; harga_satuan: number; stock_bahan: number },
+    data: { nama_barang: string; uty: string; satuan: string; harga_satuan: number;},
     setError: Function
 ) => {
     try {

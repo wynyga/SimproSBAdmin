@@ -11,17 +11,17 @@ import { ChevronDownIcon } from "@/icons";
 import { getStock, gudangOut } from "../../../../utils/stock";
 import { getCostTees } from "../../../../utils/CostTeeApi";
 
-// --- INTERFACE BARU & YANG DIPERBARUI ---
+// --- INTERFACE (Sudah Benar) ---
 interface StockItem {
   kode_barang: string;
   nama_barang: string;
+  // Catatan: getStock() mengirim lebih banyak data, tapi ini sudah cukup untuk form
 }
 
 interface StockData {
   [category: string]: StockItem[];
 }
 
-// 1. Definisikan interface yang lebih detail untuk CostTee
 interface CostTee {
   id: number;
   cost_tee_code: string;
@@ -38,8 +38,6 @@ export default function GudangOutForm() {
   const [categories, setCategories] = useState<string[]>([]);
   const [stockData, setStockData] = useState<StockData>({});
   const [filteredItems, setFilteredItems] = useState<StockItem[]>([]);
-  
-  // 2. Gunakan interface CostTee yang baru
   const [costTees, setCostTees] = useState<CostTee[]>([]);
 
   const [loading, setLoading] = useState(false);
@@ -51,26 +49,24 @@ export default function GudangOutForm() {
     kode_barang: "",
     nama_barang: "",
     tanggal_barang_keluar: "",
-    peruntukan: "",
+    peruntukan: "", // <-- Ini akan menyimpan ID (misal: "123")
     jumlah: 1,
     keterangan: "",
   });
 
   useEffect(() => {
-  const fetchInitial = async () => {
-      const response = await getStock(); 
-      if (response && response.data) {
-        setStockData(response.data);
-        setCategories(Object.keys(response.data)); 
+    const fetchInitial = async () => {
+      // --- REFAKTOR 1: Logika fetch data disederhanakan ---
+      // getStock() sudah mengembalikan 'data', jadi kita tidak perlu cek 'response.data'
+      const stockResponse = await getStock();
+      if (stockResponse) {
+        setStockData(stockResponse);
+        setCategories(Object.keys(stockResponse));
       }
-      if (response) {
-        setStockData(response);
-        setCategories(Object.keys(response));
-      }
+      // --- AKHIR REFAKTOR 1 ---
 
       const tees = await getCostTees(setError);
       if (tees) {
-        // 3. Ganti `any` dengan tipe `CostTee`
         const filtered = tees.filter(
           (tee: CostTee) => tee.cost_element?.cost_centre?.cost_code === "KASOUT"
         );
@@ -96,7 +92,7 @@ export default function GudangOutForm() {
       setFormData((prev) => ({
         ...prev,
         nama_barang: item.nama_barang,
-        kode_barang: item.kode_barang|| "",
+        kode_barang: item.kode_barang || "",
       }));
     }
   };
@@ -112,6 +108,7 @@ export default function GudangOutForm() {
   };
 
   const handleDateChange = (date: Date) => {
+    // Memastikan format YYYY-MM-DD
     const formatted = date.toISOString().split("T")[0];
     setFormData((prev) => ({
       ...prev,
@@ -125,10 +122,27 @@ export default function GudangOutForm() {
     setError(null);
     setSuccessMessage(null);
 
+    // --- REFAKTOR 2: Menyiapkan Payload 'peruntukan' yang Benar ---
+    // formData.peruntukan saat ini berisi ID (misal: "123").
+    // Kita perlu mencari deskripsi yang sesuai (misal: "Biaya Tukang").
+    const peruntukanId = formData.peruntukan;
+    const selectedTee = costTees.find(
+      (tee) => tee.id.toString() === peruntukanId
+    );
+    const peruntukanDescription = selectedTee ? selectedTee.description : "";
+
+    // Validasi tambahan
+    if (!peruntukanDescription) {
+      setError("Peruntukan yang valid harus dipilih.");
+      setLoading(false);
+      return;
+    }
+    // --- AKHIR REFAKTOR 2 ---
+
     const result = await gudangOut(
       formData.kode_barang,
       formData.tanggal_barang_keluar,
-      formData.peruntukan,
+      peruntukanDescription, // <-- Mengirim deskripsi, BUKAN ID
       formData.jumlah,
       formData.keterangan,
       setError
@@ -155,7 +169,9 @@ export default function GudangOutForm() {
     <ComponentCard title="Form Input Gudang Keluar">
       {error && <p className="text-sm mb-4 text-red-500 text-center">{error}</p>}
       {successMessage && (
-        <p className="text-sm mb-4 text-green-600 text-center">{successMessage}</p>
+        <p className="text-sm mb-4 text-green-600 text-center">
+          {successMessage}
+        </p>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -166,7 +182,7 @@ export default function GudangOutForm() {
               placeholder="Pilih kategori"
               options={categories.map((cat) => ({
                 value: cat,
-                label: cat.replace(/_/g, " "),
+                label: cat.replace(/_/g, " ").toUpperCase(), // Format label
               }))}
               value={formData.kategori}
               onChange={handleSelectKategori}
@@ -203,10 +219,10 @@ export default function GudangOutForm() {
             name="kode_barang"
             value={formData.kode_barang}
             onChange={handleInputChange}
-            disabled
+            disabled // Input ini harus disabled karena diisi otomatis
+            className="bg-gray-100 dark:bg-gray-700"
           />
         </div>
-
 
         <div>
           <DatePicker
@@ -223,10 +239,10 @@ export default function GudangOutForm() {
             <Select
               placeholder="Pilih peruntukan"
               options={costTees.map((tee) => ({
-                value: tee.id.toString(),
-                label: tee.description,
+                value: tee.id.toString(), // value tetap ID
+                label: tee.description, // label adalah deskripsi
               }))}
-              value={formData.peruntukan}
+              value={formData.peruntukan} // value terikat ke formData.peruntukan (ID)
               onChange={(val) =>
                 setFormData((prev) => ({ ...prev, peruntukan: val }))
               }

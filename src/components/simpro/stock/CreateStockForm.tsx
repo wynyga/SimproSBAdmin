@@ -8,23 +8,26 @@ import Select from "@/components/form/Select";
 import Button from "@/components/ui/button/Button";
 import { addStock } from "../../../../utils/stock";
 
+// --- REFAKTOR DIMULAI DI SINI ---
+// Array ini disesuaikan agar cocok dengan key di $modelMap milik StockController
 const modelMap = [
-  "day_work",
-  "equipment",
+  "day_works",
+  "equipments",
   "tools",
-  "land_stone_sand",
-  "cement",
-  "rebar",
-  "wood",
-  "roof_ceiling_tile",
-  "keramik_floor",
-  "paint_glass_wallpaper",
+  "land_stone_sands",
+  "cements",
+  "rebars",
+  "woods",
+  "roof_ceiling_tiles",
+  "keramik_floors",
+  "paint_glass_wallpapers",
   "others",
-  "oil_chemical_perekat",
-  "sanitary",
-  "piping_pump",
-  "lighting",
+  "oil_chemical_perekats",
+  "sanitaries",
+  "piping_pumps",
+  "lightings",
 ];
+// --- REFAKTOR SELESAI ---
 
 export default function CreateStockForm() {
   const [formData, setFormData] = useState({
@@ -46,6 +49,7 @@ export default function CreateStockForm() {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
+      // Konversi ke angka sudah benar
       [name]: name === "harga_satuan" || name === "stock_bahan" ? +value : value,
     }));
   };
@@ -53,24 +57,27 @@ export default function CreateStockForm() {
   const handleSubmit = async () => {
     setError(null);
     setMessage(null);
-  
+
     // Validasi manual
     if (
       !formData.jenis_peralatan ||
       !formData.nama_barang ||
       !formData.uty ||
       !formData.satuan ||
-      formData.harga_satuan <= 0 ||
-      formData.stock_bahan <= 0
+      formData.harga_satuan <= 0 || // Controller membolehkan 0, tapi ini OK (lebih ketat)
+      formData.stock_bahan <= 0 // Controller membolehkan 0, tapi ini OK
     ) {
       setError("Semua field wajib diisi dengan benar.");
       return;
     }
-  
+
     setLoading(true);
-    await addStock(formData, setError);
-  
-    if (!error) {
+    // Asumsi: addStock mengirim formData apa adanya
+    const result = await addStock(formData, setError); 
+
+    // Cek jika addStock mengembalikan 'success' (bukan hanya 'error' yg null)
+    // Sesuaikan ini jika 'addStock' Anda tidak mengembalikan 'result'
+    if (result && !error) {
       setMessage("Stok berhasil ditambahkan!");
       setFormData({
         jenis_peralatan: "",
@@ -80,13 +87,12 @@ export default function CreateStockForm() {
         harga_satuan: 0,
         stock_bahan: 0,
       });
-  
+
       setTimeout(() => setMessage(null), 3000);
     }
-  
+
     setLoading(false);
   };
-  
 
   return (
     <ComponentCard title="Form Tambah Stock">
@@ -102,10 +108,10 @@ export default function CreateStockForm() {
           <Label>Jenis Stock</Label>
           <Select
             placeholder="Pilih jenis"
-            defaultValue={formData.jenis_peralatan}
+            value={formData.jenis_peralatan}
             options={modelMap.map((item) => ({
-              value: item,
-              label: item.replace(/_/g, " ").toUpperCase(),
+              value: item, // Sekarang mengirim nilai yang benar (cth: "day_works")
+              label: item.replace(/_/g, " ").toUpperCase(), // Label tetap rapi
             }))}
             onChange={(val) =>
               setFormData((prev) => ({ ...prev, jenis_peralatan: val }))
@@ -151,7 +157,8 @@ export default function CreateStockForm() {
             <Input
               name="harga_satuan"
               type="text"
-              placeholder="Contoh: 500.000"
+              placeholder="Contoh: 50000"
+              // Input formatter Anda sudah bagus
               value={Number(formData.harga_satuan || 0).toLocaleString("id-ID")}
               onChange={(e) => {
                 const raw = e.target.value.replace(/\./g, "");
@@ -168,14 +175,14 @@ export default function CreateStockForm() {
             />
           </div>
           <div>
-            <Label>Stock Bahan</Label>
+            <Label>Stock Awal</Label>
             <Input
-                name="stock_bahan"
-                type="number"
-                min="0" 
-                value={formData.stock_bahan}
-                onChange={handleInputChange}
-                required
+              name="stock_bahan"
+              type="number"
+              min="0"
+              value={formData.stock_bahan}
+              onChange={handleInputChange}
+              required
             />
           </div>
         </div>

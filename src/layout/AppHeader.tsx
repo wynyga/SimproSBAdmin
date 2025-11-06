@@ -39,7 +39,7 @@ const AppHeader: React.FC = () => {
   // ✅ Logout otomatis saat modal dikonfirmasi
   const handleSessionExpiredLogout = async () => {
     await logoutUser((errMsg: string) => setError(errMsg));
-    router.push("/");
+    router.push("/signin");
   };
 
   const handleToggle = () => {
