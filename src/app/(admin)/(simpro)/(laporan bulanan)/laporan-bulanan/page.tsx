@@ -236,9 +236,6 @@ export default function LaporanBulananPage() {
                 <tr>
                   <th className="border-r px-4 py-2 font-semibold">No.</th>
                   <th className="border-r px-4 py-2 font-semibold">Posting Date</th>
-                  <th className="border-r px-4 py-2 font-semibold">Posting Time</th>
-                  <th className="border-r px-4 py-2 font-semibold">Eff Date</th>
-                  <th className="border-r px-4 py-2 font-semibold">Eff Time</th>
                   <th className="border-r px-4 py-2 font-semibold">Description</th>
                   <th className="border-r px-4 py-2 font-semibold">Debit</th>
                   <th className="border-r px-4 py-2 font-semibold">Credit</th>
@@ -251,9 +248,6 @@ export default function LaporanBulananPage() {
                     <tr key={transaction.no} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                       <td className="border-r px-4 py-2">{transaction.no}</td>
                       <td className="border-r px-4 py-2">{transaction.postingDate}</td>
-                      <td className="border-r px-4 py-2">{transaction.postingTime}</td>
-                      <td className="border-r px-4 py-2">{transaction.effDate}</td>
-                      <td className="border-r px-4 py-2">{transaction.effTime}</td>
                       <td className="border-r px-4 py-2 max-w-xs">{transaction.description}</td>
                       <td className="border-r px-4 py-2 text-right">
                         {transaction.debit > 0 ? formatRupiah(transaction.debit) : "-"}
