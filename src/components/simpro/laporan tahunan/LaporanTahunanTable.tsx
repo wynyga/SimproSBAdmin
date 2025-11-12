@@ -1,9 +1,7 @@
 import React from "react";
 import CostCentreRow from "./CostCentreRow";
 
-// Sebaiknya, semua interface ini berada di satu file tipe terpusat (e.g., types.ts)
-// dan di-import ke setiap komponen yang membutuhkannya.
-
+// ... (Interface tetap sama) ...
 interface TeeData {
   cost_tee_code: string;
   description: string;
@@ -24,11 +22,11 @@ interface CostCentreData {
   elements: CostElementData[];
 }
 
-// Tipe utama yang mendefinisikan struktur prop 'data'
 interface LaporanTahunanData {
   KASIN: CostCentreData[];
   KASOUT: CostCentreData[];
 }
+// ...
 
 interface LaporanTahunanTableProps {
   data: LaporanTahunanData;
@@ -47,7 +45,10 @@ export default function LaporanTahunanTable({
           <table className="min-w-full border border-gray-200 text-left text-sm dark:border-gray-700">
             <thead className="bg-gray-100 dark:bg-gray-800/40 dark:text-white">
               <tr>
-                <th className="px-4 py-2">Kode</th>
+                {/* PERBAIKAN: Tambahkan 'print:hidden' 
+                  untuk menyembunyikan kolom ini saat dicetak 
+                */}
+                <th className="px-4 py-2 print:hidden">Kode</th>
                 <th className="px-4 py-2">Deskripsi</th>
                 <th className="px-4 py-2 text-right">Jumlah</th>
               </tr>
