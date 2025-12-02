@@ -77,7 +77,7 @@ export default function GudangInTableSTTB({ gudangInList, onCetakSttb, onCetakKw
                         Cetak CO
                       </Button>
                     ) : (
-                      <span className="italic text-gray-400">Belum Ada CO</span>
+                      <span className="italic text-gray-400">Bukan Cash</span>
                     )
                   ) : (
                     <span className="italic text-gray-400">Menunggu Verifikasi</span>
