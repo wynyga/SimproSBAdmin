@@ -75,7 +75,7 @@ export default function HistoryGudangOutPage() {
         <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
           <Select
             options={statusOptions}
-            defaultValue={statusFilter}
+            value={statusFilter}
             onChange={setStatusFilter}
             placeholder="Filter Status"
           />

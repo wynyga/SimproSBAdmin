@@ -90,9 +90,7 @@ export default function StockPage() {
       nama_barang: stockItemToEdit.nama_barang,
       uty: stockItemToEdit.uty,
       satuan: stockItemToEdit.satuan,
-      harga_satuan: parsedHarga, // Gunakan angka yang sudah dibersihkan
-      // 'stock_bahan' sengaja DIHAPUS dari objek ini
-      // sesuai dengan logika controller update() baru Anda.
+      harga_satuan: parsedHarga, 
     };
 
     // --- REFAKTOR SELESAI ---
@@ -100,7 +98,7 @@ export default function StockPage() {
     try {
       const result = await updateStock(
         stockItemToEdit.kode_barang,
-        dataToUpdate, // Objek 'dataToUpdate' sekarang sudah sesuai dengan API
+        dataToUpdate, 
         (err: string) => setErrorMsg(err)
       );
 

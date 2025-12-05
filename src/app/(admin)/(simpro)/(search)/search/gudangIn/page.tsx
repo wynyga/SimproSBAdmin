@@ -75,7 +75,7 @@ export default function HistoryGudangInPage() {
           <div className="w-full md:w-1/4">
             <Select
               options={statusOptions}
-              defaultValue={statusFilter}
+              value={statusFilter}
               onChange={(val) => setStatusFilter(val)}
               placeholder="Filter Status"
             />

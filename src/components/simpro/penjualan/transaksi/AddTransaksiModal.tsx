@@ -126,7 +126,7 @@ export default function AddTransaksiModal({
         // ✅ Poin 3: Ambil 'harga_jual' dari 'tipe_rumah'
         const hargaJualStandar = selectedUnit.tipe_rumah?.harga_jual || 0;
 
-        let nextFormData = {
+        const nextFormData = {
           ...formData,
           harga_jual_standar: hargaJualStandar,
         };
@@ -169,7 +169,8 @@ export default function AddTransaksiModal({
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    let { name, value } = e.target;
+    const { name } = e.target;
+    let { value } = e.target;
 
     if (name === "no_telepon") {
       value = value.replace(/\D/g, "");

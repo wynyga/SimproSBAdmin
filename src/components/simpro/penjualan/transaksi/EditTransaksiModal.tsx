@@ -90,7 +90,7 @@ export default function EditTransaksiModal({
   error,
 }: Props) {
   const [selectedKategori, setSelectedKategori] = useState<string>("standar");
-  const [updateError, setUpdateError] = useState<string | null>(null);
+  const [, setUpdateError] = useState<string | null>(null);
   // Efek untuk mengatur kategori saat modal dibuka/transaksi berubah
   useEffect(() => {
     if (isOpen && transaksi.unit) {

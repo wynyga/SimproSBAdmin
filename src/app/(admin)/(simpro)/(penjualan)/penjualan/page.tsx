@@ -40,7 +40,7 @@
 
   export default function TransaksiPage() {
     const [transaksiList, setTransaksiList] = useState<TransaksiDataWithRelasi[]>([]);
-    const [users, setUsers] = useState<{ id: number; nama_user: string }[]>([]);
+    const [, setUsers] = useState<{ id: number; nama_user: string }[]>([]);
     const [units, setUnits] = useState<UnitDetail[]>([]);
     const [selectedTransaksi, setSelectedTransaksi] = useState<TransaksiDataWithRelasi | null>(null);
     const [showAddModal, setShowAddModal] = useState(false);

@@ -145,16 +145,6 @@ export default function GudangInForm() {
       setLoading(false);
     }
   };
-
-  // Helper untuk membuka Link Cetak (Sesuaikan URL API Anda)
-  const handlePrint = (type: 'sttb' | 'kwitansi', id: number) => {
-    // Sesuaikan BASE_URL API Anda.
-    // Contoh: http://localhost:8000/api/sttb/10/cetak
-    const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
-    const url = `${baseURL}/${type}/${id}/cetak`;
-    window.open(url, '_blank');
-  };
-
   // --- TAMPILAN SUKSES & OPSI CETAK ---
   if (createdData) {
     return (
